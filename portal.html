@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>اي ام سبيشل — تواصل معنا</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f0f4ff;--sur:#ffffff;--tx:#1a1f2e;--tx2:#3d4a5c;
+  --mu:#7b8a9a;--bl:#2563eb;--bll:#eff6ff;--blb:#bfdbfe;
+  --gn:#059669;--gnl:#ecfdf5;--gnb:#a7f3d0;
+  --rd:#dc2626;--brd:#e2e8f0;--sh:0 8px 40px rgba(37,99,235,.12);
+  --r:20px;--r2:14px;--r3:10px;
+}
+body{
+  font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:24px 16px;
+  background-image:radial-gradient(ellipse at 20% 20%, rgba(37,99,235,.08) 0%, transparent 60%),
+                   radial-gradient(ellipse at 80% 80%, rgba(5,150,105,.06) 0%, transparent 60%);
+}
+.wrap{width:100%;max-width:500px}
+.header{text-align:center;margin-bottom:32px}
+.logo-circle{
+  width:80px;height:80px;background:linear-gradient(135deg,#2563eb,#7c3aed);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;box-shadow:0 8px 24px rgba(37,99,235,.3);
+  font-size:2rem;
+}
+.brand{font-size:1.8rem;font-weight:900;color:var(--bl);letter-spacing:-.5px}
+.tagline{font-size:.95rem;color:var(--mu);margin-top:6px;font-weight:500}
+.card{
+  background:var(--sur);border-radius:var(--r);padding:32px 28px;
+  box-shadow:var(--sh);border:1px solid rgba(37,99,235,.08);
+}
+.section-title{
+  font-size:.78rem;font-weight:800;color:var(--bl);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.section-title::before{content:'';width:3px;height:14px;background:var(--bl);border-radius:2px;display:inline-block}
+.fg{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.fl{font-size:.88rem;font-weight:700;color:var(--tx2)}
+.fi,.ft{
+  background:#f8fafc;border:2px solid var(--brd);border-radius:var(--r2);
+  padding:14px 16px;color:var(--tx);font-family:'Tajawal',sans-serif;
+  font-size:.95rem;width:100%;direction:rtl;transition:all .2s ease;
+}
+.fi:focus,.ft:focus{outline:none;border-color:var(--bl);background:var(--sur);box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+.ft{resize:vertical;min-height:110px;line-height:1.7}
+.branch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.branch-btn{
+  background:#f8fafc;border:2px solid var(--brd);border-radius:var(--r3);
+  padding:12px 8px;font-family:'Tajawal',sans-serif;font-size:.85rem;
+  font-weight:700;cursor:pointer;transition:all .2s;color:var(--tx2);text-align:center;
+}
+.branch-btn:hover{border-color:var(--bl);color:var(--bl);background:var(--bll)}
+.branch-btn.on{background:var(--bll);border-color:var(--bl);color:var(--bl)}
+.submit-btn{
+  width:100%;padding:16px;background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff;border:none;border-radius:var(--r2);font-family:'Tajawal',sans-serif;
+  font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 16px rgba(37,99,235,.35);margin-top:8px;
+}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.45)}
+.submit-btn:active{transform:scale(.98)}
+.success{
+  display:none;text-align:center;padding:32px 24px;
+  background:linear-gradient(135deg,var(--gnl),#a7f3d0);
+  border:1px solid var(--gnb);border-radius:var(--r);margin-top:20px;
+}
+.success-icon{font-size:3rem;margin-bottom:12px}
+.success h3{font-size:1.2rem;font-weight:800;color:#064e3b;margin-bottom:8px}
+.success p{font-size:.9rem;color:#047857;font-weight:500;line-height:1.6}
+.success-ref{
+  display:inline-block;margin-top:16px;background:#fff;border:1px solid var(--gnb);
+  border-radius:24px;padding:8px 20px;font-size:.85rem;font-weight:800;color:var(--gn);
+  font-family:monospace;
+}
+.footer{text-align:center;margin-top:20px;font-size:.78rem;color:var(--mu);font-weight:500}
+.divider{border:none;border-top:1px solid var(--brd);margin:20px 0}
+@media(max-width:480px){
+  body{padding:16px 12px;align-items:flex-start}
+  .card{padding:24px 18px}
+  .brand{font-size:1.5rem}
+  .branch-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="brand">اي ام سبيشل</div>
+    <div class="tagline">نستمع إليكِ ونهتم بتجربتكِ</div>
+  </div>
+
+  <div class="card" id="form-card">
+    <div class="section-title">بياناتك</div>
+    <div class="fg">
+      <label class="fl">رقم الجوال <span style="color:var(--rd)">*</span></label>
+      <input class="fi" id="p-mobile" type="tel" placeholder="05XXXXXXXX" maxlength="15" inputmode="tel">
+    </div>
+
+    <hr class="divider">
+    <div class="section-title">الفرع </div>
+    <div class="fg" style="margin-bottom:20px">
+      <div class="branch-grid" id="p-branches">
+        <button class="branch-btn" onclick="toggleBranch(this,'فرع القصر')">القصر مول </button>
+        <button class="branch-btn" onclick="toggleBranch(this,'فرع سلام مول')">سلام مول</button>
+        <button class="branch-btn" onclick="toggleBranch(this,'فرع الرياض جاليري')">الرياض جاليري</button>
+        <button class="branch-btn" onclick="toggleBranch(this,'فرع ذا ڤيو مول')">ذافيو مول </button>
+        <button class="branch-btn" onclick="toggleBranch(this,'فرع مركز المملكة')">مركز المملكة</button>
+        <button class="branch-btn" onclick="toggleBranch(this,'فرع شرق بلازا')">شرق بلازا</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <div class="section-title">رسالتكِ</div>
+    <div class="fg">
+      <label class="fl">اكتب/أكتبي رسالتك وتفاصيلها <span style="color:var(--rd)">*</span></label>
+            <textarea class="ft" id="p-msg" rows="5" placeholder="صف / صفي تجربتك أو استفسارك أو اقتراحك "></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="submitMsg()">إرسال الرسالة </button>
+  </div>
+
+  <div class="success" id="success-box">
+    <div class="success-icon">✅</div>
+    <h3>تم إرسال رسالتكِ بنجاح</h3>
+    <p>شكراً لتواصلكِ معنا. سيتواصل معكِ فريقنا في أقرب وقت ممكن.</p>
+    <div class="success-ref" id="success-ref"></div>
+    <br><br>
+  </div>
+
+  <div class="footer">اي ام سبيشل · تجربة العملاء</div>
+</div>
+
+<script>
+let selectedBranch = '';
+
+function toggleBranch(btn, br) {
+  document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
+  if (selectedBranch === br) { selectedBranch = ''; return; }
+  btn.classList.add('on');
+  selectedBranch = br;
+}
+
+function submitMsg() {
+  const mob = document.getElementById('p-mobile').value.trim();
+  const msg = document.getElementById('p-msg').value.trim();
+  if (!mob) { alert('يرجى إدخال رقم الجوال'); document.getElementById('p-mobile').focus(); return; }
+  if (!msg) { alert('يرجى كتابة رسالتك'); document.getElementById('p-msg').focus(); return; }
+
+  const messages = JSON.parse(localStorage.getItem('ims_m') || '[]');
+  const id = 'msg-' + Date.now();
+  messages.unshift({
+    id, mobile: mob, branch: selectedBranch || '', text: msg,
+    ts: new Date().toISOString(), converted: false, convertedBy: null
+  });
+  localStorage.setItem('ims_m', JSON.stringify(messages));
+
+  document.getElementById('form-card').style.display = 'none';
+  const sb = document.getElementById('success-box');
+  sb.style.display = 'block';
+  document.getElementById('success-ref').textContent = 'رقم الرسالة: ' + id.replace('msg-','').slice(-6);
+}
+
+function resetForm() {
+  document.getElementById('p-mobile').value = '';
+  document.getElementById('p-msg').value = '';
+  selectedBranch = '';
+  document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('form-card').style.display = 'block';
+  document.getElementById('success-box').style.display = 'none';
+}
+</script>
+</body>
+</html>
