@@ -171,7 +171,6 @@ function openPinOverlay(user, onSuccess){
   for(let i=0;i<4;i++){const c=document.getElementById('pc'+i);c.value='';c.classList.remove('filled','error');}
   document.getElementById('pin-err').textContent='';
   const roles={owner:'المالك',admin:'الإدارة',branch:'مديرة الفرع',cs:'خدمة العملاء',maint:'الصيانة'};
-  const avatars={owner:'👑',admin:'🌸',branch:'🌿',cs:'💬',maint:'⚙️'};
   document.getElementById('pin-name').textContent=user.name;
   document.getElementById('pin-role').textContent=roles[user.role]||user.role;
   document.getElementById('pin-avatar').textContent=avatars[user.role]||'👤';
