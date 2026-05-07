@@ -105,10 +105,10 @@ body{
     <div class="section-title">الفرع </div>
     <div class="fg" style="margin-bottom:20px">
       <div class="branch-grid" id="p-branches">
-        <button class="branch-btn" onclick="toggleBranch(this,'فرع القصر')">القصر مول </button>
+        <button class="branch-btn" onclick="toggleBranch(this,'فرع القصر')">القصر مول</button>
         <button class="branch-btn" onclick="toggleBranch(this,'فرع سلام مول')">سلام مول</button>
         <button class="branch-btn" onclick="toggleBranch(this,'فرع الرياض جاليري')">الرياض جاليري</button>
-        <button class="branch-btn" onclick="toggleBranch(this,'فرع ذا ڤيو مول')">ذافيو مول </button>
+        <button class="branch-btn" onclick="toggleBranch(this,'فرع ذا ڤيو مول')">ذافيو مول</button>
         <button class="branch-btn" onclick="toggleBranch(this,'فرع مركز المملكة')">مركز المملكة</button>
         <button class="branch-btn" onclick="toggleBranch(this,'فرع شرق بلازا')">شرق بلازا</button>
       </div>
@@ -120,12 +120,12 @@ body{
             <textarea class="ft" id="p-msg" rows="5" placeholder="... "></textarea>
     </div>
 
-    <button class="submit-btn" onclick="submitMsg()">إرسال </button>
+    <button class="submit-btn" onclick="submitMsg()">ارسال</button>
   </div>
 
   <div class="success" id="success-box">
-    <div class="success-icon">✅</div>
-    <h3>تم إرسال رسالتك بنجاح</h3>
+    <div class="success-icon"></div>
+    <h3>تم ارسالرسالتك بنجاح</h3>
     <p>شكراً لتواصلك معنا. سيتواصل معك فريقنا في أقرب وقت ممكن.</p>
     <div class="success-ref" id="success-ref"></div>
     <br><br>
@@ -144,16 +144,30 @@ function toggleBranch(btn, br) {
   selectedBranch = br;
 }
 
+// تطبيع رقم الجوال السعودي — يُرجع رقماً بدون صفر (5XXXXXXXX) أو null
+function normalizeSaudiMobile(raw) {
+  let d = raw.replace(/[\s\-]/g, '');
+  if (d.startsWith('+966')) d = d.slice(4);
+  else if (d.startsWith('00966')) d = d.slice(5);
+  else if (d.startsWith('966')) d = d.slice(3);
+  if (d.startsWith('0')) d = d.slice(1);
+  return /^5[0-9]{8}$/.test(d) ? d : null;
+}
+
 function submitMsg() {
-  const mob = document.getElementById('p-mobile').value.trim();
+  const mobRaw = document.getElementById('p-mobile').value.trim();
   const msg = document.getElementById('p-msg').value.trim();
-  if (!mob) { alert('يرجى إدخال رقم الجوال'); document.getElementById('p-mobile').focus(); return; }
+  if (!mobRaw) { alert('يرجى إدخال رقم الجوال'); document.getElementById('p-mobile').focus(); return; }
+  const mob = normalizeSaudiMobile(mobRaw);
+  if (!mob) { alert('رقم الجوال غير صحيح. يرجى إدخال رقم سعودي صحيح (مثال: 0512345678 أو 512345678 أو 966512345678)'); document.getElementById('p-mobile').focus(); return; }
   if (!msg) { alert('يرجى كتابة رسالتك'); document.getElementById('p-msg').focus(); return; }
 
   const messages = JSON.parse(localStorage.getItem('ims_m') || '[]');
   const id = 'msg-' + Date.now();
+  // رقم الجوال المحفوظ = بدون صفر (5XXXXXXXX)
+  // رقم الرسالة = رقم الجوال بدون صفر
   messages.unshift({
-    id, mobile: mob, branch: selectedBranch || '', text: msg,
+    id: mob, mobile: mob, branch: selectedBranch || '', text: msg,
     ts: new Date().toISOString(), converted: false, convertedBy: null
   });
   localStorage.setItem('ims_m', JSON.stringify(messages));
@@ -161,7 +175,8 @@ function submitMsg() {
   document.getElementById('form-card').style.display = 'none';
   const sb = document.getElementById('success-box');
   sb.style.display = 'block';
-  document.getElementById('success-ref').textContent = 'رقم الرسالة: ' + id.replace('msg-','').slice(-6);
+  // رقم الرسالة = رقم الجوال الذي أدخله العميل بدون الصفر
+  document.getElementById('success-ref').textContent = 'رقم رسالتك: ' + mob;
 }
 
 function resetForm() {

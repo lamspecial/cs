@@ -6,8 +6,8 @@
  *   Collection: ims
  *     ├── config      → المستخدمون + الإعدادات
  *     ├── complaints  → { items: [...] }
- *     ├── messages    → { items: [...] }
- *     ├── branchMsgs  → { items: [...] }
+ *     ├── messages    → { items: [...] } (رسائل عملاء البوابة)
+ *     ├── branchMsgs  → { items: [...] } (رسائل الفروع + رسائل المالك owner_cast)
  *     └── warnings    → { items: [...] }
  */
 
