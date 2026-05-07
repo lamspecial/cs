@@ -58,12 +58,50 @@ let currentRef=null, prevTxt='', pendingC=null;
 let gC='m', gK='m', currentTab='all';
 
 // ═══ حفظ البيانات ═══
-const sv   = ()=>{ localStorage.setItem('ims_u',JSON.stringify(users)); localStorage.setItem('ims_ct',JSON.stringify(ctypes)); localStorage.setItem('ims_sent',JSON.stringify(sentiments)); localStorage.setItem('ims_demo',JSON.stringify(demos)); localStorage.setItem('ims_emp',JSON.stringify(employees)); localStorage.setItem('ims_bwa',JSON.stringify(branchWA)); };
-const saveC= ()=>localStorage.setItem('ims_c',JSON.stringify(complaints));
-const saveM= ()=>localStorage.setItem('ims_m',JSON.stringify(messages));
-const saveBM=()=>localStorage.setItem('ims_bm',JSON.stringify(branchMsgs));
-const saveS= s=>localStorage.setItem('ims_s',JSON.stringify(s));
-const savePSeen=()=>localStorage.setItem('ims_ps',JSON.stringify(pageSeen));
+// ═══ حفظ الإعدادات (localStorage + Firestore) ═══
+const sv = () => {
+  localStorage.setItem('ims_u',    JSON.stringify(users));
+  localStorage.setItem('ims_ct',   JSON.stringify(ctypes));
+  localStorage.setItem('ims_sent', JSON.stringify(sentiments));
+  localStorage.setItem('ims_demo', JSON.stringify(demos));
+  localStorage.setItem('ims_emp',  JSON.stringify(employees));
+  localStorage.setItem('ims_bwa',  JSON.stringify(branchWA));
+  window.DB?.saveConfig({ users, ctypes, sentiments, demos, employees, branchWA, adminWANum, maintPass, signatureBase64 });
+};
+
+// ═══ حفظ البيانات المشتركة (localStorage + Firestore) ═══
+const saveC   = () => { localStorage.setItem('ims_c',  JSON.stringify(complaints));  window.DB?.saveComplaints(complaints);  };
+const saveM   = () => { localStorage.setItem('ims_m',  JSON.stringify(messages));    window.DB?.saveMessages(messages);      };
+const saveBM  = () => { localStorage.setItem('ims_bm', JSON.stringify(branchMsgs));  window.DB?.saveBranchMsgs(branchMsgs);  };
+const saveW   = () => { localStorage.setItem('ims_w',  JSON.stringify(warnings));    window.DB?.saveWarnings(warnings);      };
+
+// ═══ حفظ بيانات الجلسة (محلية فقط — خاصة بكل جهاز) ═══
+const saveS     = s => localStorage.setItem('ims_s',  JSON.stringify(s));
+const savePSeen = () => localStorage.setItem('ims_ps', JSON.stringify(pageSeen));
+
+// ═══ مزامنة فورية من Firestore (يُستدعى بواسطة firebase.js) ═══
+window._imsSync = (key, data) => {
+  if (!session) return; // لا تحديث قبل تسجيل الدخول
+  if (key === 'complaints') {
+    complaints = data;
+    if (document.getElementById('page-list')?.classList.contains('on'))   renderList();
+    if (document.getElementById('page-filter')?.classList.contains('on')) runFilter();
+    if (document.getElementById('page-stats')?.classList.contains('on'))  renderStats();
+    updateDots();
+  } else if (key === 'messages') {
+    messages = data;
+    if (document.getElementById('page-msgs')?.classList.contains('on'))   renderMsgs();
+    updateDots();
+  } else if (key === 'branchMsgs') {
+    branchMsgs = data;
+    if (document.getElementById('page-branchmsgs')?.classList.contains('on')) renderBranchMsgs();
+    updateDots();
+  } else if (key === 'warnings') {
+    warnings = data;
+    if (document.getElementById('page-warnings')?.classList.contains('on')) renderWarnings();
+    updateDots();
+  }
+};
 
 // ═══ أدوات ═══
 const pad=(n,l)=>String(n).padStart(l,'0');
@@ -507,24 +545,24 @@ function renderMaintPanel(){
   <div class="ms"><h3>Branch WhatsApp</h3><div id="mp-bwa">${mpBWAHTML()}</div></div>
   <div class="ms"><h3>Admin WhatsApp</h3>
     <input class="mfi" id="mp-adminwa" value="${adminWANum}" placeholder="966XXXXXXXXX" style="width:160px">
-    <button class="mbtn" onclick="adminWANum=document.getElementById('mp-adminwa').value.trim();localStorage.setItem('ims_adminwa',adminWANum);showMpMsg('saved')">Save</button>
+    <button class="mbtn" onclick="adminWANum=document.getElementById('mp-adminwa').value.trim();localStorage.setItem('ims_adminwa',adminWANum);window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64});showMpMsg('saved')">Save</button>
   </div>
   <div class="ms"><h3>Actions</h3>
     <button class="mbtn mbd" onclick="if(confirm('Clear all complaints?')){complaints=[];saveC();}">Clear Complaints</button>
     <button class="mbtn mbd" onclick="if(confirm('Clear all messages?')){messages=[];saveM();}">Clear Messages</button>
-    <button class="mbtn mbd" onclick="if(confirm('Clear warnings?')){warnings=[];localStorage.setItem('ims_w','[]');}">Clear Warnings</button>
+    <button class="mbtn mbd" onclick="if(confirm('Clear warnings?')){warnings=[];saveW();}">Clear Warnings</button>
     <button class="mbtn mbd" onclick="if(confirm('Reset demo?')){localStorage.removeItem('ims_demo_loaded');location.reload();}">Reset Demo</button>
   </div>`;
 }
 
 function showMpMsg(t){const el=document.getElementById('mp-pmsg');if(el){el.textContent=t;setTimeout(()=>el.textContent='',2000);}}
-function uploadSignature(){const f=document.getElementById('mp-sig-file').files[0];if(!f)return;const r=new FileReader();r.onload=e=>{signatureBase64=e.target.result;localStorage.setItem('ims_sig',signatureBase64);document.getElementById('mp-sig-preview').src=signatureBase64;document.getElementById('mp-sig-preview').style.display='block';};r.readAsDataURL(f);}
-function clearSignature(){signatureBase64='';localStorage.removeItem('ims_sig');document.getElementById('mp-sig-preview').style.display='none';}
+function uploadSignature(){const f=document.getElementById('mp-sig-file').files[0];if(!f)return;const r=new FileReader();r.onload=e=>{signatureBase64=e.target.result;localStorage.setItem('ims_sig',signatureBase64);window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64});document.getElementById('mp-sig-preview').src=signatureBase64;document.getElementById('mp-sig-preview').style.display='block';};r.readAsDataURL(f);}
+function clearSignature(){signatureBase64='';localStorage.removeItem('ims_sig');window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64:''});document.getElementById('mp-sig-preview').style.display='none';}
 function mpUsersHTML(){return users.map(u=>`<div class="murow"><div><div class="munm">${u.name}</div><div class="muinf">${u.role}${u.branch?' | '+u.branch:''}</div></div><div><button class="mbtn" onclick="mpRename('${u.id}')">rn</button><button class="mbtn" onclick="mpChPass('${u.id}')">pw</button>${u.role!=='owner'?`<button class="mbtn mbd" onclick="mpDelU('${u.id}')">del</button>`:''}</div></div>`).join('');}
 function mpListHTML(arr,key){return arr.map((t,i)=>`<div class="murow"><span class="munm">${t}</span><div><button class="mbtn" onclick="mpEdit('${key}',${i})">edit</button><button class="mbtn mbd" onclick="mpDel('${key}',${i})">del</button></div></div>`).join('');}
 function mpEmpHTML(){return Object.entries(employees).map(([br,emps])=>`<div style="margin-bottom:9px"><div style="font-size:.71rem;color:#666;margin-bottom:3px">${br}</div>${emps.map(e=>`<div class="emprow"><span class="munm" style="font-size:.74rem">${e.name}</span><div><button class="mbtn" onclick="mpRenameEmp('${br}','${e.id}')">rn</button><button class="mbtn mbd" onclick="mpDelEmp('${br}','${e.id}')">del</button></div></div>`).join('')}<div style="margin-top:4px"><input class="mfi" id="ep-${br.replace(/\s/g,'_')}" placeholder="New employee" style="width:150px"><button class="mbtn" onclick="mpAddEmp('${br}')">add</button></div></div>`).join('');}
 function mpBWAHTML(){return BRANCHES_LIST.map(br=>`<div class="emprow"><span class="munm" style="font-size:.74rem">${br}</span><input class="mfi" id="bwa-${br.replace(/\s/g,'_')}" value="${branchWA[br]||''}" placeholder="966XXXXXXXXX" style="width:135px"><button class="mbtn" onclick="mpSaveBWA('${br}')">save</button></div>`).join('');}
-function changeMaintPass(){const n=document.getElementById('mp-new').value,c2=document.getElementById('mp-conf').value;if(!n)return;if(n!==c2){showMpMsg('mismatch');return;}maintPass=n;localStorage.setItem('ims_mp',n);showMpMsg('updated ✓');document.getElementById('mp-new').value='';document.getElementById('mp-conf').value='';}
+function changeMaintPass(){const n=document.getElementById('mp-new').value,c2=document.getElementById('mp-conf').value;if(!n)return;if(n!==c2){showMpMsg('mismatch');return;}maintPass=n;localStorage.setItem('ims_mp',n);window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64});showMpMsg('updated ✓');document.getElementById('mp-new').value='';document.getElementById('mp-conf').value='';}
 function mpRename(id){const u=users.find(x=>x.id===id);if(!u)return;const n=prompt('New name:',u.name);if(!n)return;u.name=n;sv();document.getElementById('mp-users').innerHTML=mpUsersHTML();}
 function mpChPass(id){const u=users.find(x=>x.id===id);if(!u)return;const p=prompt('New 4-digit pass:');if(!p||p.length!==4)return;u.pass=p;sv();}
 function mpDelU(id){if(!confirm('Delete?'))return;users=users.filter(x=>x.id!==id);sv();document.getElementById('mp-users').innerHTML=mpUsersHTML();}
@@ -1016,7 +1054,7 @@ function renderWarnings(){
   else if(r!=='owner'&&r!=='admin'&&r!=='maint')vis=vis.filter(w=>w.status!=='excluded');
   if(!vis.length){el.innerHTML=`<div class="empty"><p>لا توجد إنذارات مسجلة</p></div>`;return;}
   vis.forEach(w=>{if(!w.seenBy)w.seenBy={};if(!w.seenBy[session.id])w.seenBy[session.id]=nowISO();});
-  localStorage.setItem('ims_w',JSON.stringify(warnings));
+  saveW();
   el.innerHTML=vis.map(w=>{
     const badges={draft:'<span class="badge bam">بانتظار المراجعة ⏳</span>',approved:'<span class="badge bg">معتمد ✔️</span>',revoked:'<span class="badge bo">مسحوب ↩️</span>',excluded:'<span class="badge bgr">مستبعد ❌</span>'};
     const borders={draft:'border-right:5px solid var(--am)',approved:'border-right:5px solid var(--gn)',revoked:'border-right:5px solid var(--or)',excluded:'border-right:5px solid var(--mu2)'};
@@ -1049,7 +1087,7 @@ function sendOwnerWarning(ref){
   else{text+=`لوحظ تعدد الملاحظات على أدائكم، وآخرها الشكوى برقم (<strong>${c.ref}</strong>) بخصوص (<strong>${c.ctype}</strong>). وعليه نوجه إليكم هذا <strong>الإنذار الكتابي لتراكم المخالفات</strong>.`;}
   text+=`<br><br>مع خالص التحيات،<br><strong>الإدارة</strong>`;
   const w={id:'W'+Date.now(),ref:c.ref,emp,branch:c.branch,ctype:c.ctype,title,text,ts:nowISO(),status:'draft'};
-  warnings.unshift(w);localStorage.setItem('ims_w',JSON.stringify(warnings));
+  warnings.unshift(w);saveW();
   goPage('warnings');showToast('تم تجهيز مسودة لفت النظر','ok');
   setTimeout(()=>reviewA4(w.id),500);
 }
@@ -1076,23 +1114,23 @@ function reviewA4(id,editMode=false){
   document.getElementById('a4-modal').classList.add('on');
 }
 function execCmd(cmd,val=null){document.execCommand(cmd,false,val);document.getElementById('a4-content').focus();}
-function saveWarningText(id){const w=warnings.find(x=>x.id===id);if(!w)return;w.text=document.getElementById('a4-content').innerHTML;localStorage.setItem('ims_w',JSON.stringify(warnings));reviewA4(id,false);showToast('تم حفظ التعديلات','ok');}
+function saveWarningText(id){const w=warnings.find(x=>x.id===id);if(!w)return;w.text=document.getElementById('a4-content').innerHTML;saveW();reviewA4(id,false);showToast('تم حفظ التعديلات','ok');}
 function closeA4(){document.getElementById('a4-modal').classList.remove('on');document.getElementById('a4-content').contentEditable='false';document.getElementById('a4-toolbar').style.display='none';}
 function approveWarning(id){
-  const w=warnings.find(x=>x.id===id);if(!w)return;w.status='approved';localStorage.setItem('ims_w',JSON.stringify(warnings));
+  const w=warnings.find(x=>x.id===id);if(!w)return;w.status='approved';saveW();
   const c=complaints.find(x=>x.ref===w.ref);
   if(c){c.audit.push({who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:`تم اعتماد "${w.title}" للموظفة ${w.emp}`});saveC();const ownerName=users.find(u=>u.role==='owner')?.name||session.name;branchMsgs.unshift({id:'bm-'+Date.now(),branch:c.branch,complaintRef:c.ref,from:ownerName,ts:nowISO(),seenBy:{},text:`تم إصدار واعتماد "${w.title}" للموظفة ${c.branchEmployee} وهو متاح للتحميل من سجل الإنذارات.`,type:'warning'});saveBM();}
   reviewA4(id,false);renderWarnings();showToast('تم اعتماد الإنذار','ok');updateDots();
 }
 function revokeWarning(id){
   if(!confirm('هل أنت متأكد من سحب هذا الإنذار؟'))return;
-  const w=warnings.find(x=>x.id===id);if(!w)return;w.status='revoked';localStorage.setItem('ims_w',JSON.stringify(warnings));
+  const w=warnings.find(x=>x.id===id);if(!w)return;w.status='revoked';saveW();
   const c=complaints.find(x=>x.ref===w.ref);if(c){c.audit.push({who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:`تم سحب "${w.title}" للموظفة ${w.emp}`});saveC();}
   reviewA4(id,false);renderWarnings();showToast('تم سحب الإنذار','ok');
 }
 function excludeWarning(id){
   if(!confirm('استبعاد نهائي؟'))return;
-  const w=warnings.find(x=>x.id===id);if(!w)return;w.status='excluded';localStorage.setItem('ims_w',JSON.stringify(warnings));
+  const w=warnings.find(x=>x.id===id);if(!w)return;w.status='excluded';saveW();
   closeA4();renderWarnings();showToast('تم الاستبعاد','ok');
 }
 function downloadPDF(){
@@ -1265,5 +1303,7 @@ applyTheme();
   saveC();localStorage.setItem('ims_demo_loaded','1');
 })();
 
-// ══ تشغيل التطبيق عند التحميل ══
+// ══ تشغيل التطبيق ══
+// يُشغَّل مباشرةً عند تحميله: إما بعد مزامنة Firebase (عبر firebase.js)
+// أو كاحتياطي عند تحميله مباشرةً بدون Firebase.
 if(session)initApp();else buildRoleGrid();
