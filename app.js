@@ -435,7 +435,6 @@ function buildBottomNav(){
     h+=`<button class="bnav-btn" id="bnav-more" onclick="toggleMoreDrawer()" aria-label="المزيد">
       <span class="bni">${NAV_ICONS.more}</span><span class="bnl">المزيد</span></button>`;
   }
-  // للمالك: إضافة زر الخروج في شريط التنقل
   if(session.role==='owner'){
     h+=`<button class="bnav-btn bnav-logout" onclick="logout()" aria-label="خروج">
       <span class="bni">${NAV_ICONS.logout}</span><span class="bnl">خروج</span></button>`;
@@ -452,6 +451,10 @@ function buildBottomNav(){
       <span class="di-icon">${NAV_ICONS.logout}</span><span>خروج</span></button>`;
   }
   drawerGrid.innerHTML=dh;
+  // إجبار الظهور على الجوال بعد بناء المحتوى
+  if(window.innerWidth<=768){
+    nav.style.display='block';
+  }
   updateBNavActive('list');
 }
 
