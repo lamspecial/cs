@@ -318,6 +318,13 @@ function logout(){
   document.getElementById('ls-role').classList.add('on');
   document.getElementById('ls-creds').classList.remove('on');
   document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));
+  // إخفاء الشريط السفلي عند الخروج (خارج #app الآن)
+  const nav=document.getElementById('bottom-nav');
+  const drawer=document.getElementById('bnav-drawer');
+  const overlay=document.getElementById('bnav-overlay');
+  if(nav)nav.classList.remove('app-active');
+  if(drawer)drawer.classList.remove('on');
+  if(overlay)overlay.classList.remove('on');
   closeMoreDrawer();
 }
 
@@ -451,10 +458,8 @@ function buildBottomNav(){
       <span class="di-icon">${NAV_ICONS.logout}</span><span>خروج</span></button>`;
   }
   drawerGrid.innerHTML=dh;
-  // إجبار الظهور على الجوال بعد بناء المحتوى
-  if(window.innerWidth<=768){
-    nav.style.display='block';
-  }
+  // تفعيل الشريط السفلي عبر class — الـ CSS يتحكم في الظهور حسب حجم الشاشة
+  nav.classList.add('app-active');
   updateBNavActive('list');
 }
 

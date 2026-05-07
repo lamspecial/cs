@@ -346,7 +346,20 @@ hr.d{border:none;border-top:1px solid var(--brd);margin:16px 0}
 .no-access p{font-size:.88rem;font-weight:500;color:var(--mu2)}
 
 /* ══ Bottom Nav ══ */
-.bottom-nav{display:none;position:fixed;bottom:0;right:0;left:0;z-index:200;background:var(--sur);border-top:1px solid var(--brd);box-shadow:0 -4px 20px rgba(0,0,0,.08);padding-bottom:env(safe-area-inset-bottom);will-change:transform;-webkit-transform:translateZ(0);transform:translateZ(0)}
+/* الشريط مخفي دائماً حتى يُبنى بعد تسجيل الدخول (.app-active) */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;right:0;left:0;z-index:200;
+  background:var(--sur);border-top:1px solid var(--brd);
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);
+  padding-bottom:env(safe-area-inset-bottom);
+  will-change:transform;
+  -webkit-transform:translateZ(0);transform:translateZ(0);
+}
+/* يظهر فقط على الجوال وبعد تسجيل الدخول */
+@media(max-width:768px){
+  .bottom-nav.app-active{display:block}
+}
 [data-theme="dark"] .bottom-nav{box-shadow:0 -4px 20px rgba(0,0,0,.3)}
 .bnav-inner{display:flex;align-items:stretch;height:var(--bnav-h);justify-content:space-around}
 .bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;color:var(--mu);transition:color .18s ease;position:relative;padding:7px 4px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
@@ -396,11 +409,11 @@ hr.d{border:none;border-top:1px solid var(--brd);margin:16px 0}
   .mbtn2{display:none}
   .sbov{display:none!important}
   .tbsearch{max-width:300px}
-  .bottom-nav,.bnav-drawer,.bnav-overlay{display:none!important}
+  /* الديسكتوب: يخفي الشريط دائماً حتى لو .app-active */
+  .bottom-nav.app-active,.bnav-drawer,.bnav-overlay{display:none!important}
   .toast{bottom:24px}
 }
 @media(max-width:768px){
-  .bottom-nav{display:block}
   .sidebar{display:none!important}
   .sbov{display:none!important}
   .mbtn2{display:none}
