@@ -1269,62 +1269,77 @@ function sendOwnerWarning(ref){
 }
 
 let currentA4=null;
-function reviewA4(id,editMode=true){
+function reviewA4(id){
   currentA4=warnings.find(w=>w.id===id);if(!currentA4)return;
-  const logoEl=document.getElementById('a4-logo');if(logoEl)logoEl.textContent='اي ام سبيشل';
-  document.getElementById('a4-title').textContent=currentA4.title;
-  document.getElementById('a4-content').innerHTML=currentA4.text;
+  const r=session.role;
+  const isOwner=r==='owner';
+  const canM=r==='owner'||r==='admin'||r==='maint';
+
+  const logoEl=document.getElementById('a4-logo');if(logoEl){logoEl.textContent='اي ام سبيشل';logoEl.contentEditable=isOwner?'true':'false';}
+  const titleEl=document.getElementById('a4-title');titleEl.textContent=currentA4.title;titleEl.contentEditable=isOwner?'true':'false';
+  const ca=document.getElementById('a4-content');ca.innerHTML=currentA4.text;ca.contentEditable=isOwner?'true':'false';
   document.getElementById('a4-date').textContent=fmtShort(currentA4.ts);
+
+  // التذييل قابل للتعديل فقط للمالك
+  const footerEditable=document.getElementById('a4-footer-sign');
+  if(footerEditable)footerEditable.parentElement&&(footerEditable.closest('[contenteditable]'));
+  document.querySelectorAll('.a4-footer [contenteditable]').forEach(el=>el.contentEditable=isOwner?'true':'false');
+
   const sigEl=document.getElementById('a4-sig-img');
   if(signatureBase64&&currentA4.status==='approved'){sigEl.src=signatureBase64;sigEl.style.display='inline-block';}else sigEl.style.display='none';
-  // الشريط دائماً ظاهر — كل النص قابل للتعديل
+
+  // شريط التحرير — للمالك فقط
   const tb=document.getElementById('a4-toolbar');
-  const ca=document.getElementById('a4-content');
-  if(tb)tb.style.display='flex';
-  ca.contentEditable='true';
-  const r=session.role;const canM=r==='owner'||r==='admin'||r==='maint';
+  if(tb)tb.style.display=isOwner?'flex':'none';
+
+  // أزرار الإجراءات
   let actionsHTML='';
-  if((currentA4.status==='draft'||currentA4.status==='revoked')&&canM){
-    actionsHTML=`<button class="btn pri" onclick="saveAndApproveWarning('${id}')">حفظ واعتماد</button><button class="btn" onclick="saveWarningText('${id}')">حفظ التعديلات</button><button class="btn dan" onclick="excludeWarning('${id}')">استبعاد</button><button class="btn" onclick="closeA4()">إغلاق</button>`;
-  }else if(currentA4.status==='approved'){
-    actionsHTML=`<button class="btn" onclick="saveWarningText('${id}')">حفظ التعديلات</button>${canM?`<button class="btn amb" onclick="revokeWarning('${id}')">سحب الإنذار</button>`:''}<button class="btn gn" onclick="downloadPDF()">تنزيل PDF</button><button class="btn" onclick="closeA4()">إغلاق</button>`;
+  if(isOwner){
+    if(currentA4.status==='draft'||currentA4.status==='revoked'){
+      actionsHTML=`<button class="btn pri" onclick="saveAndApproveWarning('${id}')">حفظ واعتماد</button><button class="btn" onclick="saveWarningText('${id}')">حفظ التعديلات</button><button class="btn dan" onclick="excludeWarning('${id}')">استبعاد</button><button class="btn" onclick="closeA4()">إغلاق</button>`;
+    }else if(currentA4.status==='approved'){
+      actionsHTML=`<button class="btn" onclick="saveWarningText('${id}')">حفظ التعديلات</button><button class="btn amb" onclick="revokeWarning('${id}')">سحب الإنذار</button><button class="btn" onclick="closeA4()">إغلاق</button>`;
+    }else{
+      actionsHTML=`<button class="btn" onclick="closeA4()">إغلاق</button>`;
+    }
+  }else if(canM){
+    // admin/maint: يرون بدون تعديل، فقط اعتماد إذا draft
+    if(currentA4.status==='draft'||currentA4.status==='revoked'){
+      actionsHTML=`<button class="btn pri" onclick="approveWarning('${id}')">اعتماد وإرسال</button><button class="btn dan" onclick="excludeWarning('${id}')">استبعاد</button><button class="btn" onclick="closeA4()">إغلاق</button>`;
+    }else if(currentA4.status==='approved'){
+      actionsHTML=`<button class="btn amb" onclick="revokeWarning('${id}')">سحب الإنذار</button><button class="btn" onclick="closeA4()">إغلاق</button>`;
+    }else{
+      actionsHTML=`<button class="btn" onclick="closeA4()">إغلاق</button>`;
+    }
   }else{
     actionsHTML=`<button class="btn" onclick="closeA4()">إغلاق</button>`;
   }
+
   document.getElementById('a4-actions').innerHTML=actionsHTML;
   document.getElementById('a4-modal').classList.add('on');
-  setTimeout(()=>ca.focus(),100);
+  if(isOwner)setTimeout(()=>ca.focus(),100);
 }
 
-function saveAndApproveWarning(id){
-  saveWarningText(id);
-  setTimeout(()=>approveWarning(id),100);
-}
+function saveAndApproveWarning(id){saveWarningText(id);setTimeout(()=>approveWarning(id),100);}
 function execCmd(cmd,val=null){document.execCommand(cmd,false,val);document.getElementById('a4-content').focus();}
-function saveWarningText(id){const w=warnings.find(x=>x.id===id);if(!w)return;w.text=document.getElementById('a4-content').innerHTML;w.title=document.getElementById('a4-title').textContent;saveW();showToast('تم حفظ التعديلات','ok');}
+function saveWarningText(id){const w=warnings.find(x=>x.id===id);if(!w||session.role!=='owner')return;w.text=document.getElementById('a4-content').innerHTML;w.title=document.getElementById('a4-title').textContent;saveW();showToast('تم حفظ التعديلات','ok');}
 function closeA4(){document.getElementById('a4-modal').classList.remove('on');}
 function approveWarning(id){
   const w=warnings.find(x=>x.id===id);if(!w)return;w.status='approved';saveW();
   const c=complaints.find(x=>x.ref===w.ref);
-  if(c){c.audit.push({who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:`تم اعتماد "${w.title}" للموظفة ${w.emp}`});saveC();const ownerName=users.find(u=>u.role==='owner')?.name||session.name;branchMsgs.unshift({id:'bm-'+Date.now(),branch:c.branch,complaintRef:c.ref,from:ownerName,ts:nowISO(),seenBy:{},text:`تم إصدار واعتماد "${w.title}" للموظفة ${c.branchEmployee} وهو متاح للتحميل من سجل الإنذارات.`,type:'warning'});saveBM();}
-  reviewA4(id,false);renderWarnings();showToast('تم اعتماد الإنذار','ok');updateDots();
+  if(c){c.audit.push({who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:`تم اعتماد "${w.title}" للموظفة ${w.emp}`});saveC();const ownerName=users.find(u=>u.role==='owner')?.name||session.name;branchMsgs.unshift({id:'bm-'+Date.now(),branch:c.branch,complaintRef:c.ref,from:ownerName,ts:nowISO(),seenBy:{},text:`تم إصدار واعتماد "${w.title}" للموظفة ${c.branchEmployee}، يمكن مراجعته من سجل الإنذارات في النظام.`,type:'warning'});saveBM();}
+  closeA4();renderWarnings();showToast('تم اعتماد الإنذار','ok');updateDots();
 }
 function revokeWarning(id){
   if(!confirm('هل أنت متأكد من سحب هذا الإنذار؟'))return;
   const w=warnings.find(x=>x.id===id);if(!w)return;w.status='revoked';saveW();
   const c=complaints.find(x=>x.ref===w.ref);if(c){c.audit.push({who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:`تم سحب "${w.title}" للموظفة ${w.emp}`});saveC();}
-  reviewA4(id,false);renderWarnings();showToast('تم سحب الإنذار','ok');
+  closeA4();renderWarnings();showToast('تم سحب الإنذار','ok');
 }
 function excludeWarning(id){
   if(!confirm('استبعاد نهائي؟'))return;
   const w=warnings.find(x=>x.id===id);if(!w)return;w.status='excluded';saveW();
   closeA4();renderWarnings();showToast('تم الاستبعاد','ok');
-}
-function downloadPDF(){
-  const element=document.getElementById('a4-document');
-  const opt={margin:[0,0,0,0],filename:`إنذار_${currentA4.emp.replace(/\s/g,'_')}.pdf`,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
-  showToast('جاري تجهيز الملف...','ok');
-  (window._loadHtml2pdf?window._loadHtml2pdf():Promise.resolve()).then(()=>html2pdf().set(opt).from(element).save().then(()=>showToast('تم التحميل','ok')));
 }
 
 // 
