@@ -4,8 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>اي ام سبيشل</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"></noscript>
+<script>/* html2pdf loaded on demand */window._loadHtml2pdf=()=>{if(window.html2pdf)return Promise.resolve();return new Promise((r,j)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";s.onload=r;s.onerror=j;document.head.appendChild(s);});}</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,11 +18,11 @@
 <!-- ══════════════ شاشة تسجيل الدخول ══════════════ -->
 <div id="ls">
   <div class="lbox">
-    <button class="theme-toggle-login" id="theme-btn-login" onclick="toggleTheme()" title="تبديل النمط">☽</button>
+    <button class="theme-toggle-login" id="theme-btn-login" onclick="toggleTheme()" title="تبديل النمط"></button>
     <div class="llogo">
       <img src="special.png" alt="Logo" class="llogo-img" onerror="this.style.display='none'">
       <h1>اي ام سبيشل</h1>
-      <p>نظام إدارة الشكاوى</p>
+      <p>ادارة حماية السمعة</p>
     </div>
     <div class="lstep on" id="ls-role">
       <p style="font-size:.85rem;font-weight:600;color:var(--mu);margin-bottom:16px;text-align:center">اختر نوع المستخدم</p>
@@ -38,10 +43,9 @@
 <!-- ══════════════ شاشة PIN كلمة المرور ══════════════ -->
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
-    <div class="pin-avatar" id="pin-avatar">👤</div>
     <div class="pin-name" id="pin-name">—</div>
     <div class="pin-role" id="pin-role">—</div>
-    <div class="pin-label">أدخلي كلمة المرور</div>
+    <div class="pin-label" id="pin-label">أدخل كلمة المرور</div>
     <div class="pin-inputs" id="pin-inputs">
       <input class="pin-cell" id="pc0" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" oninput="pinInput(0,this)" onkeydown="pinKey(0,event)">
       <input class="pin-cell" id="pc1" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" oninput="pinInput(1,this)" onkeydown="pinKey(1,event)">
@@ -95,7 +99,6 @@
       <div class="sbsub" id="sb-branch-sub"></div>
       <div class="sbuser-row">
         <div class="sbuser" id="sb-user"></div>
-        <button class="edit-pass-btn" onclick="goPage('chpass')">تعديل</button>
       </div>
     </div>
     <div class="sbnav">
@@ -125,7 +128,7 @@
       <span class="fs-val" id="fs-val">100%</span>
       <button class="fs-btn" onclick="changeFontSize(1)">A+</button>
     </div>
-    <button class="theme-toggle-app" id="theme-btn-app" onclick="toggleTheme()">☽</button>
+    <button class="theme-toggle-app" id="theme-btn-app" onclick="toggleTheme()"></button>
   </div>
 
   <!-- المحتوى -->
@@ -198,6 +201,12 @@
     <div class="page" id="page-msgs">
       <div class="ph"><h2>رسائل العملاء</h2></div>
       <div id="msgs-content"></div>
+    </div>
+
+    <!-- رسائل المالك -->
+    <div class="page" id="page-ownercast">
+      <div class="ph"><h2>الرسائل والتحديثات</h2></div>
+      <div id="ownercast-content"></div>
     </div>
 
     <!-- رسائل الفرع -->
@@ -315,6 +324,33 @@
 
 </div><!-- /app -->
 
+<!-- مودال إرسال رسالة المالك -->
+<div class="mov" id="owner-send-modal">
+  <div class="mbox" style="max-width:520px;width:95%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="margin:0;color:var(--tx)">إرسال رسالة للفروع</h3>
+      <button class="qa-close" style="position:relative;transform:none;left:0;top:0" onclick="closeOwnerSendModal()"></button>
+    </div>
+    <div class="fg">
+      <label class="fl">نص الرسالة</label>
+      <textarea class="ft" id="owner-msg-text" rows="4" placeholder="اكتب رسالتك هنا..."></textarea>
+    </div>
+    <div class="fg">
+      <label class="fl" style="margin-bottom:10px">الفروع المستهدفة</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn" style="font-size:.8rem;padding:7px 14px;min-height:36px" onclick="selectAllBranches()">تحديد الكل</button>
+        <button class="btn" style="font-size:.8rem;padding:7px 14px;min-height:36px" onclick="clearAllBranches()">إلغاء الكل</button>
+      </div>
+      <div id="owner-branch-checkboxes" class="ms-wrap"></div>
+    </div>
+    <div id="owner-send-err" style="font-size:.85rem;font-weight:700;color:var(--rd);margin-bottom:10px;display:none"></div>
+    <div class="brow" style="margin-top:16px">
+      <button class="btn pri" onclick="sendOwnerCast()">إرسال الرسالة</button>
+      <button class="btn" onclick="closeOwnerSendModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <!-- مودال معاينة الشكوى -->
 <div id="prov">
   <div class="prbox">
@@ -333,10 +369,10 @@
   <div class="mbox" style="max-width:230mm;width:95%;height:95vh;display:flex;flex-direction:column;padding:0;background:var(--bg);overflow:hidden;">
     <div style="padding:18px 20px;border-bottom:1px solid var(--border-light);background:var(--sur);display:flex;justify-content:space-between;align-items:center;">
       <h3 style="margin:0;color:var(--tx)">معاينة وتعديل الإنذار</h3>
-      <button class="qa-close" style="position:relative;transform:none;left:0;top:0;" onclick="closeA4()">✕</button>
+      <button class="qa-close" style="position:relative;transform:none;left:0;top:0;" onclick="closeA4()"></button>
     </div>
     <div style="padding:10px 20px;background:var(--sur);">
-      <div id="a4-toolbar" class="wysiwyg-toolbar" style="display:none;">
+      <div id="a4-toolbar" class="wysiwyg-toolbar">
         <button class="wysiwyg-btn" onclick="execCmd('bold')"><b>B</b> عريض</button>
         <button class="wysiwyg-btn" onclick="execCmd('italic')"><i>I</i> مائل</button>
         <button class="wysiwyg-btn" onclick="execCmd('underline')"><u>U</u> تسطير</button>
@@ -355,14 +391,14 @@
     <div id="a4-print-area" style="flex:1;overflow-y:auto;padding:20px;display:flex;justify-content:center;background:#e2e8f0;">
       <div class="a4-container" id="a4-document">
         <div class="a4-header">
-          <div class="a4-logo">اي ام سبيشل</div>
-          <div class="a4-title" id="a4-title">لفت نظر إداري</div>
+          <div class="a4-logo" id="a4-logo" contenteditable="true" spellcheck="false">اي ام سبيشل</div>
+          <div class="a4-title" id="a4-title" contenteditable="true" spellcheck="false">لفت نظر إداري</div>
         </div>
-        <div class="a4-body" id="a4-content"></div>
+        <div class="a4-body" id="a4-content" contenteditable="true" spellcheck="false"></div>
         <div class="a4-footer">
-          <div>التاريخ: <span id="a4-date"></span></div>
-          <div style="text-align:center">
-            <div>اعتماد الإدارة</div>
+          <div contenteditable="true" spellcheck="false">التاريخ: <span id="a4-date"></span></div>
+          <div style="text-align:center" contenteditable="true" spellcheck="false">
+            <div id="a4-footer-sign">اعتماد الإدارة</div>
             <img id="a4-sig-img" class="a4-sig" style="display:none;margin-top:10px;">
           </div>
         </div>

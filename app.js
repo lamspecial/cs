@@ -1,10 +1,10 @@
 'use strict';
-// ══════════════════════════════════════════════
+// 
 //  اي ام سبيشل — app.js v5
 //  بدون قسم الطلبات — PIN Login — Bottom Nav
-// ══════════════════════════════════════════════
+// 
 
-// ═══ MAINT CODE ═══
+//  MAINT CODE 
 const MCODE=`0x4C4F4144494E47 SYSTEM_BOOT
 IMS_CORE_v5.0.0 BUILD:20250426
 INIT:auth.handler INIT:complaint.engine
@@ -18,25 +18,37 @@ MODULE:PinAuth LOADED
 0xDEADBEEF HEARTBEAT:OK
 READY_FOR_INPUT`;
 
-// ═══ بيانات افتراضية ═══
+//  بيانات افتراضية 
 const DEFAULT_USERS=[
-  {id:'o1', name:'المالك',              role:'owner',  pass:'2701', branch:null},
-  {id:'a1', name:'سارة العتيبي',        role:'admin',  pass:'4321', branch:null},
-  {id:'a2', name:'نورة الشمري',         role:'admin',  pass:'4321', branch:null},
-  {id:'b1', name:'اسمهان',              role:'branch', pass:'5678', branch:'فرع القصر'},
-  {id:'b2', name:'مها',                 role:'branch', pass:'5678', branch:'فرع الرياض جاليري'},
-  {id:'c1', name:'موظف خدمة العملاء',   role:'cs',     pass:'9999', branch:null},
+  {id:'o1', name:'المالك',              role:'owner',  pass:'', branch:null},
+  {id:'b1m', name:'مديرة فرع القصر',            role:'branch', pass:'1234', branch:'فرع القصر'},
+  {id:'b1d', name:'نائبة مديرة فرع القصر',       role:'branch', pass:'1234', branch:'فرع القصر'},
+  {id:'b2m', name:'مديرة فرع سلام مول',          role:'branch', pass:'1234', branch:'فرع سلام مول'},
+  {id:'b2d', name:'نائبة مديرة فرع سلام مول',    role:'branch', pass:'1234', branch:'فرع سلام مول'},
+  {id:'b3m', name:'مديرة فرع الرياض جاليري',     role:'branch', pass:'1234', branch:'فرع الرياض جاليري'},
+  {id:'b3d', name:'نائبة مديرة فرع الرياض جاليري',role:'branch', pass:'1234', branch:'فرع الرياض جاليري'},
+  {id:'b4m', name:'مديرة فرع ذا ڤيو مول',        role:'branch', pass:'1234', branch:'فرع ذا ڤيو مول'},
+  {id:'b4d', name:'نائبة مديرة فرع ذا ڤيو مول',  role:'branch', pass:'1234', branch:'فرع ذا ڤيو مول'},
+  {id:'b5m', name:'مديرة فرع مركز المملكة',       role:'branch', pass:'1234', branch:'فرع مركز المملكة'},
+  {id:'b5d', name:'نائبة مديرة فرع مركز المملكة', role:'branch', pass:'1234', branch:'فرع مركز المملكة'},
+  {id:'b6m', name:'مديرة فرع شرق بلازا',          role:'branch', pass:'1234', branch:'فرع شرق بلازا'},
+  {id:'b6d', name:'نائبة مديرة فرع شرق بلازا',    role:'branch', pass:'1234', branch:'فرع شرق بلازا'},
+  {id:'c1', name:'نورة',    role:'cs', pass:'1234', branch:null},
+  {id:'c2', name:'منيرة',   role:'cs', pass:'1234', branch:null},
+  {id:'c3', name:'سارة',    role:'cs', pass:'1234', branch:null},
+  {id:'c4', name:'فاطمة',   role:'cs', pass:'1234', branch:null},
+  {id:'c5', name:'هديل',    role:'cs', pass:'1234', branch:null},
 ];
 const DEFAULT_EMP={
-  'فرع القصر':          [{id:'e1',name:'اسمهان (المديرة)'}],
-  'فرع سلام مول':      [{id:'e2',name:'المديرة'}],
-  'فرع الرياض جاليري': [{id:'e3',name:'مها (المديرة)'}],
-  'فرع ذا ڤيو مول':    [{id:'e4',name:'المديرة'}],
-  'فرع مركز المملكة':  [{id:'e5',name:'المديرة'}],
-  'فرع شرق بلازا':     [{id:'e6',name:'المديرة'}],
+  'فرع القصر':          [{id:'e1',name:'مديرة فرع القصر'},{id:'e2',name:'نائبة مديرة فرع القصر'},{id:'e3',name:'نورة'},{id:'e4',name:'منيرة'},{id:'e5',name:'سارة'},{id:'e6',name:'فاطمة'},{id:'e7',name:'هديل'}],
+  'فرع سلام مول':      [{id:'e8',name:'مديرة فرع سلام مول'},{id:'e9',name:'نائبة مديرة فرع سلام مول'},{id:'e10',name:'نورة'},{id:'e11',name:'منيرة'},{id:'e12',name:'سارة'},{id:'e13',name:'فاطمة'},{id:'e14',name:'هديل'}],
+  'فرع الرياض جاليري': [{id:'e15',name:'مديرة فرع الرياض جاليري'},{id:'e16',name:'نائبة مديرة فرع الرياض جاليري'},{id:'e17',name:'نورة'},{id:'e18',name:'منيرة'},{id:'e19',name:'سارة'},{id:'e20',name:'فاطمة'},{id:'e21',name:'هديل'}],
+  'فرع ذا ڤيو مول':    [{id:'e22',name:'مديرة فرع ذا ڤيو مول'},{id:'e23',name:'نائبة مديرة فرع ذا ڤيو مول'},{id:'e24',name:'نورة'},{id:'e25',name:'منيرة'},{id:'e26',name:'سارة'},{id:'e27',name:'فاطمة'},{id:'e28',name:'هديل'}],
+  'فرع مركز المملكة':  [{id:'e29',name:'مديرة فرع مركز المملكة'},{id:'e30',name:'نائبة مديرة فرع مركز المملكة'},{id:'e31',name:'نورة'},{id:'e32',name:'منيرة'},{id:'e33',name:'سارة'},{id:'e34',name:'فاطمة'},{id:'e35',name:'هديل'}],
+  'فرع شرق بلازا':     [{id:'e36',name:'مديرة فرع شرق بلازا'},{id:'e37',name:'نائبة مديرة فرع شرق بلازا'},{id:'e38',name:'نورة'},{id:'e39',name:'منيرة'},{id:'e40',name:'سارة'},{id:'e41',name:'فاطمة'},{id:'e42',name:'هديل'}],
 };
 
-// ═══ حالة التطبيق ═══
+//  حالة التطبيق 
 let users      = JSON.parse(localStorage.getItem('ims_u')||'null') || DEFAULT_USERS;
 let complaints = JSON.parse(localStorage.getItem('ims_c')||'[]');
 let messages   = JSON.parse(localStorage.getItem('ims_m')||'[]');
@@ -53,12 +65,12 @@ let signatureBase64 = localStorage.getItem('ims_sig')||'';
 let session    = JSON.parse(localStorage.getItem('ims_s')||'null');
 let pageSeen   = JSON.parse(localStorage.getItem('ims_ps')||'{}');
 
-// ═══ حالة UI ═══
+//  حالة UI 
 let currentRef=null, prevTxt='', pendingC=null;
 let gC='m', gK='m', currentTab='all';
 
-// ═══ حفظ البيانات ═══
-// ═══ حفظ الإعدادات (localStorage + Firestore) ═══
+//  حفظ البيانات 
+//  حفظ الإعدادات (localStorage + Firestore) 
 const sv = () => {
   localStorage.setItem('ims_u',    JSON.stringify(users));
   localStorage.setItem('ims_ct',   JSON.stringify(ctypes));
@@ -69,17 +81,17 @@ const sv = () => {
   window.DB?.saveConfig({ users, ctypes, sentiments, demos, employees, branchWA, adminWANum, maintPass, signatureBase64 });
 };
 
-// ═══ حفظ البيانات المشتركة (localStorage + Firestore) ═══
+//  حفظ البيانات المشتركة (localStorage + Firestore) 
 const saveC   = () => { localStorage.setItem('ims_c',  JSON.stringify(complaints));  window.DB?.saveComplaints(complaints);  };
 const saveM   = () => { localStorage.setItem('ims_m',  JSON.stringify(messages));    window.DB?.saveMessages(messages);      };
 const saveBM  = () => { localStorage.setItem('ims_bm', JSON.stringify(branchMsgs));  window.DB?.saveBranchMsgs(branchMsgs);  };
 const saveW   = () => { localStorage.setItem('ims_w',  JSON.stringify(warnings));    window.DB?.saveWarnings(warnings);      };
 
-// ═══ حفظ بيانات الجلسة (محلية فقط — خاصة بكل جهاز) ═══
+//  حفظ بيانات الجلسة (محلية فقط — خاصة بكل جهاز) 
 const saveS     = s => localStorage.setItem('ims_s',  JSON.stringify(s));
 const savePSeen = () => localStorage.setItem('ims_ps', JSON.stringify(pageSeen));
 
-// ═══ مزامنة فورية من Firestore (يُستدعى بواسطة firebase.js) ═══
+//  مزامنة فورية من Firestore (يُستدعى بواسطة firebase.js) 
 window._imsSync = (key, data) => {
   if (!session) return; // لا تحديث قبل تسجيل الدخول
   if (key === 'complaints') {
@@ -103,7 +115,7 @@ window._imsSync = (key, data) => {
   }
 };
 
-// ═══ أدوات ═══
+//  أدوات 
 const pad=(n,l)=>String(n).padStart(l,'0');
 const MO=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const fmtShort=iso=>{const d=new Date(iso);return`${d.getDate()} ${MO[d.getMonth()]}`;};
@@ -111,7 +123,7 @@ const fmtTime=iso=>{const d=new Date(iso),h=d.getHours(),m=pad(d.getMinutes(),2)
 const nowISO=()=>new Date().toISOString();
 function genRef(){const d=new Date(),dd=pad(d.getDate(),2),mm=pad(d.getMonth()+1,2),yr=d.getFullYear(),key=`${dd}${mm}${yr}`;return{ref:`S${mm}${dd}${pad(complaints.filter(c=>c.dateKey===key).length+1,2)}`,todayKey:key};}
 
-// ═══ حالات الشكاوى ═══
+//  حالات الشكاوى 
 const SMAP={'تحت المعالجة':'btl','جارية حاليا':'bb','تمت المعالجة':'bg','معاد فتحها':'bp','مستبعدة':'bgr'};
 const USER_ST=['تحت المعالجة','تمت المعالجة','معاد فتحها','مستبعدة'];
 const SPERMS={'تحت المعالجة':['owner','admin','cs','maint'],'تمت المعالجة':['owner','admin','cs','maint'],'معاد فتحها':['owner','cs','maint'],'مستبعدة':['owner','cs','maint']};
@@ -121,7 +133,7 @@ const isActive=c=>(Date.now()-new Date(c.createdAt).getTime())<3600000&&c.status
 const isDone=c=>c.status==='تمت المعالجة'||c.status==='مستبعدة';
 const isExcluded=c=>c.status==='مستبعدة';
 
-// ═══ تشغيل تلقائي ═══
+//  تشغيل تلقائي 
 function runAuto(){
   let ch=false;
   complaints.forEach(c=>{
@@ -135,7 +147,7 @@ function runAuto(){
 }
 setInterval(runAuto,60000);
 
-// ═══ بناء النصوص ═══
+//  بناء النصوص 
 function buildClientMsg(c){
   if(isDone(c))return`عميلنا العزيز ${c.client} تمت معالجة الشكوى رقم (${c.ref}). شكرًا لتواصلكم. ادارة اي ام سبيشل`;
   return`عميلنا العزيز ${c.client} تم استلام الشكوى برقم ${c.ref} شكرا لتواصلكم. ادارة اي ام سبيشل`;
@@ -160,9 +172,9 @@ function buildSummary(c,withComments=false){
 }
 const auditWho=a=>{if(!a.role||a.role==='system')return a.who;const u=users.find(x=>x.id===a.uid);const nm=u?u.name:a.who;if(a.role==='owner')return`المالك (${nm})`;if(a.role==='admin')return`${nm} (الإدارة)`;if(a.role==='branch'){const u2=users.find(x=>x.id===a.uid);return`${nm} (مديرة ${u2?u2.branch:''})`;}if(a.role==='cs')return`${nm} (خدمة العملاء)`;return nm;};
 
-// ═══════════════════════════════════════
+// 
 //  PIN — نظام كلمة المرور الأربعة خانات
-// ═══════════════════════════════════════
+// 
 let pinTarget=null; // {user, callback}
 
 function openPinOverlay(user, onSuccess){
@@ -171,10 +183,8 @@ function openPinOverlay(user, onSuccess){
   for(let i=0;i<4;i++){const c=document.getElementById('pc'+i);c.value='';c.classList.remove('filled','error');}
   document.getElementById('pin-err').textContent='';
   const roles={owner:'المالك',admin:'الإدارة',branch:'مديرة الفرع',cs:'خدمة العملاء',maint:'الصيانة'};
-  const avatars={owner:'👑',admin:'🌸',branch:'🌿',cs:'💬',maint:'⚙️'};
   document.getElementById('pin-name').textContent=user.name;
   document.getElementById('pin-role').textContent=roles[user.role]||user.role;
-  document.getElementById('pin-avatar').textContent=avatars[user.role]||'👤';
   document.getElementById('pin-overlay').classList.add('on');
   setTimeout(()=>document.getElementById('pc0').focus(),100);
 }
@@ -227,9 +237,9 @@ function checkPin(){
   }
 }
 
-// ═══════════════════════════════════════
+// 
 //  AUTH — تسجيل الدخول
-// ═══════════════════════════════════════
+// 
 let loginRole=null;
 const BRANCHES_LIST=['فرع القصر','فرع سلام مول','فرع الرياض جاليري','فرع ذا ڤيو مول','فرع مركز المملكة','فرع شرق بلازا'];
 const BRANCHES_LABELS=['القصر','سلام مول','الرياض جاليري','ذا ڤيو','المملكة','شرق بلازا'];
@@ -249,8 +259,10 @@ function selRole(role,el){
   document.querySelectorAll('.rc').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
   // المالك — يستخدم كلمة المرور المخزنة في قاعدة البيانات
-  const ownerUser = users.find(u=>u.role==='owner') || {id:'o1',name:'المالك',role:'owner',pass:'2701',branch:null};
-  openPinOverlay(ownerUser, ()=>{
+  const ownerUser = users.find(u=>u.role==='owner') || {id:'o1',name:'المالك',role:'owner',branch:null};
+  // رقم المالك يتغير يومياً ولا يُقرأ من قاعدة البيانات
+  const ownerLoginUser = {...ownerUser, pass: getOwnerPass()};
+  openPinOverlay(ownerLoginUser, ()=>{
     session = {id:ownerUser.id, role:'owner', name:ownerUser.name, branch:null};
     saveS(session);
     initApp();
@@ -314,6 +326,7 @@ function saveMyPass(){
   const c2=document.getElementById('cp-confirm').value.trim();
   const errEl=document.getElementById('cp-err');
   errEl.style.display='none';
+  if(session.role==='owner'){errEl.textContent='رقم المالك يتغير تلقائياً بحسب التاريخ ولا يمكن تغييره';errEl.style.display='block';return;}
   if(!n||n.length!==4){errEl.textContent='يرجى إدخال 4 أرقام';errEl.style.display='block';return;}
   if(n!==c2){errEl.textContent='الرقمان لا يتطابقان';errEl.style.display='block';return;}
   const u=users.find(x=>x.id===session.id);
@@ -324,9 +337,9 @@ function saveMyPass(){
   goPage('list');
 }
 
-// ═══════════════════════════════════════
+// 
 //  INIT — تهيئة التطبيق
-// ═══════════════════════════════════════
+// 
 function initApp(){
   runAuto();
   renderAllForms();
@@ -338,11 +351,14 @@ function initApp(){
   document.getElementById('sb-user').textContent=`${session.name} — ${rl}`;
   const bsub=document.getElementById('sb-branch-sub');
   if(r==='branch'&&session.branch){bsub.textContent=session.branch;bsub.style.display='block';}else bsub.style.display='none';
+  // إخفاء/إظهار زر تعديل (لا يظهر للمالك)
+  const editPassBtn=document.querySelector('.edit-pass-btn');
+  if(editPassBtn)editPassBtn.style.display=r==='owner'?'none':'';
   const isCsOrMaint=r==='cs'||r==='maint';
-  const show=(id,v)=>document.getElementById(id).classList.toggle('hid',!v);
+  const show=(id,v)=>{const el=document.getElementById(id);if(el)el.classList.toggle('hid',!v);};
   show('nav-new',       isCsOrMaint);
   show('nav-msgs',      isCsOrMaint);
-  show('nav-branchmsgs',r==='branch'||r==='admin'||r==='maint');
+  show('nav-branchmsgs',r==='branch'||r==='admin'||r==='maint'||r==='owner');
   show('nav-filter',    r!=='branch'&&r!=='owner');
   show('nav-rep',       true);
   show('nav-settings',  r==='maint');
@@ -357,23 +373,48 @@ function initApp(){
 }
 
 
-// ═══════════════════════════════════════
+// 
 //  BOTTOM NAV
-// ═══════════════════════════════════════
+// 
+// ── SVG أيقونات التنقل السفلي ──
+const NAV_ICONS={
+  list:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>`,
+  new:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`,
+  msgs:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  branchmsgs:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+  warnings:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  stats:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+  filter:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
+  rep:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  settings:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41M21 12h-2M5 12H3M17.66 17.66l-1.41-1.41M6.34 6.34L4.93 4.93"/><path d="M12 1v2M12 21v2"/></svg>`,
+  chpass:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  more:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
+  logout:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
+};
+
 function getBNavItems(role){
   const cs=role==='cs'||role==='maint';
   const br=role==='branch';
+  const isOwner=role==='owner';
+  // للمالك: الملاحظات (list)، الرسائل (branchmsgs)، السمعة (rep)، خروج
+  if(isOwner){
+    return[
+      {id:'list',       label:'الملاحظات', icon:NAV_ICONS.list,     show:true,  drawer:false},
+      {id:'branchmsgs', label:'الرسائل',   icon:NAV_ICONS.branchmsgs,show:true, drawer:false},
+      {id:'rep',        label:'السمعة',    icon:NAV_ICONS.rep,       show:true,  drawer:false},
+    ];
+  }
   const all=[
-    {id:'list',       icon:'📋',label:'الشكاوى',   show:true,              drawer:false},
-    {id:'new',        icon:'✏️', label:'تسجيل',     show:cs,                drawer:false},
-    {id:'msgs',       icon:'📩',label:'العملاء',    show:cs,                drawer:false},
-    {id:'branchmsgs', icon:'💬',label:'الرسائل',    show:br,                drawer:false},
-    {id:'warnings',   icon:'⚠️', label:'الإنذارات', show:role!=='cs',       drawer:false},
-    {id:'stats',      icon:'📊',label:'الإحصائيات', show:role!=='branch'&&role!=='maint', drawer:true},
-    {id:'filter',     icon:'🔍',label:'التحليل',    show:role!=='branch'&&role!=='owner', drawer:true},
-    {id:'rep',        icon:'🛡️', label:'السمعة',    show:true,              drawer:true},
-    {id:'settings',   icon:'⚙️', label:'المستخدمين',show:role==='maint',    drawer:true},
-    {id:'chpass',     icon:'🔑',label:'كلمة السر',  show:true,              drawer:true},
+    {id:'list',       label:'الشكاوى',    icon:NAV_ICONS.list,     show:true,              drawer:false},
+    {id:'new',        label:'تسجيل',      icon:NAV_ICONS.new,      show:cs,                drawer:false},
+    {id:'msgs',       label:'العملاء',    icon:NAV_ICONS.msgs,     show:cs,                drawer:false},
+    {id:'branchmsgs', label:'الرسائل',    icon:NAV_ICONS.branchmsgs,show:br,               drawer:false},
+    {id:'warnings',   label:'الإنذارات',  icon:NAV_ICONS.warnings, show:role!=='cs',       drawer:false},
+    {id:'stats',      label:'الإحصائيات', icon:NAV_ICONS.stats,    show:role!=='branch'&&role!=='maint', drawer:true},
+    {id:'filter',     label:'التحليل',    icon:NAV_ICONS.filter,   show:role!=='branch'&&role!=='owner', drawer:true},
+    {id:'rep',        label:'السمعة',     icon:NAV_ICONS.rep,      show:true,              drawer:true},
+    {id:'settings',   label:'المستخدمين', icon:NAV_ICONS.settings, show:role==='maint',    drawer:true},
+    {id:'chpass',     label:'كلمة السر',  icon:NAV_ICONS.chpass,   show:role!=='owner',    drawer:true},
   ];
   return all.filter(x=>x.show);
 }
@@ -388,21 +429,28 @@ function buildBottomNav(){
   let h='<div class="bnav-inner">';
   mainItems.forEach(it=>{
     h+=`<button class="bnav-btn" id="bnav-${it.id}" onclick="bnavGo('${it.id}')" aria-label="${it.label}">
-      <span class="bnav-dot"></span><span class="bni">${it.icon}</span><span class="bnl">${it.label}</span></button>`;
+      <span class="bnav-dot"></span><span class="bni">${it.icon||''}</span><span class="bnl">${it.label}</span></button>`;
   });
   if(drawerItems.length){
     h+=`<button class="bnav-btn" id="bnav-more" onclick="toggleMoreDrawer()" aria-label="المزيد">
-      <span class="bni">⋯</span><span class="bnl">المزيد</span></button>`;
+      <span class="bni">${NAV_ICONS.more}</span><span class="bnl">المزيد</span></button>`;
+  }
+  // للمالك: إضافة زر الخروج في شريط التنقل
+  if(session.role==='owner'){
+    h+=`<button class="bnav-btn bnav-logout" onclick="logout()" aria-label="خروج">
+      <span class="bni">${NAV_ICONS.logout}</span><span class="bnl">خروج</span></button>`;
   }
   h+='</div>';
   nav.innerHTML=h;
   let dh='';
   drawerItems.forEach(it=>{
     dh+=`<button class="bnav-drawer-item" id="bnav-d-${it.id}" onclick="bnavGo('${it.id}');closeMoreDrawer();" aria-label="${it.label}">
-      <span class="di-dot"></span><span class="di-icon">${it.icon}</span><span>${it.label}</span></button>`;
+      <span class="di-dot"></span><span class="di-icon">${it.icon||''}</span><span>${it.label}</span></button>`;
   });
-  dh+=`<button class="bnav-drawer-item" onclick="logout()" style="background:var(--rdl);border-color:var(--rdb);color:var(--rd);">
-    <span class="di-icon">🚪</span><span>خروج</span></button>`;
+  if(session.role!=='owner'){
+    dh+=`<button class="bnav-drawer-item" onclick="logout()" style="background:var(--rdl);border-color:var(--rdb);color:var(--rd);">
+      <span class="di-icon">${NAV_ICONS.logout}</span><span>خروج</span></button>`;
+  }
   drawerGrid.innerHTML=dh;
   updateBNavActive('list');
 }
@@ -432,7 +480,8 @@ function updateBNavDots(){
   setBNavDot('list',complaints.filter(c=>!c.seenBy||!c.seenBy[session.id]).length>0);
   if(r==='cs'||r==='maint')setBNavDot('msgs',messages.filter(m=>!m.converted).length>0);
   if(r==='branch'){setBNavDot('branchmsgs',branchMsgs.filter(bm=>bm.branch===session.branch&&!bm.seenBy?.[session.id]).length>0);}
-  if(r!=='cs'){let wc=0;if(r==='owner'||r==='admin')wc=warnings.filter(w=>w.status==='draft').length;else if(r==='branch')wc=warnings.filter(w=>w.branch===session.branch&&w.status==='approved'&&(!w.seenBy||!w.seenBy[session.id])).length;setBNavDot('warnings',wc>0);}
+  if(r==='owner'){const wc=warnings.filter(w=>w.status==='draft').length;setBNavDot('branchmsgs',wc>0);}
+  if(r!=='cs'&&r!=='owner'){let wc=0;if(r==='admin'||r==='maint')wc=warnings.filter(w=>w.status==='draft').length;else if(r==='branch')wc=warnings.filter(w=>w.branch===session.branch&&w.status==='approved'&&(!w.seenBy||!w.seenBy[session.id])).length;setBNavDot('warnings',wc>0);}
 }
 
 function toggleMoreDrawer(){
@@ -446,23 +495,25 @@ function closeMoreDrawer(){
   document.getElementById('bnav-overlay').classList.remove('on');
 }
 
-// ═══════════════════════════════════════
+// 
 //  SIDEBAR DOTS
-// ═══════════════════════════════════════
+// 
 function updateDots(){
   if(!session)return;
   const r=session.role;
   setDot('nav-list',complaints.filter(c=>!c.seenBy||!c.seenBy[session.id]).length>0);
   if(r==='cs'||r==='maint')setDot('nav-msgs',messages.filter(m=>!m.converted).length>0);
   if(r==='branch')setDot('nav-branchmsgs',branchMsgs.filter(bm=>bm.branch===session.branch&&!bm.seenBy?.[session.id]).length>0);
-  if(r!=='cs'){let wc=0;if(r==='owner'||r==='admin')wc=warnings.filter(w=>w.status==='draft').length;else if(r==='branch')wc=warnings.filter(w=>w.branch===session.branch&&w.status==='approved'&&(!w.seenBy||!w.seenBy[session.id])).length;setDot('nav-warnings',wc>0);}
+  if(r!=='cs'&&r!=='owner'){let wc=0;if(r==='admin'||r==='maint')wc=warnings.filter(w=>w.status==='draft').length;else if(r==='branch')wc=warnings.filter(w=>w.branch===session.branch&&w.status==='approved'&&(!w.seenBy||!w.seenBy[session.id])).length;setDot('nav-warnings',wc>0);}
+  // للمالك: إشعار في tab الرسائل إذا وجدت إنذارات جديدة
+  if(r==='owner'){const wc=warnings.filter(w=>w.status==='draft').length;setDot('nav-branchmsgs',wc>0);}
   updateBNavDots();
 }
 function setDot(id,show){const nb=document.getElementById(id);if(nb)nb.classList.toggle('has-new',show);}
 
-// ═══════════════════════════════════════
+// 
 //  صيانة
-// ═══════════════════════════════════════
+// 
 function openMaint(){
   document.getElementById('maint-scr').classList.add('on');
   document.getElementById('m-code-edit').value=MCODE;
@@ -562,9 +613,9 @@ function mpUsersHTML(){return users.map(u=>`<div class="murow"><div><div class="
 function mpListHTML(arr,key){return arr.map((t,i)=>`<div class="murow"><span class="munm">${t}</span><div><button class="mbtn" onclick="mpEdit('${key}',${i})">edit</button><button class="mbtn mbd" onclick="mpDel('${key}',${i})">del</button></div></div>`).join('');}
 function mpEmpHTML(){return Object.entries(employees).map(([br,emps])=>`<div style="margin-bottom:9px"><div style="font-size:.71rem;color:#666;margin-bottom:3px">${br}</div>${emps.map(e=>`<div class="emprow"><span class="munm" style="font-size:.74rem">${e.name}</span><div><button class="mbtn" onclick="mpRenameEmp('${br}','${e.id}')">rn</button><button class="mbtn mbd" onclick="mpDelEmp('${br}','${e.id}')">del</button></div></div>`).join('')}<div style="margin-top:4px"><input class="mfi" id="ep-${br.replace(/\s/g,'_')}" placeholder="New employee" style="width:150px"><button class="mbtn" onclick="mpAddEmp('${br}')">add</button></div></div>`).join('');}
 function mpBWAHTML(){return BRANCHES_LIST.map(br=>`<div class="emprow"><span class="munm" style="font-size:.74rem">${br}</span><input class="mfi" id="bwa-${br.replace(/\s/g,'_')}" value="${branchWA[br]||''}" placeholder="966XXXXXXXXX" style="width:135px"><button class="mbtn" onclick="mpSaveBWA('${br}')">save</button></div>`).join('');}
-function changeMaintPass(){const n=document.getElementById('mp-new').value,c2=document.getElementById('mp-conf').value;if(!n)return;if(n!==c2){showMpMsg('mismatch');return;}maintPass=n;localStorage.setItem('ims_mp',n);window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64});showMpMsg('updated ✓');document.getElementById('mp-new').value='';document.getElementById('mp-conf').value='';}
+function changeMaintPass(){const n=document.getElementById('mp-new').value,c2=document.getElementById('mp-conf').value;if(!n)return;if(n!==c2){showMpMsg('mismatch');return;}maintPass=n;localStorage.setItem('ims_mp',n);window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64});showMpMsg('updated ');document.getElementById('mp-new').value='';document.getElementById('mp-conf').value='';}
 function mpRename(id){const u=users.find(x=>x.id===id);if(!u)return;const n=prompt('New name:',u.name);if(!n)return;u.name=n;sv();document.getElementById('mp-users').innerHTML=mpUsersHTML();}
-function mpChPass(id){const u=users.find(x=>x.id===id);if(!u)return;const p=prompt('New 4-digit pass:');if(!p||p.length!==4)return;u.pass=p;sv();}
+function mpChPass(id){const u=users.find(x=>x.id===id);if(!u)return;if(u.role==='owner'){alert('رقم المالك يتغير تلقائياً بحسب التاريخ ولا يمكن تغييره');return;}const p=prompt('New 4-digit pass:');if(!p||p.length!==4)return;u.pass=p;sv();}
 function mpDelU(id){if(!confirm('Delete?'))return;users=users.filter(x=>x.id!==id);sv();document.getElementById('mp-users').innerHTML=mpUsersHTML();}
 function mpAddUser(){const n=document.getElementById('mp-un').value.trim(),r=document.getElementById('mp-ur').value,br=document.getElementById('mp-ubr').value||null,p=document.getElementById('mp-upas').value;if(!n||!p||p.length!==4)return;users.push({id:`${r}-${Date.now()}`,name:n,role:r,pass:p,branch:br});sv();document.getElementById('mp-users').innerHTML=mpUsersHTML();document.getElementById('mp-un').value='';document.getElementById('mp-upas').value='';}
 const getArr=k=>({ct:ctypes,sent:sentiments,demo:demos}[k]||[]);
@@ -576,9 +627,9 @@ function mpDelEmp(br,eid){if(!confirm('Delete?'))return;employees[br]=(employees
 function mpAddEmp(br){const k=br.replace(/\s/g,'_');const inp=document.getElementById(`ep-${k}`);if(!inp||!inp.value.trim())return;if(!employees[br])employees[br]=[];employees[br].push({id:'e'+Date.now(),name:inp.value.trim()});sv();document.getElementById('mp-emp').innerHTML=mpEmpHTML();inp.value='';}
 function mpSaveBWA(br){const k=br.replace(/\s/g,'_');const v=document.getElementById(`bwa-${k}`).value.trim();branchWA[br]=v;sv();}
 
-// ═══════════════════════════════════════
+// 
 //  النماذج
-// ═══════════════════════════════════════
+// 
 function renderAllForms(){renderCtypeForm();renderSentimentForm();renderDemoForm();}
 function renderCtypeForm(){
   const rg=document.getElementById('ctype-rg');if(rg)rg.innerHTML=ctypes.map(t=>`<label class="rl"><input type="radio" name="ctype" value="${t}">${t}</label>`).join('');
@@ -598,21 +649,25 @@ function setG(who,g){
 function genRefUI(){const el=document.getElementById('f-ref');if(el)el.value=genRef().ref;}
 function cond(id,show){const el=document.getElementById(id);if(!el)return;el.classList.toggle('h',!show);el.classList.toggle('v',show);}
 
-// ═══════════════════════════════════════
+// 
 //  التنقل
-// ═══════════════════════════════════════
+// 
 function goPage(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
   const pg=document.getElementById('page-'+p);
   if(pg)pg.classList.add('on');
   const nb=document.getElementById('nav-'+p);if(nb)nb.classList.add('on');
-  const tt={new:'تسجيل شكوى',list:'سجل الشكاوى',msgs:'رسائل العملاء',branchmsgs:'الرسائل',warnings:'سجل الإنذارات',stats:'الإحصائيات',filter:'تحليل الشكاوى',rep:'حماية السمعة',settings:'إدارة المستخدمين',chpass:'تغيير الرقم السري'};
-  document.getElementById('tbtitle').textContent=tt[p]||'';
+  const isOwner=session&&session.role==='owner';
+  const ownerTitles={list:'الملاحظات',branchmsgs:'الرسائل والتحديثات',rep:'حماية السمعة'};
+  const tt={new:'تسجيل شكوى',list:'سجل الشكاوى',msgs:'رسائل العملاء',branchmsgs:'الرسائل الواردة',warnings:'سجل الإنذارات',stats:'الإحصائيات',filter:'تحليل الشكاوى',rep:'حماية السمعة',settings:'إدارة المستخدمين',chpass:'تغيير الرقم السري',ownercast:'الرسائل والتحديثات'};
+  const title=isOwner&&ownerTitles[p]?ownerTitles[p]:(tt[p]||'');
+  const titleEl=document.getElementById('tbtitle');if(titleEl)titleEl.textContent=title;
   closeDetail();
   if(p==='list')renderList();
   if(p==='msgs')renderMsgs();
   if(p==='branchmsgs')renderBranchMsgs();
+  if(p==='ownercast')renderOwnerCast();
   if(p==='warnings')renderWarnings();
   if(p==='stats')renderStats();
   if(p==='filter')runFilter();
@@ -625,9 +680,21 @@ function goPage(p){
   setTimeout(updateDots,300);
 }
 
-// ═══════════════════════════════════════
+// 
+//  تطبيع رقم الجوال السعودي
+// 
+function normalizeSaudiMobile(raw){
+  let d=raw.replace(/[\s\-]/g,'');
+  if(d.startsWith('+966'))d=d.slice(4);
+  else if(d.startsWith('00966'))d=d.slice(5);
+  else if(d.startsWith('966'))d=d.slice(3);
+  if(d.startsWith('0'))d=d.slice(1);
+  return /^5[0-9]{8}$/.test(d)?d:null;
+}
+
+// 
 //  معاينة وحفظ الشكوى
-// ═══════════════════════════════════════
+// 
 function previewC(){
   const ref=document.getElementById('f-ref').value;
   const branch=document.getElementById('f-branch').value;
@@ -650,9 +717,13 @@ function previewC(){
   if(!branch){showToast('يرجى اختيار الفرع','err');return;}
   if(!ctype){showToast('يرجى اختيار نوع الشكوى','err');return;}
   if(!mobile||!client||!child||!desc||!demand){showToast('يرجى تعبئة الحقول المطلوبة','err');return;}
+  // التحقق من صيغة رقم الجوال السعودي
+  const mobileNorm=normalizeSaudiMobile(mobile);
+  if(!mobileNorm){showToast('رقم الجوال غير صحيح — يرجى إدخال رقم سعودي صحيح','err');return;}
   if(hdQ==='yes'&&!hdA){showToast('يرجى تحديد المطلب غير المعلن','err');return;}
   const now=new Date(),dd=pad(now.getDate(),2),mm=pad(now.getMonth()+1,2),yr=now.getFullYear();
-  pendingC={ref,branch,ctype,dateKey:`${dd}${mm}${yr}`,dateDisplay:`${dd}/${mm}/${yr}`,timeDisplay:`${pad(now.getHours(),2)}:${pad(now.getMinutes(),2)}`,createdAt:nowISO(),mobile,client,child,desc,demand,hdQ,hdA:hdQ==='yes'?hdA:null,origin,financial,hasEmp,negative,negText:negative?negText:'',sentiment,demo,csnote,gC,gK,status:'جارية حاليا',ownerPriority:false,adminComment:null,branchComment:null,branchEmployee:null,seenBy:{},tasks:[{id:'t1',label:'إرسال إشعار للعميل باستلام الشكوى',done:false},{id:'t2',label:'معالجة الشكوى',done:false}],audit:[{who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:'تم إنشاء الشكوى'}],addedBy:session.name};
+  const mobileForRecord=normalizeSaudiMobile(mobile)||mobile;
+  pendingC={ref,branch,ctype,dateKey:`${dd}${mm}${yr}`,dateDisplay:`${dd}/${mm}/${yr}`,timeDisplay:`${pad(now.getHours(),2)}:${pad(now.getMinutes(),2)}`,createdAt:nowISO(),mobile:mobileForRecord,client,child,desc,demand,hdQ,hdA:hdQ==='yes'?hdA:null,origin,financial,hasEmp,negative,negText:negative?negText:'',sentiment,demo,csnote,gC,gK,status:'جارية حاليا',ownerPriority:false,adminComment:null,branchComment:null,branchEmployee:null,seenBy:{},tasks:[{id:'t1',label:'إرسال إشعار للعميل باستلام الشكوى',done:false},{id:'t2',label:'معالجة الشكوى',done:false}],audit:[{who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:'تم إنشاء الشكوى'}],addedBy:session.name};
   prevTxt=buildSummary(pendingC,false);
   document.getElementById('prev-text').textContent=prevTxt;
   document.getElementById('prov').classList.add('on');
@@ -675,19 +746,25 @@ function clearForm(){
   pendingC=null;gC='m';gK='m';setG('c','m');setG('k','m');genRefUI();
 }
 
-// ═══════════════════════════════════════
+// 
 //  قائمة الشكاوى
-// ═══════════════════════════════════════
+// 
 function renderList(){
   runAuto();
   const r=session.role;
+  const isOwner=r==='owner';
   let vis=[...complaints];
   if(r==='branch')vis=vis.filter(c=>c.branch===session.branch);
   const activeC=vis.filter(c=>isActive(c)).length;
   const pendCnt=vis.filter(c=>!isActive(c)&&!isDone(c)).length;
   const negC=vis.filter(c=>c.negative).length;
-  const tabs=[{id:'all',label:'الكل',count:vis.length},{id:'active',label:'حديثة',count:activeC},{id:'pending',label:'جارية',count:pendCnt},{id:'negative',label:'تقييمات سلبية',count:negC}];
+  // للمالك: تسمية "ملاحظات" بدل "شكاوى"
+  const allLabel=isOwner?'الكل':'الكل';
+  const tabs=[{id:'all',label:allLabel,count:vis.length},{id:'active',label:'حديثة',count:activeC},{id:'pending',label:'جارية',count:pendCnt},{id:'negative',label:'تقييمات سلبية',count:negC}];
   if(r==='branch'){const nc=vis.filter(c=>!c.branchComment&&!isDone(c)).length;tabs.splice(1,0,{id:'needs',label:'يتطلب إفادتك',count:nc});}
+  // تحديث عنوان الصفحة في الـ ph
+  const phEl=document.querySelector('#page-list .ph h2');
+  if(phEl)phEl.textContent=isOwner?'سجل الملاحظات':'سجل الشكاوى';
   document.getElementById('stat-tabs').innerHTML=tabs.map(t=>`<div class="stab${currentTab===t.id?' on':''}" onclick="setTab('${t.id}')"><div class="sn">${t.count}</div><div class="sl">${t.label}</div></div>`).join('');
   let shown=vis;
   if(currentTab==='active')shown=vis.filter(c=>isActive(c));
@@ -735,9 +812,9 @@ function cCard(c,r){
   </div>`;
 }
 
-// ═══════════════════════════════════════
+// 
 //  تفاصيل الشكوى
-// ═══════════════════════════════════════
+// 
 function showDetail(ref){
   const c=complaints.find(x=>x.ref===ref);if(!c)return;
   if(currentRef===ref){closeDetail();return;}
@@ -830,7 +907,7 @@ function renderFullDetail(c,inner,r){
   const sumTxt=buildSummary(c,true);
   inner.innerHTML=`
   <div class="qa-bar">
-    <button class="qa-close" onclick="closeDetail()">✕</button>
+    <button class="qa-close" onclick="closeDetail()"></button>
     ${showActions&&canStatus?`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${statusHTML}</div>`:''}
     ${showActions&&canEdit?`<button class="btn" onclick="startEdit('${c.ref}')">تعديل</button>`:''}
     ${showActions?`<button class="btn" id="detail-mode-btn" onclick="toggleDetailMode()">تفاصيل كاملة</button>`:''}
@@ -994,9 +1071,9 @@ function requestClarification(ref){
   showToast(c.needsClarification?'تم إرسال طلب التوضيح':'تم إلغاء طلب التوضيح','ok');
 }
 
-// ═══════════════════════════════════════
+// 
 //  رسائل العملاء
-// ═══════════════════════════════════════
+// 
 function renderMsgs(){
   const el=document.getElementById('msgs-content');
   if(!messages.length){el.innerHTML=`<div class="empty"><p>لا توجد رسائل من العملاء</p></div>`;return;}
@@ -1022,19 +1099,64 @@ function convertMsg(id){
   updateDots();
 }
 
-// ═══════════════════════════════════════
+// 
 //  رسائل الفرع
-// ═══════════════════════════════════════
+// 
 function renderBranchMsgs(){
   const el=document.getElementById('branch-msgs-content');const r=session.role;
   let myMsgs=[];
   if(r==='branch')myMsgs=branchMsgs.filter(bm=>bm.branch===session.branch);
   else if(r==='admin'||r==='maint')myMsgs=branchMsgs.filter(bm=>bm.branch==='admin'||bm.type==='clarification');
+  else if(r==='owner'){
+    // للمالك: رسائل + إنذارات مدمجة
+    myMsgs=branchMsgs.filter(bm=>bm.branch==='admin'||bm.branch===null||bm.type==='clarification');
+  }
+  // للمالك: إضافة زر إرسال رسالة وعرض الإنذارات المدمجة
+  if(r==='owner'){
+    let html=`<div style="margin-bottom:16px">
+      <button class="btn pri" onclick="openOwnerSendModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        إرسال رسالة للفروع
+      </button>
+    </div>`;
+    // الإنذارات مدمجة
+    const ownerWarnings=warnings.filter(w=>w.status!=='excluded');
+    if(ownerWarnings.length){
+      html+=`<div style="font-size:.8rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:4px">الإنذارات ولفت النظر</div>`;
+      html+=ownerWarnings.map(w=>{
+        const wBadges={draft:'<span class="badge bam">بانتظار المراجعة</span>',approved:'<span class="badge bg">معتمد</span>',revoked:'<span class="badge bo">مسحوب</span>',excluded:'<span class="badge bgr">مستبعد</span>'};
+        return`<div class="branch-msg-card" style="border-right-color:var(--am)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge bam" style="font-size:.7rem">انذار</span>
+            ${wBadges[w.status]||''}
+          </div>
+          <div class="bm-title" style="color:var(--am)">${w.title}</div>
+          <div class="bm-body">${w.emp} — ${w.branch}</div>
+          <div class="bm-meta">${fmtShort(w.ts)} | الشكوى: ${w.ref}</div>
+          <div style="margin-top:10px"><button class="btn" style="font-size:.8rem;padding:7px 14px;min-height:36px" onclick="reviewA4('${w.id}',false)">معاينة المستند</button></div>
+        </div>`;
+      }).join('');
+    }
+    // الرسائل الواردة للمالك
+    if(myMsgs.length){
+      html+=`<div style="font-size:.8rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:16px">الرسائل الواردة</div>`;
+      html+=myMsgs.map(bm=>{
+        if(!bm.seenBy)bm.seenBy={};if(!bm.seenBy[session.id]){bm.seenBy[session.id]=nowISO();saveBM();}
+        const title=bm.type==='warning'?'رسالة نظام':bm.type==='clarification'?'طلب توضيح':'رسالة إدارية';
+        const navBtn=bm.complaintRef?`<button class="btn" style="font-size:.8rem;padding:6px 14px;margin-top:10px;min-height:36px" onclick="goToComplaintFromMsg('${bm.complaintRef}')">الانتقال إلى الشكوى</button>`:'';
+        return`<div class="branch-msg-card"><div class="bm-title">${title}</div><div class="bm-body">${bm.text}</div>${bm.complaintRef?`<div class="bm-meta">مرتبطة بالشكوى: ${bm.complaintRef} | ${fmtShort(bm.ts)} — ${fmtTime(bm.ts)}</div>`:''}${navBtn}</div>`;
+      }).join('');
+    }
+    if(!ownerWarnings.length&&!myMsgs.length){html+=`<div class="empty"><p>لا توجد رسائل أو إنذارات</p></div>`;}
+    el.innerHTML=html;
+    setTimeout(updateDots,200);
+    return;
+  }
   if(!myMsgs.length){el.innerHTML=`<div class="empty"><p>لا توجد رسائل</p></div>`;return;}
   el.innerHTML=myMsgs.map(bm=>{
     if(!bm.seenBy)bm.seenBy={};if(!bm.seenBy[session.id]){bm.seenBy[session.id]=nowISO();saveBM();}
     const title=bm.type==='warning'?'رسالة نظام':bm.type==='clarification'?'طلب توضيح من المالك':'رسالة إدارية';
-    const navBtn=bm.complaintRef?`<button class="btn" style="font-size:.8rem;padding:6px 14px;margin-top:10px" onclick="goToComplaintFromMsg('${bm.complaintRef}')">الانتقال إلى الشكوى</button>`:'';
+    const navBtn=bm.complaintRef?`<button class="btn" style="font-size:.8rem;padding:6px 14px;margin-top:10px;min-height:36px" onclick="goToComplaintFromMsg('${bm.complaintRef}')">الانتقال إلى الشكوى</button>`:'';
     return`<div class="branch-msg-card"><div class="bm-title">${title}</div><div class="bm-body">${bm.text}</div>${bm.complaintRef?`<div class="bm-meta">مرتبطة بالشكوى: ${bm.complaintRef} | ${fmtShort(bm.ts)} — ${fmtTime(bm.ts)}</div>`:''}${navBtn}</div>`;
   }).join('');
   setTimeout(updateDots,200);
@@ -1044,9 +1166,63 @@ function goToComplaintFromMsg(ref){
   setTimeout(()=>{showDetail(ref);},120);
 }
 
-// ═══════════════════════════════════════
-//  الإنذارات
-// ═══════════════════════════════════════
+// 
+//  رسائل المالك (ownercast) — لم يعد يُستخدم كصفحة مستقلة للمالك
+//  لكن يبقى للتوافق مع الأدوار الأخرى
+// 
+function renderOwnerCast(){
+  const el=document.getElementById('ownercast-content');if(!el)return;
+  if(!session||session.role!=='owner'){el.innerHTML='';return;}
+  // للمالك: إعادة توجيه لصفحة branchmsgs
+  goPage('branchmsgs');
+}
+
+// ── مودال إرسال رسالة المالك ──
+function openOwnerSendModal(){
+  const modal=document.getElementById('owner-send-modal');if(!modal)return;
+  document.getElementById('owner-msg-text').value='';
+  document.getElementById('owner-send-err').style.display='none';
+  // بناء خانات الفروع
+  const container=document.getElementById('owner-branch-checkboxes');
+  container.innerHTML=BRANCHES_LIST.map(br=>`
+    <label class="ms-item">
+      <input type="checkbox" value="${br}" checked>
+      ${br}
+    </label>`).join('');
+  modal.classList.add('on');
+}
+
+function closeOwnerSendModal(){
+  const modal=document.getElementById('owner-send-modal');if(modal)modal.classList.remove('on');
+}
+
+function selectAllBranches(){
+  document.querySelectorAll('#owner-branch-checkboxes input[type="checkbox"]').forEach(cb=>cb.checked=true);
+}
+
+function clearAllBranches(){
+  document.querySelectorAll('#owner-branch-checkboxes input[type="checkbox"]').forEach(cb=>cb.checked=false);
+}
+
+function sendOwnerCast(){
+  const text=document.getElementById('owner-msg-text').value.trim();
+  const errEl=document.getElementById('owner-send-err');
+  const selected=Array.from(document.querySelectorAll('#owner-branch-checkboxes input:checked')).map(cb=>cb.value);
+  errEl.style.display='none';
+  if(!text){errEl.textContent='يرجى كتابة نص الرسالة';errEl.style.display='block';return;}
+  if(!selected.length){errEl.textContent='يرجى اختيار فرع واحد على الأقل';errEl.style.display='block';return;}
+  const ownerName=users.find(u=>u.role==='owner')?.name||session.name;
+  const ts=nowISO();
+  selected.forEach(br=>{
+    branchMsgs.unshift({id:'oc-'+Date.now()+'-'+Math.random().toString(36).slice(2),branch:br,from:ownerName,ts,seenBy:{},text,type:'ownercast',complaintRef:null});
+  });
+  // أيضاً للإدارة
+  branchMsgs.unshift({id:'oc-admin-'+Date.now(),branch:'admin',from:ownerName,ts,seenBy:{},text,type:'ownercast',complaintRef:null});
+  saveBM();
+  closeOwnerSendModal();
+  showToast(`تم إرسال الرسالة إلى ${selected.length} فرع`,'ok');
+  updateDots();
+}
 function renderWarnings(){
   const el=document.getElementById('warnings-content');const r=session.role;
   let vis=[...warnings];
@@ -1056,7 +1232,7 @@ function renderWarnings(){
   vis.forEach(w=>{if(!w.seenBy)w.seenBy={};if(!w.seenBy[session.id])w.seenBy[session.id]=nowISO();});
   saveW();
   el.innerHTML=vis.map(w=>{
-    const badges={draft:'<span class="badge bam">بانتظار المراجعة ⏳</span>',approved:'<span class="badge bg">معتمد ✔️</span>',revoked:'<span class="badge bo">مسحوب ↩️</span>',excluded:'<span class="badge bgr">مستبعد ❌</span>'};
+    const badges={draft:'<span class="badge bam">بانتظار المراجعة</span>',approved:'<span class="badge bg">معتمد</span>',revoked:'<span class="badge bo">مسحوب</span>',excluded:'<span class="badge bgr">مستبعد</span>'};
     const borders={draft:'border-right:5px solid var(--am)',approved:'border-right:5px solid var(--gn)',revoked:'border-right:5px solid var(--or)',excluded:'border-right:5px solid var(--mu2)'};
     return`<div class="card" style="margin-bottom:12px;padding:18px;${borders[w.status]||''}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
@@ -1065,7 +1241,7 @@ function renderWarnings(){
           <div style="font-size:.88rem;color:var(--tx2);margin-top:3px;font-weight:600">${w.title} — الشكوى: ${w.ref}</div>
           <div style="font-size:.78rem;color:var(--mu);margin-top:7px;display:flex;gap:10px;align-items:center">${badges[w.status]||''}<span>${fmtShort(w.ts)}</span></div>
         </div>
-        <button class="btn pri" onclick="reviewA4('${w.id}',false)">معاينة المستند</button>
+        <button class="btn pri" onclick="reviewA4('${w.id}')">معاينة المستند</button>
       </div>
     </div>`;
   }).join('');
@@ -1093,29 +1269,40 @@ function sendOwnerWarning(ref){
 }
 
 let currentA4=null;
-function reviewA4(id,editMode=false){
+function reviewA4(id,editMode=true){
   currentA4=warnings.find(w=>w.id===id);if(!currentA4)return;
+  const logoEl=document.getElementById('a4-logo');if(logoEl)logoEl.textContent='اي ام سبيشل';
   document.getElementById('a4-title').textContent=currentA4.title;
   document.getElementById('a4-content').innerHTML=currentA4.text;
   document.getElementById('a4-date').textContent=fmtShort(currentA4.ts);
   const sigEl=document.getElementById('a4-sig-img');
   if(signatureBase64&&currentA4.status==='approved'){sigEl.src=signatureBase64;sigEl.style.display='inline-block';}else sigEl.style.display='none';
-  const tb=document.getElementById('a4-toolbar');const ca=document.getElementById('a4-content');
+  // الشريط دائماً ظاهر — كل النص قابل للتعديل
+  const tb=document.getElementById('a4-toolbar');
+  const ca=document.getElementById('a4-content');
+  if(tb)tb.style.display='flex';
+  ca.contentEditable='true';
+  const r=session.role;const canM=r==='owner'||r==='admin'||r==='maint';
   let actionsHTML='';
-  if(editMode){tb.style.display='flex';ca.contentEditable='true';ca.focus();actionsHTML=`<button class="btn pri" onclick="saveWarningText('${id}')">حفظ التعديلات</button><button class="btn" onclick="reviewA4('${id}',false)">إلغاء</button>`;}
-  else{
-    tb.style.display='none';ca.contentEditable='false';
-    const r=session.role;const canM=r==='owner'||r==='admin'||r==='maint';
-    if((currentA4.status==='draft'||currentA4.status==='revoked')&&canM){actionsHTML=`<button class="btn pri" onclick="approveWarning('${id}')">اعتماد وإرسال</button><button class="btn teal" onclick="reviewA4('${id}',true)">تعديل النص</button><button class="btn dan" onclick="excludeWarning('${id}')">استبعاد</button><button class="btn" onclick="closeA4()">إغلاق</button>`;}
-    else if(currentA4.status==='approved'){actionsHTML=`${canM?`<button class="btn amb" onclick="revokeWarning('${id}')">سحب الإنذار</button>`:''}<button class="btn gn" onclick="downloadPDF()">تنزيل PDF</button><button class="btn" onclick="closeA4()">إغلاق</button>`;}
-    else{actionsHTML=`<button class="btn" onclick="closeA4()">إغلاق</button>`;}
+  if((currentA4.status==='draft'||currentA4.status==='revoked')&&canM){
+    actionsHTML=`<button class="btn pri" onclick="saveAndApproveWarning('${id}')">حفظ واعتماد</button><button class="btn" onclick="saveWarningText('${id}')">حفظ التعديلات</button><button class="btn dan" onclick="excludeWarning('${id}')">استبعاد</button><button class="btn" onclick="closeA4()">إغلاق</button>`;
+  }else if(currentA4.status==='approved'){
+    actionsHTML=`<button class="btn" onclick="saveWarningText('${id}')">حفظ التعديلات</button>${canM?`<button class="btn amb" onclick="revokeWarning('${id}')">سحب الإنذار</button>`:''}<button class="btn gn" onclick="downloadPDF()">تنزيل PDF</button><button class="btn" onclick="closeA4()">إغلاق</button>`;
+  }else{
+    actionsHTML=`<button class="btn" onclick="closeA4()">إغلاق</button>`;
   }
   document.getElementById('a4-actions').innerHTML=actionsHTML;
   document.getElementById('a4-modal').classList.add('on');
+  setTimeout(()=>ca.focus(),100);
+}
+
+function saveAndApproveWarning(id){
+  saveWarningText(id);
+  setTimeout(()=>approveWarning(id),100);
 }
 function execCmd(cmd,val=null){document.execCommand(cmd,false,val);document.getElementById('a4-content').focus();}
-function saveWarningText(id){const w=warnings.find(x=>x.id===id);if(!w)return;w.text=document.getElementById('a4-content').innerHTML;saveW();reviewA4(id,false);showToast('تم حفظ التعديلات','ok');}
-function closeA4(){document.getElementById('a4-modal').classList.remove('on');document.getElementById('a4-content').contentEditable='false';document.getElementById('a4-toolbar').style.display='none';}
+function saveWarningText(id){const w=warnings.find(x=>x.id===id);if(!w)return;w.text=document.getElementById('a4-content').innerHTML;w.title=document.getElementById('a4-title').textContent;saveW();showToast('تم حفظ التعديلات','ok');}
+function closeA4(){document.getElementById('a4-modal').classList.remove('on');}
 function approveWarning(id){
   const w=warnings.find(x=>x.id===id);if(!w)return;w.status='approved';saveW();
   const c=complaints.find(x=>x.ref===w.ref);
@@ -1137,12 +1324,12 @@ function downloadPDF(){
   const element=document.getElementById('a4-document');
   const opt={margin:[0,0,0,0],filename:`إنذار_${currentA4.emp.replace(/\s/g,'_')}.pdf`,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
   showToast('جاري تجهيز الملف...','ok');
-  html2pdf().set(opt).from(element).save().then(()=>showToast('تم التحميل','ok'));
+  (window._loadHtml2pdf?window._loadHtml2pdf():Promise.resolve()).then(()=>html2pdf().set(opt).from(element).save().then(()=>showToast('تم التحميل','ok')));
 }
 
-// ═══════════════════════════════════════
+// 
 //  الإحصائيات
-// ═══════════════════════════════════════
+// 
 function renderStats(){
   const el=document.getElementById('stats-content');
   const msToH=ms=>{if(!ms||ms<0)return'—';const h=Math.floor(ms/3600000);const d=Math.floor(h/24);if(d>0)return`${d} يوم`;if(h>0)return`${h} ساعة`;return'أقل من ساعة';};
@@ -1167,9 +1354,9 @@ function renderStats(){
   </div>`;
 }
 
-// ═══════════════════════════════════════
+// 
 //  فلاتر
-// ═══════════════════════════════════════
+// 
 function runFilter(){
   renderCtypeForm();
   const brs=Array.from(document.querySelectorAll('#fb-wrap input:checked')).map(x=>x.value);
@@ -1189,12 +1376,12 @@ function runFilter(){
 }
 function clearFilters(){document.querySelectorAll('#page-filter input[type=checkbox]').forEach(x=>x.checked=false);runFilter();}
 
-// ═══════════════════════════════════════
+// 
 //  حماية السمعة
-// ═══════════════════════════════════════
+// 
 function renderRep(){
   const el=document.getElementById('rep-content');const r=session.role;
-  if(r!=='cs'&&r!=='owner'&&r!=='maint'){el.innerHTML=`<div class="no-access"><h3>تم إلغاء صلاحية وصولك لهذه الصفحة</h3></div>`;return;}
+  if(r!=='cs'&&r!=='owner'&&r!=='maint'&&r!=='admin'){el.innerHTML=`<div class="no-access"><h3>تم إلغاء صلاحية وصولك لهذه الصفحة</h3></div>`;return;}
   const threeM=Date.now()-90*24*3600000;const recent=complaints.filter(c=>new Date(c.createdAt).getTime()>threeM);
   const cc={},ec={},bc={},tc={};
   complaints.forEach(c=>{cc[c.client]=(cc[c.client]||0)+1;if(c.hasEmp&&c.branchEmployee)ec[c.branchEmployee]=(ec[c.branchEmployee]||0)+1;bc[c.branch]=(bc[c.branch]||0)+1;if(c.ctype)tc[c.ctype]=(tc[c.ctype]||0)+1;});
@@ -1203,24 +1390,24 @@ function renderRep(){
   const sorted=obj=>Object.entries(obj).sort((a,b)=>b[1]-a[1]);
   const filtered=obj=>sorted(obj).filter(([,cnt])=>cnt>3);
   const allRisks=[...Object.entries(rcc).filter(([,n])=>n>=3).map(([nm,cnt])=>({nm,cnt,cat:'عميل'})),...Object.entries(rec).filter(([,n])=>n>=3).map(([nm,cnt])=>({nm,cnt,cat:'موظفة'})),...Object.entries(rbc).filter(([,n])=>n>=3).map(([nm,cnt])=>({nm,cnt,cat:'فرع'})),...Object.entries(rtc).filter(([,n])=>n>=3).map(([nm,cnt])=>({nm,cnt,cat:'نوع شكوى'}))].sort((a,b)=>b.cnt-a.cnt);
-  let riskHTML=!allRisks.length?`<div class="risk-safe-banner"><div class="risk-safe-icon">⭐</div><div class="risk-safe-txt">مؤشر مخاطر السمعة منخفض وإيجابي</div><div class="risk-safe-sub">لا توجد مخاطر متكررة خلال آخر ٣ أشهر</div></div>`
+  let riskHTML=!allRisks.length?`<div class="risk-safe-banner"><div class="risk-safe-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--gn)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div><div class="risk-safe-txt">مؤشر مخاطر السمعة منخفض وإيجابي</div><div class="risk-safe-sub">لا توجد مخاطر متكررة خلال آخر ٣ أشهر</div></div>`
   :`<div class="risk-grid">${allRisks.map(({nm,cnt,cat})=>{let cls='risk-card-y',level='تحذير';if(cnt>5){cls='risk-card-r';level='خطر عالٍ';}else if(cnt===5){cls='risk-card-o';level='تصاعد';}return`<div class="risk-card ${cls}"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="risk-card-count">${cnt}</div><div class="risk-card-name">${nm}</div></div><span class="risk-card-badge">${cat}</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><div class="risk-card-label">تكرار / ٣ أشهر</div><span class="risk-card-badge">${level}</span></div></div>`;}).join('')}</div>`;
-  const buildSec=(title,icon,data)=>{if(!data.length)return'';const maxV=data[0][1];const fills=['#4f46e5','#7c3aed','#e11d48','#ea580c','#059669','#0ea5e9','#65a30d'];return`<div class="rep-section"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span>${icon}</span><span style="font-size:.93rem;font-weight:800;color:var(--tx)">${title}</span></div>${data.map(([name,cnt],i)=>`<div class="rep-row"><div class="rep-rank">${i+1}</div><div class="rep-name">${name}</div><div class="rep-track"><div class="rep-fill" style="width:${Math.round(cnt/maxV*100)}%;background:${fills[i%fills.length]}"></div></div><div class="rep-cnt" style="color:${fills[i%fills.length]}">${cnt}</div></div>`).join('')}</div>`;};
+  const buildSec=(title,data)=>{if(!data.length)return'';const maxV=data[0][1];const fills=['#4f46e5','#7c3aed','#e11d48','#ea580c','#059669','#0ea5e9','#65a30d'];return`<div class="rep-section"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-size:.93rem;font-weight:800;color:var(--tx)">${title}</span></div>${data.map(([name,cnt],i)=>`<div class="rep-row"><div class="rep-rank">${i+1}</div><div class="rep-name">${name}</div><div class="rep-track"><div class="rep-fill" style="width:${Math.round(cnt/maxV*100)}%;background:${fills[i%fills.length]}"></div></div><div class="rep-cnt" style="color:${fills[i%fills.length]}">${cnt}</div></div>`).join('')}</div>`;};
   const fCC=filtered(cc),fEC=filtered(ec),fBC=filtered(bc),fTC=filtered(tc);
   const hasData=fCC.length||fEC.length||fBC.length||fTC.length;
   el.innerHTML=`<div class="rep-page">
-    <div class="rep-section"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="color:var(--rd)">⚠️</span><span style="font-size:.93rem;font-weight:800;color:var(--tx)">مخاطر السمعة النشطة</span><span style="font-size:.73rem;font-weight:600;color:var(--mu);margin-right:auto">آخر ٣ أشهر</span></div>${riskHTML}</div>
+    <div class="rep-section"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-size:.93rem;font-weight:800;color:var(--tx)">مخاطر السمعة النشطة</span><span style="font-size:.73rem;font-weight:600;color:var(--mu);margin-right:auto">آخر ٣ أشهر</span></div>${riskHTML}</div>
     ${!hasData?`<div class="rep-section" style="text-align:center;padding:28px"><div style="font-size:.93rem;font-weight:700;color:var(--tx)">لا توجد بيانات كافية حالياً</div><div style="font-size:.83rem;color:var(--mu);margin-top:5px">تظهر المؤشرات عند تجاوز ٣ تكرارات</div></div>`:''}
-    ${buildSec('العملاء الأكثر تكراراً','👤',fCC)}
-    ${buildSec('الموظفات المشار إليهن','⭐',fEC)}
-    ${buildSec('تحليل الفروع','🏢',fBC)}
-    ${buildSec('تكرار أنواع الشكاوى','📌',fTC)}
+    ${buildSec('العملاء الأكثر تكراراً',fCC)}
+    ${buildSec('الموظفات المشار إليهن',fEC)}
+    ${buildSec('تحليل الفروع',fBC)}
+    ${buildSec('تكرار أنواع الشكاوى',fTC)}
   </div>`;
 }
 
-// ═══════════════════════════════════════
+// 
 //  البحث
-// ═══════════════════════════════════════
+// 
 function gSearch(q){
   const drop=document.getElementById('gdrop');q=q.trim().toLowerCase();
   if(!q){drop.style.display='none';return;}
@@ -1234,20 +1421,20 @@ function gSearch(q){
 function jumpTo(ref){document.getElementById('gdrop').style.display='none';document.getElementById('gs').value='';goPage('list');setTimeout(()=>showDetail(ref),80);}
 document.addEventListener('click',e=>{if(!e.target.closest('.tbsearch'))document.getElementById('gdrop').style.display='none';});
 
-// ═══════════════════════════════════════
+// 
 //  إدارة المستخدمين
-// ═══════════════════════════════════════
+// 
 function renderSettings(){
   document.getElementById('users-list').innerHTML=users.map(u=>`<div class="ucard">
     <div><div class="un">${u.name}${u.branch?' — '+u.branch:''}</div><div class="ur">${{owner:'المالك',admin:'الإدارة',branch:'مديرة الفرع',cs:'خدمة العملاء'}[u.role]||u.role}</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn" style="font-size:.78rem;padding:6px 12px" onclick="editPass('${u.id}')">تغيير كلمة المرور</button>
+      ${u.role!=='owner'?'<button class="btn" style="font-size:.78rem;padding:6px 12px" onclick="editPass(\'"+u.id+"\')">تغيير كلمة المرور</button>':'<span style="font-size:.75rem;color:var(--mu);padding:6px 12px">الرقم يتغير بحسب التاريخ</span>'}
       <button class="btn" style="font-size:.78rem;padding:6px 12px" onclick="editName('${u.id}')">تغيير الاسم</button>
       ${u.role!=='owner'?`<button class="btn dan" style="font-size:.78rem;padding:6px 12px" onclick="delUser('${u.id}')">حذف</button>`:''}
     </div>
   </div>`).join('');
 }
-function editPass(id){const u=users.find(x=>x.id===id);if(!u)return;const p=prompt('الرقم السري الجديد (4 أرقام):');if(!p||p.length!==4)return;u.pass=p;sv();showToast('تم تحديث الرقم السري','ok');}
+function editPass(id){const u=users.find(x=>x.id===id);if(!u)return;if(u.role==='owner'){showToast('رقم المالك يتغير تلقائياً بحسب التاريخ','err');return;}const p=prompt('الرقم السري الجديد (4 أرقام):');if(!p||p.length!==4)return;u.pass=p;sv();showToast('تم تحديث الرقم السري','ok');}
 function editName(id){const u=users.find(x=>x.id===id);if(!u)return;const n=prompt('الاسم الجديد:',u.name);if(!n)return;u.name=n;sv();renderSettings();showToast('تم تحديث الاسم','ok');}
 function delUser(id){if(!confirm('حذف المستخدم نهائياً؟'))return;users=users.filter(x=>x.id!==id);sv();renderSettings();showToast('تم الحذف','ok');}
 function showAddUser(){document.getElementById('add-user-form').style.display='block';}
@@ -1264,9 +1451,9 @@ function saveNewUser(){
   showToast('تم إضافة المستخدم','ok');
 }
 
-// ═══════════════════════════════════════
+// 
 //  أدوات مساعدة
-// ═══════════════════════════════════════
+// 
 function toggleSb(){const s=document.getElementById('sidebar'),o=document.getElementById('sbov');const cl=s.classList.toggle('cl');o.classList.toggle('on',!cl);}
 function closeSb(){document.getElementById('sidebar').classList.add('cl');document.getElementById('sbov').classList.remove('on');}
 function doCopy(t){navigator.clipboard.writeText(t).then(()=>showToast('تم النسخ','ok')).catch(()=>{const e=document.createElement('textarea');e.value=t;document.body.appendChild(e);e.select();document.execCommand('copy');document.body.removeChild(e);showToast('تم النسخ','ok');});}
@@ -1274,22 +1461,25 @@ function showModal(t,m){document.getElementById('m-title').textContent=t||'';doc
 function closeModal(){document.getElementById('modal').classList.remove('on');}
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} on`;setTimeout(()=>t.classList.remove('on'),2800);}
 
-// ═══════════════════════════════════════
+// 
 //  حجم الخط والثيم
-// ═══════════════════════════════════════
+// 
 let fsLevel=parseFloat(localStorage.getItem('ims_fs')||'1');
 function applyFontSize(){document.documentElement.style.fontSize=(fsLevel*16)+'px';const el=document.getElementById('fs-val');if(el)el.textContent=Math.round(fsLevel*100)+'%';localStorage.setItem('ims_fs',fsLevel);}
 function changeFontSize(dir){const steps=[0.8,0.875,0.95,1,1.075,1.15,1.25];const idx=steps.reduce((b,v,i)=>Math.abs(v-fsLevel)<Math.abs(steps[b]-fsLevel)?i:b,0);fsLevel=steps[Math.max(0,Math.min(steps.length-1,idx+dir))];applyFontSize();}
 applyFontSize();
 
-let isDark=localStorage.getItem('ims_dark')==='1'||(localStorage.getItem('ims_dark')===null);
-function applyTheme(){document.documentElement.setAttribute('data-theme',isDark?'dark':'');const icon=isDark?'☼':'☽';['theme-btn-login','theme-btn-app'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=icon;});localStorage.setItem('ims_dark',isDark?'1':'0');}
+const MOON_SVG=`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const SUN_SVG=`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+
+let isDark=localStorage.getItem('ims_dark')==='1';
+function applyTheme(){document.documentElement.setAttribute('data-theme',isDark?'dark':'');const icon=isDark?SUN_SVG:MOON_SVG;['theme-btn-login','theme-btn-app'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=icon;});localStorage.setItem('ims_dark',isDark?'1':'0');}
 function toggleTheme(){isDark=!isDark;applyTheme();}
 applyTheme();
 
-// ═══════════════════════════════════════
+// 
 //  بيانات تجريبية
-// ═══════════════════════════════════════
+// 
 (function(){
   if(localStorage.getItem('ims_demo_loaded'))return;
   const daysAgo=d=>new Date(Date.now()-d*86400000).toISOString();
@@ -1303,7 +1493,7 @@ applyTheme();
   saveC();localStorage.setItem('ims_demo_loaded','1');
 })();
 
-// ══ تشغيل التطبيق ══
+//  تشغيل التطبيق 
 // يُشغَّل مباشرةً عند تحميله: إما بعد مزامنة Firebase (عبر firebase.js)
 // أو كاحتياطي عند تحميله مباشرةً بدون Firebase.
 if(session)initApp();else buildRoleGrid();
