@@ -4,13 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>اي ام سبيشل</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"></noscript>
-<script>/* html2pdf loaded on demand */window._loadHtml2pdf=()=>{if(window.html2pdf)return Promise.resolve();return new Promise((r,j)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";s.onload=r;s.onerror=j;document.head.appendChild(s);});}</script>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,11 +13,11 @@
 <!-- ══════════════ شاشة تسجيل الدخول ══════════════ -->
 <div id="ls">
   <div class="lbox">
-    <button class="theme-toggle-login" id="theme-btn-login" onclick="toggleTheme()" title="تبديل النمط"></button>
+    <button class="theme-toggle-login" id="theme-btn-login" onclick="toggleTheme()" title="تبديل النمط">☽</button>
     <div class="llogo">
       <img src="special.png" alt="Logo" class="llogo-img" onerror="this.style.display='none'">
       <h1>اي ام سبيشل</h1>
-      <p>ادارة حماية السمعة</p>
+      <p>نظام إدارة الشكاوى</p>
     </div>
     <div class="lstep on" id="ls-role">
       <p style="font-size:.85rem;font-weight:600;color:var(--mu);margin-bottom:16px;text-align:center">اختر نوع المستخدم</p>
@@ -43,7 +38,7 @@
 <!-- ══════════════ شاشة PIN كلمة المرور ══════════════ -->
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
-        <div class="pin-avatar" id="pin-avatar"></div>
+    <div class="pin-avatar" id="pin-avatar">👤</div>
     <div class="pin-name" id="pin-name">—</div>
     <div class="pin-role" id="pin-role">—</div>
     <div class="pin-label">أدخلي كلمة المرور</div>
@@ -108,7 +103,6 @@
       <button class="nb on"  id="nav-list"       onclick="goPage('list')">سجل الشكاوى<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-msgs"       onclick="goPage('msgs')">رسائل العملاء<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-branchmsgs" onclick="goPage('branchmsgs')">الرسائل<span class="nb-dot"></span></button>
-      <button class="nb hid" id="nav-ownercast"   onclick="goPage('ownercast')">ارسال رسالة<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-warnings"   onclick="goPage('warnings')">الإنذارات<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-stats"      onclick="goPage('stats')">الإحصائيات<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-filter"     onclick="goPage('filter')">تحليل الشكاوى<span class="nb-dot"></span></button>
@@ -131,7 +125,7 @@
       <span class="fs-val" id="fs-val">100%</span>
       <button class="fs-btn" onclick="changeFontSize(1)">A+</button>
     </div>
-    <button class="theme-toggle-app" id="theme-btn-app" onclick="toggleTheme()"></button>
+    <button class="theme-toggle-app" id="theme-btn-app" onclick="toggleTheme()">☽</button>
   </div>
 
   <!-- المحتوى -->
@@ -204,12 +198,6 @@
     <div class="page" id="page-msgs">
       <div class="ph"><h2>رسائل العملاء</h2></div>
       <div id="msgs-content"></div>
-    </div>
-
-    <!-- رسائل المالك -->
-    <div class="page" id="page-ownercast">
-      <div class="ph"><h2>ارسال رسالة</h2></div>
-      <div id="ownercast-content"></div>
     </div>
 
     <!-- رسائل الفرع -->
@@ -345,7 +333,7 @@
   <div class="mbox" style="max-width:230mm;width:95%;height:95vh;display:flex;flex-direction:column;padding:0;background:var(--bg);overflow:hidden;">
     <div style="padding:18px 20px;border-bottom:1px solid var(--border-light);background:var(--sur);display:flex;justify-content:space-between;align-items:center;">
       <h3 style="margin:0;color:var(--tx)">معاينة وتعديل الإنذار</h3>
-      <button class="qa-close" style="position:relative;transform:none;left:0;top:0;" onclick="closeA4()"></button>
+      <button class="qa-close" style="position:relative;transform:none;left:0;top:0;" onclick="closeA4()">✕</button>
     </div>
     <div style="padding:10px 20px;background:var(--sur);">
       <div id="a4-toolbar" class="wysiwyg-toolbar" style="display:none;">
