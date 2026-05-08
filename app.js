@@ -112,6 +112,17 @@ window._imsSync = (key, data) => {
     warnings = data;
     if (document.getElementById('page-warnings')?.classList.contains('on')) renderWarnings();
     updateDots();
+  } else if (key === 'config') {
+    // تحديث الإعدادات من جهاز آخر
+    if (data.users)           users      = data.users;
+    if (data.ctypes)          ctypes     = data.ctypes;
+    if (data.sentiments)      sentiments = data.sentiments;
+    if (data.demos)           demos      = data.demos;
+    if (data.employees)       employees  = data.employees;
+    if (data.branchWA)        branchWA   = data.branchWA;
+    if (data.adminWANum != null) adminWANum = data.adminWANum;
+    if (data.maintPass  != null) maintPass  = data.maintPass;
+    if (data.signatureBase64 != null) signatureBase64 = data.signatureBase64;
   }
 };
 
@@ -1067,14 +1078,25 @@ function togglePriority(ref){
 function requestClarification(ref){
   const c=complaints.find(x=>x.ref===ref);if(!c)return;
   const ownerName=users.find(u=>u.role==='owner')?.name||session.name;
-  c.needsClarification=!c.needsClarification;
+  const wasActive=c.needsClarification;
+  c.needsClarification=!wasActive;
   if(c.needsClarification){
+    // تحقق: لا ترسل رسالة إذا كانت موجودة مسبقاً لنفس الشكوى
+    const alreadyExists=branchMsgs.some(bm=>bm.type==='clarification'&&bm.complaintRef===ref&&bm.branch===c.branch);
+    if(!alreadyExists){
+      const msgText=`طلب المالك إفادتكم فيما يتعلق بالشكوى رقم (${ref})`;
+      const ts=nowISO();
+      branchMsgs.unshift({id:'bm-'+Date.now(),branch:c.branch,complaintRef:ref,from:ownerName,ts,seenBy:{},text:msgText,type:'clarification'});
+      branchMsgs.unshift({id:'am-'+Date.now()+1,branch:'admin',complaintRef:ref,from:ownerName,ts,seenBy:{},text:msgText,type:'clarification'});
+      saveBM();
+    }
     c.audit.push({who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:'طلب المالك توضيح وتبرير للشكوى'});
-    const msgText=`طلب المالك إفادتكم فيما يتعلق بالشكوى رقم (${ref})`;
-    branchMsgs.unshift({id:'bm-'+Date.now(),branch:c.branch,complaintRef:ref,from:ownerName,ts:nowISO(),seenBy:{},text:msgText,type:'clarification'});
-    branchMsgs.unshift({id:'am-'+Date.now(),branch:'admin',complaintRef:ref,from:ownerName,ts:nowISO(),seenBy:{},text:msgText,type:'clarification'});
+  }else{
+    // عند الإلغاء: احذف رسائل التبرير المرتبطة بهذه الشكوى
+    branchMsgs=branchMsgs.filter(bm=>!(bm.type==='clarification'&&bm.complaintRef===ref));
     saveBM();
-  }else{c.audit.push({who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:'تم إلغاء طلب التوضيح'});}
+    c.audit.push({who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:'تم إلغاء طلب التوضيح'});
+  }
   saveC();closeDetail();showDetail(ref);updateDots();
   showToast(c.needsClarification?'تم إرسال طلب التوضيح':'تم إلغاء طلب التوضيح','ok');
 }
@@ -1116,21 +1138,48 @@ function renderBranchMsgs(){
   if(r==='branch')myMsgs=branchMsgs.filter(bm=>bm.branch===session.branch);
   else if(r==='admin'||r==='maint')myMsgs=branchMsgs.filter(bm=>bm.branch==='admin'||bm.type==='clarification');
   else if(r==='owner'){
-    // للمالك: رسائل + إنذارات مدمجة
     myMsgs=branchMsgs.filter(bm=>bm.branch==='admin'||bm.branch===null||bm.type==='clarification');
   }
-  // للمالك: إضافة زر إرسال رسالة وعرض الإنذارات المدمجة
   if(r==='owner'){
+    // جمع رسائل المالك المرسلة (ownercast) مجمعة بالمعرف الفريد للرسالة
+    const sentMap={};
+    branchMsgs.forEach(bm=>{
+      if(bm.type==='ownercast'&&bm.branch!=='admin'){
+        const key=bm.msgGroup||bm.id;
+        if(!sentMap[key]){sentMap[key]={...bm,branches:[bm.branch]};}
+        else{sentMap[key].branches.push(bm.branch);}
+      }
+    });
+    const sentMsgs=Object.values(sentMap).sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+
     let html=`<div style="margin-bottom:16px">
       <button class="btn pri" onclick="openOwnerSendModal()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         إرسال رسالة للفروع
       </button>
     </div>`;
-    // الإنذارات مدمجة
+    // رسائل المالك المُرسلة
+    if(sentMsgs.length){
+      html+=`<div style="font-size:.8rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:4px">الرسائل المُرسلة للفروع</div>`;
+      html+=sentMsgs.map(bm=>{
+        const branchBadges=(bm.branches||[bm.branch]).map(br=>`<span class="badge bb" style="font-size:.67rem;padding:3px 9px">${br.replace('فرع ','')}</span>`).join(' ');
+        return`<div class="branch-msg-card" style="border-right-color:var(--bl)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${branchBadges}</div>
+            <div style="display:flex;gap:6px">
+              <button class="btn" style="font-size:.75rem;padding:5px 10px;min-height:32px" onclick="editOwnerMsg('${bm.msgGroup||bm.id}')">تعديل</button>
+              <button class="btn dan" style="font-size:.75rem;padding:5px 10px;min-height:32px" onclick="deleteOwnerMsg('${bm.msgGroup||bm.id}')">حذف</button>
+            </div>
+          </div>
+          <div class="bm-body">${bm.text}</div>
+          <div class="bm-meta">${fmtShort(bm.ts)} — ${fmtTime(bm.ts)}</div>
+        </div>`;
+      }).join('');
+    }
+    // الإنذارات
     const ownerWarnings=warnings.filter(w=>w.status!=='excluded');
     if(ownerWarnings.length){
-      html+=`<div style="font-size:.8rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:4px">الإنذارات ولفت النظر</div>`;
+      html+=`<div style="font-size:.8rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:16px">الإنذارات ولفت النظر</div>`;
       html+=ownerWarnings.map(w=>{
         const wBadges={draft:'<span class="badge bam">بانتظار المراجعة</span>',approved:'<span class="badge bg">معتمد</span>',revoked:'<span class="badge bo">مسحوب</span>',excluded:'<span class="badge bgr">مستبعد</span>'};
         return`<div class="branch-msg-card" style="border-right-color:var(--am)">
@@ -1145,7 +1194,7 @@ function renderBranchMsgs(){
         </div>`;
       }).join('');
     }
-    // الرسائل الواردة للمالك
+    // الرسائل الواردة للمالك (تبريرات وغيرها)
     if(myMsgs.length){
       html+=`<div style="font-size:.8rem;font-weight:800;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:16px">الرسائل الواردة</div>`;
       html+=myMsgs.map(bm=>{
@@ -1155,7 +1204,7 @@ function renderBranchMsgs(){
         return`<div class="branch-msg-card"><div class="bm-title">${title}</div><div class="bm-body">${bm.text}</div>${bm.complaintRef?`<div class="bm-meta">مرتبطة بالشكوى: ${bm.complaintRef} | ${fmtShort(bm.ts)} — ${fmtTime(bm.ts)}</div>`:''}${navBtn}</div>`;
       }).join('');
     }
-    if(!ownerWarnings.length&&!myMsgs.length){html+=`<div class="empty"><p>لا توجد رسائل أو إنذارات</p></div>`;}
+    if(!sentMsgs.length&&!ownerWarnings.length&&!myMsgs.length){html+=`<div class="empty"><p>لا توجد رسائل أو إنذارات</p></div>`;}
     el.innerHTML=html;
     setTimeout(updateDots,200);
     return;
@@ -1221,15 +1270,31 @@ function sendOwnerCast(){
   if(!selected.length){errEl.textContent='يرجى اختيار فرع واحد على الأقل';errEl.style.display='block';return;}
   const ownerName=users.find(u=>u.role==='owner')?.name||session.name;
   const ts=nowISO();
+  const msgGroup='og-'+Date.now();
   selected.forEach(br=>{
-    branchMsgs.unshift({id:'oc-'+Date.now()+'-'+Math.random().toString(36).slice(2),branch:br,from:ownerName,ts,seenBy:{},text,type:'ownercast',complaintRef:null});
+    branchMsgs.unshift({id:'oc-'+Date.now()+'-'+Math.random().toString(36).slice(2),msgGroup,branch:br,from:ownerName,ts,seenBy:{},text,type:'ownercast',complaintRef:null});
   });
-  // أيضاً للإدارة
-  branchMsgs.unshift({id:'oc-admin-'+Date.now(),branch:'admin',from:ownerName,ts,seenBy:{},text,type:'ownercast',complaintRef:null});
+  branchMsgs.unshift({id:'oc-admin-'+Date.now(),msgGroup,branch:'admin',from:ownerName,ts,seenBy:{},text,type:'ownercast',complaintRef:null});
   saveBM();
   closeOwnerSendModal();
   showToast(`تم إرسال الرسالة إلى ${selected.length} فرع`,'ok');
-  updateDots();
+  renderBranchMsgs();updateDots();
+}
+
+function editOwnerMsg(msgGroup){
+  const msgs=branchMsgs.filter(bm=>bm.msgGroup===msgGroup||bm.id===msgGroup);
+  if(!msgs.length)return;
+  const first=msgs[0];
+  const newText=prompt('تعديل نص الرسالة:',first.text);
+  if(!newText||!newText.trim())return;
+  msgs.forEach(bm=>{bm.text=newText.trim();});
+  saveBM();renderBranchMsgs();showToast('تم تعديل الرسالة','ok');
+}
+
+function deleteOwnerMsg(msgGroup){
+  if(!confirm('هل أنت متأكد من حذف هذه الرسالة من جميع الفروع؟'))return;
+  branchMsgs=branchMsgs.filter(bm=>bm.msgGroup!==msgGroup&&bm.id!==msgGroup);
+  saveBM();renderBranchMsgs();showToast('تم حذف الرسالة','ok');
 }
 function renderWarnings(){
   const el=document.getElementById('warnings-content');const r=session.role;
@@ -1482,7 +1547,15 @@ function closeSb(){document.getElementById('sidebar').classList.add('cl');docume
 function doCopy(t){navigator.clipboard.writeText(t).then(()=>showToast('تم النسخ','ok')).catch(()=>{const e=document.createElement('textarea');e.value=t;document.body.appendChild(e);e.select();document.execCommand('copy');document.body.removeChild(e);showToast('تم النسخ','ok');});}
 function showModal(t,m){document.getElementById('m-title').textContent=t||'';document.getElementById('m-msg').textContent=m;document.getElementById('modal').classList.add('on');}
 function closeModal(){document.getElementById('modal').classList.remove('on');}
-function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} on`;setTimeout(()=>t.classList.remove('on'),2800);}
+let _toastTimer=null;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  if(_toastTimer){clearTimeout(_toastTimer);t.classList.remove('on');}
+  // force reflow to restart animation
+  void t.offsetWidth;
+  t.textContent=msg;t.className=`toast ${type} on`;
+  _toastTimer=setTimeout(()=>{t.classList.remove('on');_toastTimer=null;},2800);
+}
 
 // 
 //  حجم الخط والثيم

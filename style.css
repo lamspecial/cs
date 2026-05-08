@@ -323,8 +323,6 @@ hr.d{border:none;border-top:1px solid var(--brd);margin:16px 0}
 .a4-header{border-bottom:2px solid #000;padding-bottom:15px;margin-bottom:30px;text-align:center}
 .a4-logo{font-size:1.8rem;font-weight:800;color:#000}
 .a4-title{font-size:1.4rem;font-weight:bold;margin-top:15px;color:#000;text-decoration:underline}
-.a4-body{font-size:1.15rem;line-height:2.2;color:#000;text-align:justify;outline:none;min-height:150mm}
-.a4-body[contenteditable="true"]{box-shadow:inset 0 0 0 2px var(--bl);padding:10px;border-radius:8px;background:#fafafa}
 .a4-footer{margin-top:60px;display:flex;justify-content:space-between;align-items:flex-end;font-size:1.1rem;font-weight:bold;color:#000}
 .a4-sig{max-height:80px;max-width:180px;mix-blend-mode:multiply}
 .mov{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:900;display:none;align-items:flex-end;justify-content:center}
@@ -336,8 +334,8 @@ hr.d{border:none;border-top:1px solid var(--brd);margin:16px 0}
 #prov.on{display:flex;animation:up .3s ease-out}
 .prbox{background:var(--sur);border:1px solid var(--brd);border-radius:var(--r);padding:22px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh)}
 .prbox h3{font-size:1.05rem;font-weight:800;margin-bottom:14px;color:var(--tx);border-bottom:2px solid var(--bll);padding-bottom:10px}
-.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(100px);background:var(--tx);color:#fff;border-radius:var(--r2);padding:13px 22px;font-size:.93rem;font-weight:700;box-shadow:var(--sh);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:9999;white-space:nowrap;max-width:90vw;text-align:center}
-.toast.on{transform:translateX(-50%) translateY(0)}.toast.ok{background:var(--gn)}.toast.err{background:var(--rd)}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(120px);background:var(--tx);color:#fff;border-radius:var(--r2);padding:13px 22px;font-size:.93rem;font-weight:700;box-shadow:var(--sh);transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;z-index:9999;white-space:nowrap;max-width:90vw;text-align:center;opacity:0;pointer-events:none}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}.toast.ok{background:var(--gn)}.toast.err{background:var(--rd)}
 .ucard{background:var(--sur);border:1px solid var(--brd);border-radius:var(--r2);padding:15px 18px;box-shadow:var(--shs);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .un{font-weight:800;font-size:.98rem;color:var(--tx)}.ur{font-size:.82rem;font-weight:600;color:var(--mu);margin-top:4px}
 .empty{text-align:center;padding:44px 20px;color:var(--mu2)}.empty p{font-size:.93rem;font-weight:600}
@@ -390,10 +388,28 @@ hr.d{border:none;border-top:1px solid var(--brd);margin:16px 0}
 /* ══ A4 — تعديل للمالك فقط، عرض ثابت للباقين ══ */
 .a4-logo[contenteditable="true"]:focus,
 .a4-title[contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--bl);background:rgba(37,99,235,.04);border-radius:4px;outline:none}
-.a4-body[contenteditable="true"]{box-shadow:inset 0 0 0 2px var(--bl);padding:10px;border-radius:8px;background:#fafafa;outline:none}
+/* A4 body: white always, article-style, no borders */
+.a4-body{
+  font-size:1.1rem;line-height:2.2;color:#000;
+  text-align:justify;outline:none;min-height:150mm;
+  background:#fff !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0;
+  border-radius:0;
+}
+.a4-body[contenteditable="true"]{
+  background:#fff !important;
+  border:none !important;
+  box-shadow:none !important;
+  outline:none;
+  padding:0;
+}
 .a4-body[contenteditable="false"]{outline:none;cursor:default;user-select:text}
 .a4-footer [contenteditable="true"]:focus{box-shadow:0 0 0 2px var(--bl);border-radius:4px;padding:2px 4px;outline:none}
 .a4-footer [contenteditable="false"]{outline:none;cursor:default}
+/* A4 container always white */
+.a4-container{background:#fff !important;}
 
 /* ══ مودال إرسال رسالة المالك ══ */
 #owner-send-modal{align-items:center}
@@ -419,7 +435,7 @@ hr.d{border:none;border-top:1px solid var(--brd);margin:16px 0}
   .mbtn2{display:none}
   .main{padding-bottom:calc(var(--bnav-safe) + 14px)}
   .tbsearch{max-width:150px}
-  .toast{bottom:calc(var(--bnav-safe) + 10px)}
+  .toast{bottom:calc(var(--bnav-safe) + 14px)}
 }
 @media(max-width:480px){
   html{font-size:15px}

@@ -175,6 +175,22 @@ function setupRealtimeListeners() {
   watchDoc("messages",    "ims_m",  "messages");
   watchDoc("branchMsgs",  "ims_bm", "branchMsgs");
   watchDoc("warnings",    "ims_w",  "warnings");
+
+  // مراقبة تغييرات الإعدادات في الوقت الفعلي
+  onSnapshot(doc(db, COL, "config"), (snap) => {
+    if (!snap.exists()) return;
+    const cfg = snap.data();
+    if (cfg.users)           localStorage.setItem("ims_u",       JSON.stringify(cfg.users));
+    if (cfg.ctypes)          localStorage.setItem("ims_ct",      JSON.stringify(cfg.ctypes));
+    if (cfg.sentiments)      localStorage.setItem("ims_sent",    JSON.stringify(cfg.sentiments));
+    if (cfg.demos)           localStorage.setItem("ims_demo",    JSON.stringify(cfg.demos));
+    if (cfg.employees)       localStorage.setItem("ims_emp",     JSON.stringify(cfg.employees));
+    if (cfg.branchWA)        localStorage.setItem("ims_bwa",     JSON.stringify(cfg.branchWA));
+    if (cfg.adminWANum != null) localStorage.setItem("ims_adminwa", cfg.adminWANum);
+    if (cfg.maintPass  != null) localStorage.setItem("ims_mp",      cfg.maintPass);
+    if (cfg.signatureBase64 != null) localStorage.setItem("ims_sig", cfg.signatureBase64);
+    window._imsSync?.("config", cfg);
+  });
 }
 
 // ══════════════════════════════════════════════════════════════
