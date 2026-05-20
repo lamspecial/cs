@@ -43,8 +43,17 @@ async function loadDoc(key) {
   catch(e){ console.warn(`[DB] تعذّر تحميل "${key}":`,e); return null; }
 }
 async function saveDoc(key,data) {
-  try { await setDoc(doc(db,COL,key),data); }
-  catch(e){ console.error(`[DB] تعذّر حفظ "${key}":`,e); }
+  try {
+    await setDoc(doc(db,COL,key),data);
+    return true;
+  } catch(e) {
+    console.error(`[DB] فشل الحفظ "${key}":`,e);
+    const reason = e?.code === 'permission-denied'
+      ? 'رُفض الوصول — تحقق من Firestore Security Rules'
+      : (e?.message || String(e));
+    if(typeof showToast==='function') showToast('فشل الحفظ في Firebase: ' + reason, 'err');
+    return false;
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1862,11 +1871,32 @@ Object.assign(window, {
 // ══════════════════════════════════════════════════════════════
 //  §9  نقطة البداية الموحّدة
 //  التسلسل:
-//    1. تحميل من Firestore → المتغيرات مباشرةً (تجاوز localStorage كوسيط)
-//    2. حفظ نسخة احتياطية في localStorage
-//    3. تشغيل المستمعين الفوريين (real-time sync بين الموظفين)
-//    4. تشغيل التطبيق
+//    1. اختبار الاتصال بـ Firebase
+//    2. تحميل من Firestore → المتغيرات مباشرةً (تجاوز localStorage كوسيط)
+//    3. حفظ نسخة احتياطية في localStorage
+//    4. تشغيل المستمعين الفوريين (real-time sync بين الموظفين)
+//    5. تشغيل التطبيق
 // ══════════════════════════════════════════════════════════════
+
+// ── اختبار الاتصال بـ Firebase عند بدء التشغيل ──
+(async () => {
+  try {
+    // كتابة وثيقة اختبار للتحقق من صلاحيات Firestore
+    const testRef = doc(db, COL, '__connection_test__');
+    await setDoc(testRef, { ts: new Date().toISOString(), ok: true });
+    console.log('[Firebase] ✅ الاتصال بـ Firestore يعمل بنجاح');
+  } catch(e) {
+    const isRules = e?.code === 'permission-denied';
+    const msg = isRules
+      ? '🔒 Firestore Security Rules تمنع الكتابة!
+افتح Firebase Console → Firestore → Rules وضع:
+allow read, write: if true;'
+      : `⚠️ تعذّر الاتصال بـ Firebase: ${e?.message || e}`;
+    console.error('[Firebase-TEST]', msg);
+    alert('تحذير: ' + msg);
+  }
+})();
+
 try {
   const remote = await loadAllFromFirestore();
   if(remote.config)            { _applyConfigToState(remote.config); _cacheToLS(remote); }
