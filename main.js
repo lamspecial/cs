@@ -16,25 +16,23 @@
 // ══════════════════════════════════════════════════════════════
 //  §1  Firebase + Firestore
 // ══════════════════════════════════════════════════════════════
-import { initializeApp }  from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getAnalytics }   from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 import {
-  initializeFirestore, persistentLocalCache,
+  getFirestore,
   doc, setDoc, getDoc, onSnapshot,
-} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey:            "AIzaSyA0kcj6C_PgrSBfmZ0DE3w0CVQEq5y8WZU",
-  authDomain:        "comp-100d1.firebaseapp.com",
-  projectId:         "comp-100d1",
-  storageBucket:     "comp-100d1.firebasestorage.app",
-  messagingSenderId: "427417913381",
-  appId:             "1:427417913381:web:80262b33c432cc540197cc",
-  measurementId:     "G-P0XWTP6MTD",
+  apiKey:            "AIzaSyAF6F5N0t7NAbtvXLqBU_W6LHpIZHhLefM",
+  authDomain:        "may2-ff7bd.firebaseapp.com",
+  projectId:         "may2-ff7bd",
+  storageBucket:     "may2-ff7bd.firebasestorage.app",
+  messagingSenderId: "439701463283",
+  appId:             "1:439701463283:web:1879d30f55496dcd729786",
 };
 const fbApp = initializeApp(firebaseConfig);
-getAnalytics(fbApp);
-const db = initializeFirestore(fbApp, { localCache: persistentLocalCache() });
+// استخدام getFirestore بدون persistentLocalCache لضمان التزامن الفوري بين جميع الأجهزة
+const db = getFirestore(fbApp);
 const COL = "ims";
 
 // ══════════════════════════════════════════════════════════════

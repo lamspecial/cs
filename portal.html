@@ -134,15 +134,30 @@ body{
   <div class="footer">اي ام سبيشل ·إدارة تجربة العملاء</div>
 </div>
 
-<script>
-let selectedBranch = '';
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-function toggleBranch(btn, br) {
+const firebaseConfig = {
+  apiKey:            "AIzaSyAF6F5N0t7NAbtvXLqBU_W6LHpIZHhLefM",
+  authDomain:        "may2-ff7bd.firebaseapp.com",
+  projectId:         "may2-ff7bd",
+  storageBucket:     "may2-ff7bd.firebasestorage.app",
+  messagingSenderId: "439701463283",
+  appId:             "1:439701463283:web:1879d30f55496dcd729786",
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const COL = "ims";
+
+window.selectedBranch = '';
+
+window.toggleBranch = function(btn, br) {
   document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
-  if (selectedBranch === br) { selectedBranch = ''; return; }
+  if (window.selectedBranch === br) { window.selectedBranch = ''; return; }
   btn.classList.add('on');
-  selectedBranch = br;
-}
+  window.selectedBranch = br;
+};
 
 // تطبيع رقم الجوال السعودي — يُرجع رقماً بدون صفر (5XXXXXXXX) أو null
 function normalizeSaudiMobile(raw) {
@@ -154,7 +169,7 @@ function normalizeSaudiMobile(raw) {
   return /^5[0-9]{8}$/.test(d) ? d : null;
 }
 
-function submitMsg() {
+window.submitMsg = async function() {
   const mobRaw = document.getElementById('p-mobile').value.trim();
   const msg = document.getElementById('p-msg').value.trim();
   if (!mobRaw) { alert('يرجى إدخال رقم الجوال'); document.getElementById('p-mobile').focus(); return; }
@@ -162,31 +177,45 @@ function submitMsg() {
   if (!mob) { alert('رقم الجوال غير صحيح. يرجى إدخال رقم سعودي صحيح (مثال: 0512345678 أو 512345678 أو 966512345678)'); document.getElementById('p-mobile').focus(); return; }
   if (!msg) { alert('يرجى كتابة رسالتك'); document.getElementById('p-msg').focus(); return; }
 
-  const messages = JSON.parse(localStorage.getItem('ims_m') || '[]');
-  const id = 'msg-' + Date.now();
-  // رقم الجوال المحفوظ = بدون صفر (5XXXXXXXX)
-  // رقم الرسالة = رقم الجوال بدون صفر
-  messages.unshift({
-    id: mob, mobile: mob, branch: selectedBranch || '', text: msg,
-    ts: new Date().toISOString(), converted: false, convertedBy: null
-  });
-  localStorage.setItem('ims_m', JSON.stringify(messages));
+  // تعطيل الزر أثناء الحفظ
+  const btn = document.querySelector('button[onclick="submitMsg()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'جارٍ الإرسال…'; }
 
-  document.getElementById('form-card').style.display = 'none';
-  const sb = document.getElementById('success-box');
-  sb.style.display = 'block';
-  // رقم الرسالة = رقم الجوال الذي أدخله العميل بدون الصفر
-  document.getElementById('success-ref').textContent = 'رقم رسالتك: ' + mob;
-}
+  try {
+    // جلب الرسائل الحالية من Firestore
+    const snap = await getDoc(doc(db, COL, "messages"));
+    const messages = snap.exists() ? (snap.data().items ?? []) : [];
 
-function resetForm() {
+    // إضافة الرسالة الجديدة
+    messages.unshift({
+      id: mob, mobile: mob, branch: window.selectedBranch || '', text: msg,
+      ts: new Date().toISOString(), converted: false, convertedBy: null
+    });
+
+    // حفظ في Firestore (يُزامَن فوراً مع جميع الأجهزة)
+    await setDoc(doc(db, COL, "messages"), { items: messages });
+
+    document.getElementById('form-card').style.display = 'none';
+    const sb = document.getElementById('success-box');
+    sb.style.display = 'block';
+    document.getElementById('success-ref').textContent = 'رقم رسالتك: ' + mob;
+  } catch(e) {
+    console.error('خطأ في الحفظ:', e);
+    alert('حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.');
+    if (btn) { btn.disabled = false; btn.textContent = 'إرسال'; }
+  }
+};
+
+window.resetForm = function() {
   document.getElementById('p-mobile').value = '';
   document.getElementById('p-msg').value = '';
-  selectedBranch = '';
+  window.selectedBranch = '';
   document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
   document.getElementById('form-card').style.display = 'block';
   document.getElementById('success-box').style.display = 'none';
-}
+  const btn = document.querySelector('button[onclick="submitMsg()"]');
+  if (btn) { btn.disabled = false; btn.textContent = 'إرسال'; }
+};
 </script>
 </body>
 </html>
