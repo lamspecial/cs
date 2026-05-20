@@ -141,6 +141,8 @@ function setupRealtimeListeners() {
       setState(items);
       if(window._session_ready) _applySync(syncKey,items);
       else _queuePending(syncKey,items);
+    }, err=>{
+      console.warn(`[DB] onSnapshot "${key}" error:`, err?.code, err?.message);
     });
   };
   watchItems("complaints","ims_c","complaints",()=>_cR,()=>{_cR=true;},v=>{complaints=v;});
@@ -166,7 +168,7 @@ function setupRealtimeListeners() {
     _applyConfigToState(cfg);
     if(window._session_ready) _applySync("config",cfg);
     else _queuePending("config",cfg);
-  });
+  }, err=>{ console.warn("[DB] onSnapshot config error:", err?.code, err?.message); });
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1871,31 +1873,12 @@ Object.assign(window, {
 // ══════════════════════════════════════════════════════════════
 //  §9  نقطة البداية الموحّدة
 //  التسلسل:
-//    1. اختبار الاتصال بـ Firebase
-//    2. تحميل من Firestore → المتغيرات مباشرةً (تجاوز localStorage كوسيط)
-//    3. حفظ نسخة احتياطية في localStorage
-//    4. تشغيل المستمعين الفوريين (real-time sync بين الموظفين)
-//    5. تشغيل التطبيق
+//    1. تحميل من Firestore → المتغيرات مباشرةً (تجاوز localStorage كوسيط)
+//    2. حفظ نسخة احتياطية في localStorage
+//    3. تشغيل المستمعين الفوريين (real-time sync بين الموظفين)
+//    4. تشغيل التطبيق
 // ══════════════════════════════════════════════════════════════
 
-// ── اختبار الاتصال بـ Firebase عند بدء التشغيل ──
-(async () => {
-  try {
-    // كتابة وثيقة اختبار للتحقق من صلاحيات Firestore
-    const testRef = doc(db, COL, '__connection_test__');
-    await setDoc(testRef, { ts: new Date().toISOString(), ok: true });
-    console.log('[Firebase] ✅ الاتصال بـ Firestore يعمل بنجاح');
-  } catch(e) {
-    const isRules = e?.code === 'permission-denied';
-    const msg = isRules
-      ? '🔒 Firestore Security Rules تمنع الكتابة!
-افتح Firebase Console → Firestore → Rules وضع:
-allow read, write: if true;'
-      : `⚠️ تعذّر الاتصال بـ Firebase: ${e?.message || e}`;
-    console.error('[Firebase-TEST]', msg);
-    alert('تحذير: ' + msg);
-  }
-})();
 
 try {
   const remote = await loadAllFromFirestore();
