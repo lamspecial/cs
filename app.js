@@ -92,8 +92,9 @@ const saveS     = s => localStorage.setItem('ims_s',  JSON.stringify(s));
 const savePSeen = () => localStorage.setItem('ims_ps', JSON.stringify(pageSeen));
 
 //  مزامنة فورية من Firestore (يُستدعى بواسطة firebase.js) 
+window._session_ready = false; // يُفعَّل في initApp بعد تسجيل الدخول
 window._imsSync = (key, data) => {
-  if (!session) return; // لا تحديث قبل تسجيل الدخول
+  if (!session || !window._session_ready) return; // لا تحديث قبل تسجيل الدخول
   if (key === 'complaints') {
     complaints = data;
     if (document.getElementById('page-list')?.classList.contains('on'))   renderList();
@@ -323,6 +324,8 @@ function doLogin(){} // placeholder — غير مستخدم
 
 function logout(){
   session=null;
+  window._session_ready = false;
+  window._imsPendingSync = [];
   localStorage.removeItem('ims_s');
   document.getElementById('app').style.display='none';
   document.getElementById('ls').style.display='flex';
@@ -359,6 +362,14 @@ function saveMyPass(){
 //  INIT — تهيئة التطبيق
 // 
 function initApp(){
+  // ── إعادة تحميل البيانات من localStorage قبل أي render ──
+  // هذا يضمن أن أي تحديثات وصلت من Firestore أثناء شاشة الدخول
+  // (وخُزِّنت في localStorage بواسطة المستمعين) تنعكس فوراً
+  complaints = JSON.parse(localStorage.getItem('ims_c')||'[]');
+  messages   = JSON.parse(localStorage.getItem('ims_m')||'[]');
+  branchMsgs = JSON.parse(localStorage.getItem('ims_bm')||'[]');
+  warnings   = JSON.parse(localStorage.getItem('ims_w')||'[]');
+
   runAuto();
   renderAllForms();
   buildRoleGrid();
@@ -388,6 +399,10 @@ function initApp(){
   goPage('list');
   setInterval(updateDots,5000);
   updateDots();
+
+  // ── تفعيل المستمعين الفوريين وتطبيق التحديثات المعلّقة ──
+  window._session_ready = true;
+  window._imsFlushPending?.();
 }
 
 

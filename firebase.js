@@ -156,30 +156,61 @@ async function syncFirestoreToLocalStorage() {
 // ══════════════════════════════════════════════════════════════
 
 /**
+ * طابور التحديثات المعلّقة — يخزّن التحديثات التي تصل قبل تسجيل الدخول
+ * حتى يتم تطبيقها فور انتهاء الدخول عبر window._imsFlushPending()
+ */
+window._imsPendingSync = [];
+
+/**
  * بعد تشغيل app.js، يُضاف مستمع لكل وثيقة رئيسية.
  * عند تغيير أي وثيقة من جهاز آخر:
- *   1. تُحدَّث localStorage كاحتياطي محلي
- *   2. يُستدعى window._imsSync لتحديث الواجهة فوراً
+ *   1. تُحدَّث localStorage دائماً (حتى قبل تسجيل الدخول)
+ *   2. إذا كانت الجلسة نشطة → يُستدعى window._imsSync فوراً
+ *   3. إذا لم تكن الجلسة نشطة → يُخزَّن التحديث في _imsPendingSync
  */
 function setupRealtimeListeners() {
-  const watchDoc = (key, localKey, syncKey) => {
+  // نتخطى أول snapshot لكل مستمع (هي البيانات الحالية التي حمّلناها بالفعل)
+  let complaintsReady = false;
+  let messagesReady   = false;
+  let branchMsgsReady = false;
+  let warningsReady   = false;
+
+  const watchDoc = (key, localKey, syncKey, isReady, setReady) => {
     onSnapshot(doc(db, COL, key), (snap) => {
       if (!snap.exists()) return;
       const items = snap.data().items ?? [];
+
+      // دائماً حدّث localStorage — حتى قبل تسجيل الدخول
       localStorage.setItem(localKey, JSON.stringify(items));
-      window._imsSync?.(syncKey, items);
+
+      // تخطّ أول snapshot (البيانات الأولية المحمّلة مسبقاً)
+      if (!isReady()) { setReady(); return; }
+
+      // إذا كانت الجلسة نشطة، حدّث الواجهة فوراً
+      if (window._imsSync && window._session_ready) {
+        window._imsSync(syncKey, items);
+      } else {
+        // خزّن التحديث للتطبيق بعد تسجيل الدخول
+        // احتفظ فقط بآخر تحديث لكل مفتاح
+        window._imsPendingSync = window._imsPendingSync.filter(p => p.key !== syncKey);
+        window._imsPendingSync.push({ key: syncKey, data: items });
+      }
     });
   };
 
-  watchDoc("complaints",  "ims_c",  "complaints");
-  watchDoc("messages",    "ims_m",  "messages");
-  watchDoc("branchMsgs",  "ims_bm", "branchMsgs");
-  watchDoc("warnings",    "ims_w",  "warnings");
+  let _cR=false, _mR=false, _bR=false, _wR=false;
+  watchDoc("complaints",  "ims_c",  "complaints",  ()=>_cR, ()=>{_cR=true;});
+  watchDoc("messages",    "ims_m",  "messages",    ()=>_mR, ()=>{_mR=true;});
+  watchDoc("branchMsgs",  "ims_bm", "branchMsgs",  ()=>_bR, ()=>{_bR=true;});
+  watchDoc("warnings",    "ims_w",  "warnings",    ()=>_wR, ()=>{_wR=true;});
 
   // مراقبة تغييرات الإعدادات في الوقت الفعلي
+  let _cfgR = false;
   onSnapshot(doc(db, COL, "config"), (snap) => {
     if (!snap.exists()) return;
     const cfg = snap.data();
+
+    // دائماً حدّث localStorage
     if (cfg.users)           localStorage.setItem("ims_u",       JSON.stringify(cfg.users));
     if (cfg.ctypes)          localStorage.setItem("ims_ct",      JSON.stringify(cfg.ctypes));
     if (cfg.sentiments)      localStorage.setItem("ims_sent",    JSON.stringify(cfg.sentiments));
@@ -189,9 +220,28 @@ function setupRealtimeListeners() {
     if (cfg.adminWANum != null) localStorage.setItem("ims_adminwa", cfg.adminWANum);
     if (cfg.maintPass  != null) localStorage.setItem("ims_mp",      cfg.maintPass);
     if (cfg.signatureBase64 != null) localStorage.setItem("ims_sig", cfg.signatureBase64);
-    window._imsSync?.("config", cfg);
+
+    if (!_cfgR) { _cfgR = true; return; }
+
+    if (window._imsSync && window._session_ready) {
+      window._imsSync("config", cfg);
+    } else {
+      window._imsPendingSync = window._imsPendingSync.filter(p => p.key !== "config");
+      window._imsPendingSync.push({ key: "config", data: cfg });
+    }
   });
 }
+
+/**
+ * window._imsFlushPending() — تُستدعى من app.js بعد نجاح تسجيل الدخول
+ * تُطبّق جميع التحديثات المعلّقة التي وصلت قبل الجلسة
+ */
+window._imsFlushPending = () => {
+  const pending = window._imsPendingSync.splice(0);
+  pending.forEach(({ key, data }) => {
+    window._imsSync?.(key, data);
+  });
+};
 
 // ══════════════════════════════════════════════════════════════
 //  6. نقطة البداية — تُشغَّل مرة واحدة عند تحميل الصفحة
