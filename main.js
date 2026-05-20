@@ -1802,7 +1802,67 @@ applyTheme();
 })();
 
 // ══════════════════════════════════════════════════════════════
-//  §8  نقطة البداية الموحّدة
+//  §8  كشف الدوال لـ window (ضروري مع type="module")
+//  onclick في HTML لا يرى الدوال داخل module إلا عبر window
+// ══════════════════════════════════════════════════════════════
+Object.assign(window, {
+  // PIN
+  openPinOverlay, closePinOverlay, pinInput, pinKey, checkPin,
+  // Auth
+  buildRoleGrid, selRole, openBranchEmpLogin, selectBranchEmp,
+  closeBranchLoginScr, backRoles, doLogin, logout, saveMyPass,
+  // App init
+  initApp,
+  // Bottom nav
+  buildBottomNav, bnavGo, updateBNavActive, updateBNavDots,
+  toggleMoreDrawer, closeMoreDrawer,
+  // Dots / sidebar
+  updateDots, setDot, toggleSb, closeSb,
+  // Maintenance
+  openMaint, closeMaint, submitMaintPass, renderMaintPanel,
+  showMpMsg, uploadSignature, clearSignature,
+  mpUsersHTML, mpListHTML, mpEmpHTML, mpBWAHTML,
+  changeMaintPass, mpRename, mpChPass, mpDelU, mpAddUser,
+  mpAdd, mpEdit, mpDel, mpRenameEmp, mpDelEmp, mpAddEmp, mpSaveBWA,
+  // Forms
+  renderAllForms, renderCtypeForm, renderSentimentForm, renderDemoForm,
+  setG, cond, genRefUI,
+  // Navigation
+  goPage,
+  // Complaint form
+  previewC, closePrev, confirmSubmit, clearForm,
+  // List
+  renderList, setTab, markSeen, showDetail, closeDetail,
+  renderDetail, renderOwnerDetail, renderBranchDetail,
+  saveBranchEmployee, renderFullDetail,
+  toggleDetailMode, startEdit, saveEdit,
+  sendSummaryToAdminWA, tryDelete, changeStatus, saveComment,
+  toggleTask, togglePriority, requestClarification,
+  // Messages
+  renderMsgs, convertMsg,
+  // Branch messages
+  renderBranchMsgs, goToComplaintFromMsg, renderOwnerCast,
+  openOwnerSendModal, closeOwnerSendModal,
+  selectAllBranches, clearAllBranches,
+  sendOwnerCast, editOwnerMsg, deleteOwnerMsg,
+  // Warnings
+  renderWarnings, sendOwnerWarning,
+  reviewA4, saveAndApproveWarning, execCmd, saveWarningText,
+  closeA4, approveWarning, revokeWarning, excludeWarning,
+  // Stats / filter / rep
+  renderStats, runFilter, clearFilters, renderRep,
+  // Search
+  gSearch, jumpTo,
+  // Settings
+  renderSettings, editPass, editName, delUser,
+  showAddUser, toggleBF, saveNewUser,
+  // Utilities
+  doCopy, showModal, closeModal, showToast,
+  applyFontSize, changeFontSize, applyTheme, toggleTheme,
+});
+
+// ══════════════════════════════════════════════════════════════
+//  §9  نقطة البداية الموحّدة
 //  التسلسل:
 //    1. تحميل من Firestore → المتغيرات مباشرةً (تجاوز localStorage كوسيط)
 //    2. حفظ نسخة احتياطية في localStorage
