@@ -1,31 +1,41 @@
 /**
- * firebase.js — اي ام سبيشل
- * يُهيئ Firebase ويوفر قاعدة البيانات السحابية بديلاً عن localStorage
- *
- * البنية في Firestore:
- *   Collection: ims
- *     ├── config      → المستخدمون + الإعدادات
- *     ├── complaints  → { items: [...] }
- *     ├── messages    → { items: [...] }
- *     ├── branchMsgs  → { items: [...] }
- *     └── warnings    → { items: [...] }
+ * ╔══════════════════════════════════════════════════════════════════╗
+ * ║           firebase.js — IMS Special  •  v6.0.0                  ║
+ * ║  طبقة Firebase الكاملة: إعداد، قراءة، كتابة، مزامنة فورية       ║
+ * ╠══════════════════════════════════════════════════════════════════╣
+ * ║  البنية في Firestore (Collection: "ims")                         ║
+ * ║   ┌─ config     → { users, ctypes, sentiments, demos,           ║
+ * ║   │               employees, branchWA, adminWANum,              ║
+ * ║   │               maintPass, signatureBase64 }                  ║
+ * ║   ├─ complaints → { items: [...] }                              ║
+ * ║   ├─ messages   → { items: [...] }                              ║
+ * ║   ├─ branchMsgs → { items: [...] }                              ║
+ * ║   └─ warnings   → { items: [...] }                              ║
+ * ╠══════════════════════════════════════════════════════════════════╣
+ * ║  الواجهة المكشوفة لـ app.js                                      ║
+ * ║   • window.DB              — دوال الحفظ إلى Firestore            ║
+ * ║   • window._imsSync        — تُعرَّف في app.js، تُستدعى هنا      ║
+ * ║   • window._session_ready  — علامة: هل الجلسة نشطة؟             ║
+ * ║   • window._imsFlushPending — تصريف التحديثات المعلّقة           ║
+ * ╚══════════════════════════════════════════════════════════════════╝
  */
 
-import { initializeApp }     from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getAnalytics }      from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  § 1 — استيراد Firebase SDK
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getAnalytics }   from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
 import {
   initializeFirestore,
   persistentLocalCache,
-  doc,
-  setDoc,
-  getDoc,
-  onSnapshot,
+  doc, setDoc, getDoc, onSnapshot,
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-// ══════════════════════════════════════════════════════════════
-//  1. إعداد Firebase
-// ══════════════════════════════════════════════════════════════
-const firebaseConfig = {
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  § 2 — تهيئة Firebase والاتصال بـ Firestore
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const _config = {
   apiKey:            "AIzaSyA0kcj6C_PgrSBfmZ0DE3w0CVQEq5y8WZU",
   authDomain:        "comp-100d1.firebaseapp.com",
   projectId:         "comp-100d1",
@@ -35,227 +45,274 @@ const firebaseConfig = {
   measurementId:     "G-P0XWTP6MTD",
 };
 
-const app = initializeApp(firebaseConfig);
-getAnalytics(app);
+const _app = initializeApp(_config);
+getAnalytics(_app);
 
 /**
- * تفعيل التخزين المؤقت المحلي (IndexedDB) بحيث يعمل التطبيق
- * حتى بدون اتصال بالإنترنت، وتُرسَل التغييرات فور عودة الشبكة.
+ * persistentLocalCache: يخزّن البيانات في IndexedDB
+ * → التطبيق يعمل offline، والتغييرات ترسل عند عودة الشبكة
  */
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache(),
-});
+const _db  = initializeFirestore(_app, { localCache: persistentLocalCache() });
+const _COL = "ims";   // اسم المجموعة الرئيسية
+const _ref = (key) => doc(_db, _COL, key);
 
-// ══════════════════════════════════════════════════════════════
-//  2. دوال مساعدة للقراءة والكتابة
-// ══════════════════════════════════════════════════════════════
-const COL = "ims"; // اسم المجموعة الرئيسية
 
-/** تحميل وثيقة من Firestore — يُعيد null عند الخطأ أو الغياب */
-async function loadDoc(key) {
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  § 3 — دوال القراءة والكتابة الأساسية (خاصة بهذا الملف)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * _load(key) — يقرأ وثيقة من Firestore
+ * @returns {Object|null} بيانات الوثيقة، أو null عند غيابها أو خطأ
+ */
+async function _load(key) {
   try {
-    const snap = await getDoc(doc(db, COL, key));
+    const snap = await getDoc(_ref(key));
     return snap.exists() ? snap.data() : null;
   } catch (err) {
-    console.warn(`[DB] تعذّر تحميل "${key}":`, err);
+    console.warn(`[DB] قراءة "${key}" فشلت:`, err.message);
     return null;
   }
 }
 
-/** حفظ وثيقة في Firestore — يسجّل الخطأ ولا يوقف التطبيق */
-async function saveDoc(key, data) {
+/**
+ * _save(key, data) — يكتب وثيقة إلى Firestore
+ * يستخدم merge:false (setDoc) لاستبدال الوثيقة كاملاً في كل مرة
+ */
+async function _save(key, data) {
   try {
-    await setDoc(doc(db, COL, key), data);
+    await setDoc(_ref(key), data);
   } catch (err) {
-    console.error(`[DB] تعذّر حفظ "${key}":`, err);
+    console.error(`[DB] كتابة "${key}" فشلت:`, err.message);
   }
 }
 
-// ══════════════════════════════════════════════════════════════
-//  3. واجهة قاعدة البيانات المكشوفة عبر window.DB
-// ══════════════════════════════════════════════════════════════
 
-/**
- * window.DB — يستخدمها app.js لحفظ البيانات في السحابة
- * جميع العمليات غير متزامنة (fire-and-forget) لضمان عدم تعطّل الواجهة
- */
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  § 4 — واجهة window.DB  (تُستخدَم من app.js لحفظ البيانات)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 window.DB = {
-  /** حفظ الإعدادات والمستخدمين والقوائم */
-  saveConfig(payload) {
-    return saveDoc("config", {
-      users:           payload.users           ?? [],
-      ctypes:          payload.ctypes          ?? [],
-      sentiments:      payload.sentiments      ?? [],
-      demos:           payload.demos           ?? [],
-      employees:       payload.employees       ?? {},
-      branchWA:        payload.branchWA        ?? {},
-      adminWANum:      payload.adminWANum      ?? "",
-      maintPass:       payload.maintPass       ?? "010",
-      signatureBase64: payload.signatureBase64 ?? "",
+
+  /**
+   * saveConfig — يحفظ الإعدادات العامة والمستخدمين وكل القوائم
+   * يُطبَّق schema ثابت لتجنب حقول مجهولة في Firestore
+   */
+  saveConfig(p) {
+    return _save("config", {
+      users:           p.users           ?? [],
+      ctypes:          p.ctypes          ?? [],
+      sentiments:      p.sentiments      ?? [],
+      demos:           p.demos           ?? [],
+      employees:       p.employees       ?? {},
+      branchWA:        p.branchWA        ?? {},
+      adminWANum:      p.adminWANum      ?? "",
+      maintPass:       p.maintPass       ?? "010",
+      signatureBase64: p.signatureBase64 ?? "",
     });
   },
 
-  saveComplaints: (items) => saveDoc("complaints",  { items }),
-  saveMessages:   (items) => saveDoc("messages",    { items }),
-  saveBranchMsgs: (items) => saveDoc("branchMsgs",  { items }),
-  saveWarnings:   (items) => saveDoc("warnings",    { items }),
+  /** saveComplaints — يحفظ مصفوفة الشكاوى كاملة */
+  saveComplaints : (items) => _save("complaints",  { items }),
+
+  /** saveMessages — يحفظ رسائل العملاء */
+  saveMessages   : (items) => _save("messages",    { items }),
+
+  /** saveBranchMsgs — يحفظ رسائل الفروع والإشعارات */
+  saveBranchMsgs : (items) => _save("branchMsgs",  { items }),
+
+  /** saveWarnings — يحفظ الإنذارات */
+  saveWarnings   : (items) => _save("warnings",    { items }),
 };
 
-// ══════════════════════════════════════════════════════════════
-//  4. التحميل الأولي: Firestore → localStorage → app.js
-// ══════════════════════════════════════════════════════════════
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  § 5 — التحميل الأولي: Firestore ← ← ← localStorage ← ← ← app.js
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /**
- * يُحمّل جميع الوثائق من Firestore بالتوازي ثم يكتبها في localStorage
- * حتى يجدها app.js عند تشغيله كأنها بيانات محلية.
- * في حال فشل الاتصال تُستخدم البيانات المحلية كاحتياطي تلقائي.
+ * _applyConfig — يكتب حقول الـ config إلى localStorage
+ * (دالة مشتركة بين التحميل الأولي والمستمع الفوري)
  */
-async function syncFirestoreToLocalStorage() {
-  const [configR, complaintsR, messagesR, branchMsgsR, warningsR] =
-    await Promise.allSettled([
-      loadDoc("config"),
-      loadDoc("complaints"),
-      loadDoc("messages"),
-      loadDoc("branchMsgs"),
-      loadDoc("warnings"),
-    ]);
-
-  // الإعدادات والمستخدمين
-  const cfg = configR.value;
-  if (cfg) {
-    if (cfg.users)           localStorage.setItem("ims_u",       JSON.stringify(cfg.users));
-    if (cfg.ctypes)          localStorage.setItem("ims_ct",      JSON.stringify(cfg.ctypes));
-    if (cfg.sentiments)      localStorage.setItem("ims_sent",    JSON.stringify(cfg.sentiments));
-    if (cfg.demos)           localStorage.setItem("ims_demo",    JSON.stringify(cfg.demos));
-    if (cfg.employees)       localStorage.setItem("ims_emp",     JSON.stringify(cfg.employees));
-    if (cfg.branchWA)        localStorage.setItem("ims_bwa",     JSON.stringify(cfg.branchWA));
-    if (cfg.adminWANum)      localStorage.setItem("ims_adminwa", cfg.adminWANum);
-    if (cfg.maintPass)       localStorage.setItem("ims_mp",      cfg.maintPass);
-    if (cfg.signatureBase64) localStorage.setItem("ims_sig",     cfg.signatureBase64);
-  }
-
-  // الشكاوى
-  const cd = complaintsR.value;
-  if (cd?.items) localStorage.setItem("ims_c", JSON.stringify(cd.items));
-
-  // رسائل العملاء
-  const md = messagesR.value;
-  if (md?.items) localStorage.setItem("ims_m", JSON.stringify(md.items));
-
-  // رسائل الفروع
-  const bmd = branchMsgsR.value;
-  if (bmd?.items) localStorage.setItem("ims_bm", JSON.stringify(bmd.items));
-
-  // الإنذارات
-  const wd = warningsR.value;
-  if (wd?.items) localStorage.setItem("ims_w", JSON.stringify(wd.items));
+function _applyConfig(cfg) {
+  if (!cfg) return;
+  const set = (k, v) => v != null && localStorage.setItem(k, typeof v === "string" ? v : JSON.stringify(v));
+  set("ims_u",       cfg.users);
+  set("ims_ct",      cfg.ctypes);
+  set("ims_sent",    cfg.sentiments);
+  set("ims_demo",    cfg.demos);
+  set("ims_emp",     cfg.employees);
+  set("ims_bwa",     cfg.branchWA);
+  set("ims_adminwa", cfg.adminWANum);
+  set("ims_mp",      cfg.maintPass);
+  set("ims_sig",     cfg.signatureBase64);
 }
 
-// ══════════════════════════════════════════════════════════════
-//  5. التحديثات الفورية (Real-time listeners)
-// ══════════════════════════════════════════════════════════════
+/**
+ * _pullAll — يجلب جميع الوثائق من Firestore بالتوازي
+ * ويكتبها في localStorage حتى يجدها app.js جاهزة عند بدء التشغيل.
+ *
+ * السيناريو: المستخدم يفتح الصفحة أو يُحدِّثها →
+ *   1. firebase.js يجلب أحدث البيانات من Firestore
+ *   2. يكتبها في localStorage
+ *   3. يُحمِّل app.js الذي يقرأ من localStorage كالمعتاد
+ * النتيجة: البيانات دائماً محدَّثة عند تحديث الصفحة
+ */
+async function _pullAll() {
+  const [cfgR, cmpR, msgR, bmR, wrnR] = await Promise.allSettled([
+    _load("config"),
+    _load("complaints"),
+    _load("messages"),
+    _load("branchMsgs"),
+    _load("warnings"),
+  ]);
+
+  _applyConfig(cfgR.value);
+
+  if (cmpR.value?.items) localStorage.setItem("ims_c",  JSON.stringify(cmpR.value.items));
+  if (msgR.value?.items) localStorage.setItem("ims_m",  JSON.stringify(msgR.value.items));
+  if (bmR.value?.items)  localStorage.setItem("ims_bm", JSON.stringify(bmR.value.items));
+  if (wrnR.value?.items) localStorage.setItem("ims_w",  JSON.stringify(wrnR.value.items));
+
+  console.info("[DB] ✓ تم تحميل البيانات من Firestore");
+}
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  § 6 — المزامنة الفورية (Real-time Listeners)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 /**
- * طابور التحديثات المعلّقة — يخزّن التحديثات التي تصل قبل تسجيل الدخول
- * حتى يتم تطبيقها فور انتهاء الدخول عبر window._imsFlushPending()
+ * طابور التحديثات المعلّقة:
+ * يخزّن التحديثات التي تصل من Firestore قبل تسجيل دخول الموظف.
+ * عند الدخول تُصرَّف دفعةً واحدة عبر _imsFlushPending().
+ * يُحتفظ فقط بآخر تحديث لكل مفتاح (آخر يكسب).
  */
 window._imsPendingSync = [];
 
+/** _queueOrApply — يطبّق التحديث فوراً أو يضعه في الطابور */
+function _queueOrApply(key, data) {
+  if (window._imsSync && window._session_ready) {
+    // الجلسة نشطة → تحديث فوري للواجهة
+    window._imsSync(key, data);
+  } else {
+    // قبل تسجيل الدخول → خزّن لتطبيقه لاحقاً
+    window._imsPendingSync = window._imsPendingSync.filter(p => p.key !== key);
+    window._imsPendingSync.push({ key, data });
+  }
+}
+
 /**
- * بعد تشغيل app.js، يُضاف مستمع لكل وثيقة رئيسية.
- * عند تغيير أي وثيقة من جهاز آخر:
- *   1. تُحدَّث localStorage دائماً (حتى قبل تسجيل الدخول)
- *   2. إذا كانت الجلسة نشطة → يُستدعى window._imsSync فوراً
- *   3. إذا لم تكن الجلسة نشطة → يُخزَّن التحديث في _imsPendingSync
+ * _watchItems — يراقب وثيقة ذات حقل items[]
+ *
+ * سلوك أول snapshot:
+ *   Firestore يُطلق onSnapshot فوراً بالبيانات الحالية.
+ *   نحن حمّلناها بالفعل في _pullAll، لذا نتخطّى أول إشعار.
+ *   ما يليه = تحديثات حقيقية من أجهزة أخرى.
+ *
+ * @param {string} fsKey    - اسم الوثيقة في Firestore
+ * @param {string} lsKey    - مفتاح localStorage
+ * @param {string} syncKey  - المفتاح المُمرَّر لـ _imsSync
  */
-function setupRealtimeListeners() {
-  // نتخطى أول snapshot لكل مستمع (هي البيانات الحالية التي حمّلناها بالفعل)
-  let complaintsReady = false;
-  let messagesReady   = false;
-  let branchMsgsReady = false;
-  let warningsReady   = false;
+function _watchItems(fsKey, lsKey, syncKey) {
+  let initialized = false;
+  onSnapshot(_ref(fsKey), (snap) => {
+    if (!snap.exists()) return;
+    const items = snap.data().items ?? [];
 
-  const watchDoc = (key, localKey, syncKey, isReady, setReady) => {
-    onSnapshot(doc(db, COL, key), (snap) => {
-      if (!snap.exists()) return;
-      const items = snap.data().items ?? [];
+    // ① دائماً حدّث localStorage (يضمن صحة البيانات حتى قبل الدخول)
+    localStorage.setItem(lsKey, JSON.stringify(items));
 
-      // دائماً حدّث localStorage — حتى قبل تسجيل الدخول
-      localStorage.setItem(localKey, JSON.stringify(items));
+    // ② تخطّ أول snapshot (هي البيانات التي جلبناها في _pullAll)
+    if (!initialized) { initialized = true; return; }
 
-      // تخطّ أول snapshot (البيانات الأولية المحمّلة مسبقاً)
-      if (!isReady()) { setReady(); return; }
+    // ③ تحديث حقيقي — طبّق أو خزّن
+    _queueOrApply(syncKey, items);
+  }, (err) => console.warn(`[DB] مستمع "${fsKey}" خطأ:`, err.message));
+}
 
-      // إذا كانت الجلسة نشطة، حدّث الواجهة فوراً
-      if (window._imsSync && window._session_ready) {
-        window._imsSync(syncKey, items);
-      } else {
-        // خزّن التحديث للتطبيق بعد تسجيل الدخول
-        // احتفظ فقط بآخر تحديث لكل مفتاح
-        window._imsPendingSync = window._imsPendingSync.filter(p => p.key !== syncKey);
-        window._imsPendingSync.push({ key: syncKey, data: items });
-      }
-    });
-  };
-
-  let _cR=false, _mR=false, _bR=false, _wR=false;
-  watchDoc("complaints",  "ims_c",  "complaints",  ()=>_cR, ()=>{_cR=true;});
-  watchDoc("messages",    "ims_m",  "messages",    ()=>_mR, ()=>{_mR=true;});
-  watchDoc("branchMsgs",  "ims_bm", "branchMsgs",  ()=>_bR, ()=>{_bR=true;});
-  watchDoc("warnings",    "ims_w",  "warnings",    ()=>_wR, ()=>{_wR=true;});
-
-  // مراقبة تغييرات الإعدادات في الوقت الفعلي
-  let _cfgR = false;
-  onSnapshot(doc(db, COL, "config"), (snap) => {
+/**
+ * _watchConfig — يراقب وثيقة الإعدادات بنفس المنطق
+ */
+function _watchConfig() {
+  let initialized = false;
+  onSnapshot(_ref("config"), (snap) => {
     if (!snap.exists()) return;
     const cfg = snap.data();
 
-    // دائماً حدّث localStorage
-    if (cfg.users)           localStorage.setItem("ims_u",       JSON.stringify(cfg.users));
-    if (cfg.ctypes)          localStorage.setItem("ims_ct",      JSON.stringify(cfg.ctypes));
-    if (cfg.sentiments)      localStorage.setItem("ims_sent",    JSON.stringify(cfg.sentiments));
-    if (cfg.demos)           localStorage.setItem("ims_demo",    JSON.stringify(cfg.demos));
-    if (cfg.employees)       localStorage.setItem("ims_emp",     JSON.stringify(cfg.employees));
-    if (cfg.branchWA)        localStorage.setItem("ims_bwa",     JSON.stringify(cfg.branchWA));
-    if (cfg.adminWANum != null) localStorage.setItem("ims_adminwa", cfg.adminWANum);
-    if (cfg.maintPass  != null) localStorage.setItem("ims_mp",      cfg.maintPass);
-    if (cfg.signatureBase64 != null) localStorage.setItem("ims_sig", cfg.signatureBase64);
+    // ① حدّث localStorage دائماً
+    _applyConfig(cfg);
 
-    if (!_cfgR) { _cfgR = true; return; }
+    // ② تخطّ أول snapshot
+    if (!initialized) { initialized = true; return; }
 
-    if (window._imsSync && window._session_ready) {
-      window._imsSync("config", cfg);
-    } else {
-      window._imsPendingSync = window._imsPendingSync.filter(p => p.key !== "config");
-      window._imsPendingSync.push({ key: "config", data: cfg });
-    }
-  });
+    // ③ تحديث حقيقي
+    _queueOrApply("config", cfg);
+  }, (err) => console.warn("[DB] مستمع config خطأ:", err.message));
 }
 
 /**
- * window._imsFlushPending() — تُستدعى من app.js بعد نجاح تسجيل الدخول
- * تُطبّق جميع التحديثات المعلّقة التي وصلت قبل الجلسة
+ * _startListeners — يُشغَّل مرة واحدة بعد تحميل app.js
+ * يبدأ المستمعين الفوريين لجميع الوثائق
  */
-window._imsFlushPending = () => {
-  const pending = window._imsPendingSync.splice(0);
-  pending.forEach(({ key, data }) => {
-    window._imsSync?.(key, data);
-  });
-};
-
-// ══════════════════════════════════════════════════════════════
-//  6. نقطة البداية — تُشغَّل مرة واحدة عند تحميل الصفحة
-// ══════════════════════════════════════════════════════════════
-try {
-  await syncFirestoreToLocalStorage();
-} catch (err) {
-  // الاحتياطي: app.js سيقرأ من localStorage كالمعتاد
-  console.warn("[DB] تعذّر التزامن الأولي، سيُستخدم localStorage:", err);
+function _startListeners() {
+  _watchItems("complaints",  "ims_c",  "complaints");
+  _watchItems("messages",    "ims_m",  "messages");
+  _watchItems("branchMsgs",  "ims_bm", "branchMsgs");
+  _watchItems("warnings",    "ims_w",  "warnings");
+  _watchConfig();
+  console.info("[DB] ✓ المستمعون الفوريون نشطون");
 }
 
-// تحميل app.js ديناميكياً بعد اكتمال بيانات Firestore
-const appScript    = document.createElement("script");
-appScript.src      = "app.js";
-appScript.onload   = () => setupRealtimeListeners();
-appScript.onerror  = () => console.error("[DB] تعذّر تحميل app.js");
-document.body.appendChild(appScript);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  § 7 — واجهة التحكم في الجلسة (تُستدعى من app.js)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * window._session_ready
+ * false = شاشة الدخول (التحديثات تُخزَّن في الطابور)
+ * true  = داخل التطبيق (التحديثات تُطبَّق فوراً على الواجهة)
+ * يُضبط في app.js: true عند initApp()، false عند logout()
+ */
+window._session_ready = false;
+
+/**
+ * window._imsFlushPending()
+ * تُستدعى من app.js مباشرةً بعد نجاح تسجيل الدخول.
+ * تُصرِّف كل التحديثات المعلّقة دفعةً واحدة بالترتيب.
+ */
+window._imsFlushPending = () => {
+  const queue = window._imsPendingSync.splice(0);
+  if (queue.length) {
+    console.info(`[DB] تصريف ${queue.length} تحديث معلّق`);
+    queue.forEach(({ key, data }) => window._imsSync?.(key, data));
+  }
+};
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  § 8 — نقطة البداية (تُنفَّذ مرة واحدة عند تحميل الصفحة)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * الترتيب:
+ *  1. جلب أحدث البيانات من Firestore وكتابتها في localStorage  ← _pullAll()
+ *  2. تحميل app.js (يقرأ من localStorage فيجد بيانات محدّثة)
+ *  3. بعد تحميل app.js، تفعيل المستمعين الفوريين              ← _startListeners()
+ *
+ * الاحتياطي:
+ *  إذا فشل _pullAll (انقطاع الشبكة) → يُحمَّل app.js من localStorage كالمعتاد
+ *  وستُرسَل التغييرات المعلّقة فور عودة الاتصال (persistentLocalCache)
+ */
+try {
+  await _pullAll();
+} catch (err) {
+  console.warn("[DB] ⚠ فشل التحميل الأولي — سيُستخدَم localStorage:", err.message);
+}
+
+// تحميل app.js ديناميكياً بعد جاهزية البيانات
+const _script    = document.createElement("script");
+_script.src      = "app.js";
+_script.onload   = () => _startListeners();
+_script.onerror  = () => console.error("[DB] ✗ تعذّر تحميل app.js");
+document.body.appendChild(_script);
