@@ -1635,6 +1635,16 @@ Object.assign(window, {
   renderStats, runFilter, clearFilters, renderRep, gSearch, jumpTo,
   renderSettings, editPass, editName, delUser, showAddUser, toggleBF, saveNewUser,
   doCopy, showModal, closeModal, showToast, applyFontSize, changeFontSize, applyTheme, toggleTheme,
+  // ═══ واجهات مساعدة لصفحة control.html ═══
+  _getUsers:        ()  => users,
+  _getSession:      ()  => session,
+  _setSession:      s   => { session = s; saveS(s); },
+  _getMaintPass:    ()  => maintPass,
+  _getData:         ()  => ({ users, ctypes, sentiments, demos, employees, branchWA, adminWANum, signatureBase64, maintPass }),
+  _setAdminWANum:   v   => { adminWANum = v; sv(); },
+  _clearComplaints: ()  => { complaints = []; saveC(); },
+  _clearMessages:   ()  => { messages   = []; saveM(); },
+  _clearWarnings:   ()  => { warnings   = []; saveW(); },
 });
 
 // ══════════════════════════════════════════════════════════════

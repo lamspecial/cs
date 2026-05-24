@@ -5,127 +5,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>اي ام سبيشل — تواصل معنا</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
-<style>* { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  --bg-color1: #FFFFF9; /* أصفر أوف وايت */
-  --bg-color2: #FFFAFA; /* أحمر أوف وايت */
-  --sur: rgba(255, 255, 255, 0.45); /* خلفية زجاجية شفافة */
-  --tx: #4A1515; /* نص داكن متناسق مع الأحمر */
-  --tx2: #7A2525;
-  --mu: #9B7070;
-  --bl: #C62828; /* أحمر غني متشبع للأزرار والتحديد */
-  --bll: rgba(198, 40, 40, 0.08);
-  --blb: rgba(198, 40, 40, 0.25);
-  --gn: #059669; --gnl: #ecfdf5; --gnb: #a7f3d0;
-  --rd: #dc2626; 
-  --brd: rgba(180, 140, 140, 0.3); /* حواف مدمجة مع التصميم */
-  --border-light: rgba(255, 255, 255, 0.7);
-  --sh: 0 10px 40px rgba(74, 21, 21, 0.08);
-  --r: 20px; --r2: 14px; --r3: 10px;
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f0f4ff;--sur:#ffffff;--tx:#1a1f2e;--tx2:#3d4a5c;
+  --mu:#7b8a9a;--bl:#2563eb;--bll:#eff6ff;--blb:#bfdbfe;
+  --gn:#059669;--gnl:#ecfdf5;--gnb:#a7f3d0;
+  --rd:#dc2626;--brd:#e2e8f0;--sh:0 8px 40px rgba(37,99,235,.12);
+  --r:20px;--r2:14px;--r3:10px;
 }
-body {
-  font-family: 'Tajawal', sans-serif;
-  background: linear-gradient(135deg, var(--bg-color1), var(--bg-color2));
-  color: var(--tx);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
-  position: relative;
-  z-index: 1;
+body{
+  font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:24px 16px;
+  background-image:radial-gradient(ellipse at 20% 20%, rgba(37,99,235,.08) 0%, transparent 60%),
+                   radial-gradient(ellipse at 80% 80%, rgba(5,150,105,.06) 0%, transparent 60%);
 }
-/* إضافة تأثير عمق لوني ناعم في الخلفية */
-body::before {
-  content: "";
-  position: absolute; inset: 0;
-  background-image: radial-gradient(circle at 15% 20%, rgba(198, 40, 40, 0.04) 0%, transparent 40%),
-                    radial-gradient(circle at 85% 80%, rgba(249, 168, 37, 0.06) 0%, transparent 40%);
-  z-index: -1;
+.wrap{width:100%;max-width:500px}
+.header{text-align:center;margin-bottom:32px}
+.logo-circle{
+  width:80px;height:80px;background:linear-gradient(135deg,#2563eb,#7c3aed);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;box-shadow:0 8px 24px rgba(37,99,235,.3);
+  font-size:2rem;
 }
-.wrap { width: 100%; max-width: 500px; }
-.header { text-align: center; margin-bottom: 32px; }
-.logo-circle {
-  width: 80px; height: 80px; background: rgba(255,255,255,0.8);
-  border: 1px solid var(--border-light);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px; box-shadow: var(--sh);
-  font-size: 2rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+.brand{font-size:1.8rem;font-weight:900;color:var(--bl);letter-spacing:-.5px}
+.tagline{font-size:.95rem;color:var(--mu);margin-top:6px;font-weight:500}
+.card{
+  background:var(--sur);border-radius:var(--r);padding:32px 28px;
+  box-shadow:var(--sh);border:1px solid rgba(37,99,235,.08);
 }
-/* ألوان النص (اي ام سبيشل) */
-.brand { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.brand-im { color: #C62828; } /* أحمر غني */
-.brand-special { color: #F9A825; } /* أصفر غني */
-
-.tagline { font-size: .95rem; color: var(--mu); margin-top: 6px; font-weight: 700; }
-.card {
-  background: var(--sur);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-radius: var(--r); padding: 32px 28px;
-  box-shadow: var(--sh); border: 1px solid var(--border-light);
+.section-title{
+  font-size:.78rem;font-weight:800;color:var(--bl);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;
 }
-.section-title {
-  font-size: .78rem; font-weight: 800; color: var(--tx); text-transform: uppercase;
-  letter-spacing: .8px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+.section-title::before{content:'';width:3px;height:14px;background:var(--bl);border-radius:2px;display:inline-block}
+.fg{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.fl{font-size:.88rem;font-weight:700;color:var(--tx2)}
+.fi,.ft{
+  background:#f8fafc;border:2px solid var(--brd);border-radius:var(--r2);
+  padding:14px 16px;color:var(--tx);font-family:'Tajawal',sans-serif;
+  font-size:.95rem;width:100%;direction:rtl;transition:all .2s ease;
 }
-.section-title::before { content: ''; width: 4px; height: 14px; background: var(--bl); border-radius: 2px; display: inline-block; }
-.fg { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-.fl { font-size: .88rem; font-weight: 700; color: var(--tx2); }
-
-/* مستطيل الإدخال: خلفية بيضاء صلبة كما طلبت */
-.fi, .ft {
-  background: #ffffff !important; 
-  border: 2px solid var(--brd); border-radius: var(--r2);
-  padding: 14px 16px; color: var(--tx); font-family: 'Tajawal', sans-serif;
-  font-size: .95rem; width: 100%; direction: rtl; transition: all .2s ease;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+.fi:focus,.ft:focus{outline:none;border-color:var(--bl);background:var(--sur);box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+.ft{resize:vertical;min-height:110px;line-height:1.7}
+.branch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.branch-btn{
+  background:#f8fafc;border:2px solid var(--brd);border-radius:var(--r3);
+  padding:12px 8px;font-family:'Tajawal',sans-serif;font-size:.85rem;
+  font-weight:700;cursor:pointer;transition:all .2s;color:var(--tx2);text-align:center;
 }
-.fi:focus, .ft:focus { outline: none; border-color: var(--bl); box-shadow: 0 0 0 4px var(--bll); }
-.ft { resize: vertical; min-height: 110px; line-height: 1.7; }
-.branch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.branch-btn {
-  background: rgba(255,255,255,0.7); border: 2px solid var(--brd); border-radius: var(--r3);
-  padding: 12px 8px; font-family: 'Tajawal', sans-serif; font-size: .85rem;
-  font-weight: 700; cursor: pointer; transition: all .2s; color: var(--tx2); text-align: center;
+.branch-btn:hover{border-color:var(--bl);color:var(--bl);background:var(--bll)}
+.branch-btn.on{background:var(--bll);border-color:var(--bl);color:var(--bl)}
+.submit-btn{
+  width:100%;padding:16px;background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff;border:none;border-radius:var(--r2);font-family:'Tajawal',sans-serif;
+  font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 16px rgba(37,99,235,.35);margin-top:8px;
 }
-.branch-btn:hover { border-color: var(--bl); color: var(--bl); background: var(--bll); }
-.branch-btn.on { background: var(--bll); border-color: var(--bl); color: var(--bl); }
-.submit-btn {
-  width: 100%; padding: 16px; 
-  background: linear-gradient(135deg, #C62828, #A31B1B); /* زر أحمر غني */
-  color: #fff; border: none; border-radius: var(--r2); font-family: 'Tajawal', sans-serif;
-  font-size: 1rem; font-weight: 800; cursor: pointer; transition: all .2s;
-  box-shadow: 0 6px 20px rgba(198, 40, 40, 0.3); margin-top: 8px;
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.45)}
+.submit-btn:active{transform:scale(.98)}
+.success{
+  display:none;text-align:center;padding:32px 24px;
+  background:linear-gradient(135deg,var(--gnl),#a7f3d0);
+  border:1px solid var(--gnb);border-radius:var(--r);margin-top:20px;
 }
-.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(198, 40, 40, 0.4); }
-.submit-btn:active { transform: scale(.98); }
-.success {
-  display: none; text-align: center; padding: 32px 24px;
-  background: rgba(236, 253, 245, 0.8); backdrop-filter: blur(10px);
-  border: 1px solid var(--gnb); border-radius: var(--r); margin-top: 20px;
+.success-icon{font-size:3rem;margin-bottom:12px}
+.success h3{font-size:1.2rem;font-weight:800;color:#064e3b;margin-bottom:8px}
+.success p{font-size:.9rem;color:#047857;font-weight:500;line-height:1.6}
+.success-ref{
+  display:inline-block;margin-top:16px;background:#fff;border:1px solid var(--gnb);
+  border-radius:24px;padding:8px 20px;font-size:.85rem;font-weight:800;color:var(--gn);
+  font-family:monospace;
 }
-.success-icon { font-size: 3rem; margin-bottom: 12px; }
-.success h3 { font-size: 1.2rem; font-weight: 800; color: #064e3b; margin-bottom: 8px; }
-.success p { font-size: .9rem; color: #047857; font-weight: 500; line-height: 1.6; }
-.success-ref {
-  display: inline-block; margin-top: 16px; background: #fff; border: 1px solid var(--gnb);
-  border-radius: 24px; padding: 8px 20px; font-size: .85rem; font-weight: 800; color: var(--gn);
-  font-family: monospace; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-.footer { text-align: center; margin-top: 20px; font-size: .78rem; color: var(--mu); font-weight: 700; }
-.divider { border: none; border-top: 1px solid var(--brd); margin: 20px 0; }
-@media(max-width: 480px){
-  body { padding: 16px 12px; align-items: flex-start; }
-  .card { padding: 24px 18px; }
-  .brand { font-size: 1.8rem; }
-  .branch-grid { grid-template-columns: repeat(2, 1fr); }
+.footer{text-align:center;margin-top:20px;font-size:.78rem;color:var(--mu);font-weight:500}
+.divider{border:none;border-top:1px solid var(--brd);margin:20px 0}
+@media(max-width:480px){
+  body{padding:16px 12px;align-items:flex-start}
+  .card{padding:24px 18px}
+  .brand{font-size:1.5rem}
+  .branch-grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="header">
-    <div class="brand"><span class="brand-im">اي ام</span> <span class="brand-special">سبيشل</span></div>
+    <div class="brand">اي ام سبيشل</div>
     <div class="tagline">نستمع إليك ونهتم بتجربتك</div>
   </div>
 
