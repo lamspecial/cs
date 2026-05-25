@@ -648,7 +648,8 @@ window.mpBWAHTML = function () {
 window.ctrlRenderControlPanel = function () {
   const container = document.getElementById('ctrl-panel-content');
   if (!container) return;
-  const d = window._getData();
+  try {
+    const d = window._getData();
 
   container.innerHTML = `
     <!-- معلومات النظام -->
@@ -823,16 +824,35 @@ window.ctrlRenderControlPanel = function () {
       </div>
     </div>
   `;
+  } catch (e) {
+    container.innerHTML = `<div class="card" style="color:var(--rd);font-size:.88rem;padding:20px">
+      <strong>خطأ في تحميل الإعدادات:</strong> ${e.message}
+      <br><button class="btn" style="margin-top:12px" onclick="window.ctrlRenderControlPanel()">إعادة المحاولة</button>
+    </div>`;
+    console.error('ctrlRenderControlPanel error:', e);
+  }
 };
 
-// ══ 4. Override goPage ══
+// ══ 4. Override goPage + bnavGo ══
 const _origGoPage = window.goPage;
 window.goPage = function (p) {
   _origGoPage(p);
   if (p === 'control') {
     const titleEl = document.getElementById('tbtitle');
     if (titleEl) titleEl.textContent = 'إعدادات النظام';
-    window.ctrlRenderControlPanel();
+    // requestAnimationFrame يضمن أن الصفحة ظهرت في DOM قبل الرسم
+    requestAnimationFrame(() => window.ctrlRenderControlPanel());
+  }
+};
+
+// bnavGo يستدعي goPage الداخلي في main.js متجاوزاً override الخاص بنا
+// لذا نعيد تعريفه ليستخدم window.goPage
+const _origBnavGo = window.bnavGo;
+window.bnavGo = function (page) {
+  if (page === 'control') {
+    window.goPage('control');   // يستدعي override مباشرةً
+  } else {
+    _origBnavGo(page);
   }
 };
 
@@ -872,7 +892,7 @@ function _ctrlPostInit() {
       const moreBtn = inner.querySelector('#bnav-more');
       const btn = document.createElement('button');
       btn.className = 'bnav-btn'; btn.id = 'bnav-control';
-      btn.setAttribute('onclick', "bnavGo('control')");
+      btn.setAttribute('onclick', "goPage('control')");   // يستدعي window.goPage (override)
       btn.setAttribute('aria-label', 'إعدادات النظام');
       btn.innerHTML = `<span class="bnav-dot"></span><span class="bni">${CTRL_ICON}</span><span class="bnl">النظام</span>`;
       if (moreBtn) inner.insertBefore(btn, moreBtn); else inner.appendChild(btn);
