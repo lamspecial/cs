@@ -497,3 +497,56 @@ hr.d{border:none;border-top:1px solid var(--brd);margin:16px 0}
   .bnav-btn .bni svg{width:18px;height:18px}
   .pin-cell{width:46px;height:54px;font-size:1.4rem}
 }
+
+/* ══════════════════════════════════════════════
+   A4 MOBILE FIX — إصلاح عرض لفت النظر في الجوال
+   ══════════════════════════════════════════════ */
+@media(max-width:768px){
+  #a4-print-area{
+    padding:10px!important;
+    background:#f0f0f0!important;
+    align-items:flex-start!important;
+  }
+  .a4-container{
+    width:100%!important;
+    min-height:auto!important;
+    padding:14mm 8mm!important;
+    font-size:1rem!important;
+    line-height:1.9!important;
+    word-break:break-word!important;
+    box-shadow:0 2px 12px rgba(0,0,0,.15)!important;
+  }
+  .a4-header{
+    padding-bottom:10px!important;
+    margin-bottom:18px!important;
+  }
+  .a4-logo{ font-size:1.4rem!important; }
+  .a4-title{ font-size:1.1rem!important; margin-top:10px!important; }
+  .a4-body{
+    font-size:.95rem!important;
+    line-height:2!important;
+    min-height:auto!important;
+  }
+  .a4-footer{
+    flex-direction:column!important;
+    gap:12px!important;
+    margin-top:30px!important;
+    font-size:.9rem!important;
+    align-items:flex-start!important;
+  }
+  .a4-floating-actions{
+    flex-wrap:wrap!important;
+    gap:8px!important;
+    padding:10px 12px!important;
+    justify-content:center!important;
+  }
+  .a4-floating-actions .btn{
+    font-size:.82rem!important;
+    padding:9px 14px!important;
+    min-height:42px!important;
+  }
+  #a4-modal .mbox{
+    height:100vh!important;
+    max-height:100vh!important;
+  }
+}
