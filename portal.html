@@ -6,16 +6,39 @@
 <title>اي ام سبيشل</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"></noscript>
-<script>/* html2pdf loaded on demand */window._loadHtml2pdf=()=>{if(window.html2pdf)return Promise.resolve();return new Promise((r,j)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";s.onload=r;s.onerror=j;document.head.appendChild(s);});}</script>
+<script>window._loadHtml2pdf=()=>{if(window.html2pdf)return Promise.resolve();return new Promise((r,j)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";s.onload=r;s.onerror=j;document.head.appendChild(s);});}</script>
 <link rel="stylesheet" href="style.css">
+<style>
+/* إخفاء مربع البحث في بورتال */
+.tbsearch { display: none !important; }
+
+/* A4 mobile fix — صفحة مرنة تمتد بطول النص */
+@media(max-width:768px){
+  #a4-print-area {
+    padding: 10px !important;
+    background: #f0f0f0 !important;
+  }
+  .a4-container {
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 14mm 8mm !important;
+    font-size: 1rem !important;
+    line-height: 1.9 !important;
+    word-break: break-word !important;
+  }
+  .a4-header { padding-bottom: 10px !important; margin-bottom: 18px !important; }
+  .a4-logo   { font-size: 1.4rem !important; }
+  .a4-title  { font-size: 1.1rem !important; margin-top: 10px !important; }
+  .a4-body   { font-size: .95rem !important; line-height: 2 !important; }
+  .a4-footer { flex-direction: column !important; gap: 12px !important; margin-top: 30px !important; font-size: .9rem !important; }
+}
+</style>
 </head>
 <body>
 
-<!-- ══════════════ شاشة تسجيل الدخول ══════════════ -->
+<!-- شاشة تسجيل الدخول -->
 <div id="ls">
   <div class="lbox">
     <button class="theme-toggle-login" id="theme-btn-login" onclick="toggleTheme()" title="تبديل النمط"></button>
@@ -36,11 +59,10 @@
       </div>
       <div id="lerr"></div>
     </div>
-
   </div>
 </div>
 
-<!-- ══════════════ شاشة PIN كلمة المرور ══════════════ -->
+<!-- شاشة PIN -->
 <div class="pin-overlay" id="pin-overlay">
   <div class="pin-box">
     <div class="pin-name" id="pin-name">—</div>
@@ -57,7 +79,7 @@
   </div>
 </div>
 
-<!-- ══════════════ شاشة اختيار الفرع ══════════════ -->
+<!-- شاشة اختيار الفرع -->
 <div id="branch-login-scr">
   <div class="branch-login-box">
     <img src="special.png" alt="Logo" class="welcome-logo" onerror="this.style.display='none'">
@@ -68,11 +90,9 @@
   </div>
 </div>
 
-<!-- ══════════════ شاشة الصيانة ══════════════ -->
+<!-- شاشة الصيانة -->
 <div id="maint-scr">
-  <div class="m-code-area">
-    <textarea class="m-code-edit" id="m-code-edit" spellcheck="false"></textarea>
-  </div>
+  <div class="m-code-area"><textarea class="m-code-edit" id="m-code-edit" spellcheck="false"></textarea></div>
   <div class="m-bottom" id="m-bottom">
     <div class="m-pass-row">
       <span class="m-pass-lbl">pass</span>
@@ -85,11 +105,10 @@
   <div class="m-panel" id="m-panel"></div>
 </div>
 
-<!-- ══════════════ التطبيق الرئيسي ══════════════ -->
+<!-- التطبيق الرئيسي -->
 <div id="app">
   <div class="sbov" id="sbov" onclick="closeSb()"></div>
 
-  <!-- الشريط الجانبي — ديسكتوب -->
   <nav class="sidebar cl" id="sidebar">
     <div class="sbh">
       <div class="sblogo">
@@ -115,12 +134,13 @@
     <div class="sbfoot"><button class="logoutbtn" onclick="logout()">تسجيل الخروج</button></div>
   </nav>
 
-  <!-- الشريط العلوي -->
+  <!-- الشريط العلوي — بدون مربع بحث -->
   <div class="topbar">
     <button class="mbtn2" onclick="toggleSb()"><span></span><span></span><span></span></button>
     <div class="tbtitle" id="tbtitle">سجل الشكاوى</div>
-    <div class="tbsearch">
-      <input type="text" id="gs" placeholder="بحث بالاسم أو الرقم" oninput="gSearch(this.value)">
+    <!-- tbsearch مخفي بالـ CSS لكن موجود للتوافق مع main.js -->
+    <div class="tbsearch" style="display:none!important">
+      <input type="text" id="gs" placeholder="" oninput="gSearch(this.value)">
       <div class="sdrop" id="gdrop"></div>
     </div>
     <div class="fs-btns">
@@ -131,7 +151,6 @@
     <button class="theme-toggle-app" id="theme-btn-app" onclick="toggleTheme()"></button>
   </div>
 
-  <!-- المحتوى -->
   <main class="main">
 
     <!-- تسجيل شكوى -->
@@ -150,19 +169,19 @@
         <div class="fg"><label class="fl"><span class="fn">4</span>رقم جوال العميل</label><input class="fi" id="f-mobile" type="tel" placeholder="05XXXXXXXX" maxlength="15"></div>
         <div class="fg">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-            <label class="fl"><span class="fn">5</span><span id="lbl-c">اسم العميل</span></label>
+            <label class="fl"><span class="fn">5</span><span id="lbl-c">اسم العميل (اختياري)</span></label>
             <button class="gb on" id="gb-cm" onclick="setG('c','m')">أب</button>
             <button class="gb" id="gb-cf" onclick="setG('c','f')">أم</button>
           </div>
-          <input class="fi" id="f-client" type="text" placeholder="الاسم الكامل">
+          <input class="fi" id="f-client" type="text" placeholder="الاسم الكامل (اختياري)">
         </div>
         <div class="fg">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-            <label class="fl"><span class="fn" style="visibility:hidden">5</span><span id="lbl-k">اسم الطفل</span></label>
+            <label class="fl"><span class="fn" style="visibility:hidden">5</span><span id="lbl-k">اسم الطفل (اختياري)</span></label>
             <button class="gb on" id="gb-km" onclick="setG('k','m')">طفل</button>
             <button class="gb" id="gb-kf" onclick="setG('k','f')">طفلة</button>
           </div>
-          <input class="fi" id="f-child" type="text" placeholder="اسم الطفل">
+          <input class="fi" id="f-child" type="text" placeholder="اسم الطفل (اختياري)">
         </div>
         <div class="fg"><label class="fl"><span class="fn">6</span>وصف الشكوى</label><textarea class="ft" id="f-desc" rows="4" placeholder="اكتب وصف الشكوى كما وصفها العميل..."></textarea></div>
         <div class="fg"><label class="fl"><span class="fn">7</span>المطلب المُعلن</label><textarea class="ft" id="f-demand" rows="3" placeholder="ما الذي يطلبه العميل؟"></textarea></div>
@@ -205,13 +224,13 @@
 
     <!-- رسائل المالك -->
     <div class="page" id="page-ownercast">
-      <div class="ph"><h2>الرسائل والتحديثات</h2></div>
+      <div class="ph"><h2>الإشعارات الصادرة</h2></div>
       <div id="ownercast-content"></div>
     </div>
 
     <!-- رسائل الفرع -->
     <div class="page" id="page-branchmsgs">
-      <div class="ph"><h2>الرسائل الواردة</h2></div>
+      <div class="ph"><h2>الإشعارات الصادرة</h2></div>
       <div id="branch-msgs-content"></div>
     </div>
 
@@ -278,7 +297,7 @@
           <div class="fg"><label class="fl">الاسم</label><input class="fi" id="nu-name" placeholder="اسم المستخدم كاملاً"></div>
           <div class="fg"><label class="fl">الصفة (الدور)</label>
             <select class="fsel" id="nu-role" onchange="toggleBF()">
-              <option value="owner">المالك</option><option value="admin">الإدارة</option>
+              <option value="admin">الإدارة</option>
               <option value="branch">مديرة الفرع</option><option value="cs">خدمة العملاء</option>
             </select>
           </div>
@@ -314,7 +333,7 @@
 
   </main>
 
-  <!-- الشريط السفلي — جوال -->
+  <!-- الشريط السفلي -->
   <nav class="bottom-nav" id="bottom-nav" aria-label="التنقل الرئيسي"></nav>
   <div class="bnav-overlay" id="bnav-overlay" onclick="closeMoreDrawer()"></div>
   <div class="bnav-drawer" id="bnav-drawer">
@@ -331,10 +350,7 @@
       <h3 style="margin:0;color:var(--tx)">إرسال رسالة للفروع</h3>
       <button class="qa-close" style="position:relative;transform:none;left:0;top:0" onclick="closeOwnerSendModal()"></button>
     </div>
-    <div class="fg">
-      <label class="fl">نص الرسالة</label>
-      <textarea class="ft" id="owner-msg-text" rows="4" placeholder="اكتب رسالتك هنا..."></textarea>
-    </div>
+    <div class="fg"><label class="fl">نص الرسالة</label><textarea class="ft" id="owner-msg-text" rows="4" placeholder="اكتب رسالتك هنا..."></textarea></div>
     <div class="fg">
       <label class="fl" style="margin-bottom:10px">الفروع المستهدفة</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
@@ -419,5 +435,27 @@
 
 <div class="toast" id="toast"></div>
 <script type="module" src="main.js"></script>
+
+<!-- Override: إخفاء تبويب "جارية حاليا" في سجل الشكاوى لبورتال -->
+<script type="module">
+// نتأكد من تحميل main.js أولاً ثم نتدخل
+window.addEventListener('load', () => {
+  // override renderList لإزالة تبويب "جارية حاليا" من بورتال
+  const _origRenderList = window.renderList;
+  if(_origRenderList) {
+    window.renderList = function() {
+      _origRenderList.call(this);
+      // إخفاء تبويب "جارية" من بورتال
+      const tabs = document.querySelectorAll('#stat-tabs .stab');
+      tabs.forEach(tab => {
+        const label = tab.querySelector('.sl');
+        if(label && label.textContent.trim() === 'جارية') {
+          tab.style.display = 'none';
+        }
+      });
+    };
+  }
+});
+</script>
 </body>
 </html>

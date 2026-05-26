@@ -8,78 +8,105 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#f0f4ff;--sur:#ffffff;--tx:#1a1f2e;--tx2:#3d4a5c;
-  --mu:#7b8a9a;--bl:#2563eb;--bll:#eff6ff;--blb:#bfdbfe;
+  --bg:#fff5f5;--sur:#ffffff;--tx:#1a1f2e;--tx2:#3d4a5c;
+  --mu:#7b8a9a;--rd:#dc2626;--rdm:#b91c1c;--rdd:#991b1b;
   --gn:#059669;--gnl:#ecfdf5;--gnb:#a7f3d0;
-  --rd:#dc2626;--brd:#e2e8f0;--sh:0 8px 40px rgba(37,99,235,.12);
+  --brd:#fecaca;--sh:0 8px 40px rgba(220,38,38,.12);
   --r:20px;--r2:14px;--r3:10px;
 }
 body{
   font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);
   min-height:100vh;display:flex;align-items:center;justify-content:center;
   padding:24px 16px;
-  background-image:radial-gradient(ellipse at 20% 20%, rgba(37,99,235,.08) 0%, transparent 60%),
-                   radial-gradient(ellipse at 80% 80%, rgba(5,150,105,.06) 0%, transparent 60%);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(220,38,38,.10) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(185,28,28,.07) 0%, transparent 60%);
 }
 .wrap{width:100%;max-width:500px}
+
+/* ══ الهيدر ══ */
 .header{text-align:center;margin-bottom:32px}
-.logo-circle{
-  width:80px;height:80px;background:linear-gradient(135deg,#2563eb,#7c3aed);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  margin:0 auto 16px;box-shadow:0 8px 24px rgba(37,99,235,.3);
-  font-size:2rem;
+.brand{font-size:1.9rem;font-weight:900;letter-spacing:-.5px;line-height:1.1}
+.brand .am{color:#dc2626}
+.brand .special{color:#f5c000}
+.tagline{font-size:.95rem;color:var(--mu);margin-top:8px;font-weight:500}
+
+/* ══ زر اللغة ══ */
+.lang-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:8px}
+.section-title{
+  font-size:.78rem;font-weight:800;color:var(--rd);text-transform:uppercase;
+  letter-spacing:.8px;display:flex;align-items:center;gap:8px;
 }
-.brand{font-size:1.8rem;font-weight:900;color:var(--bl);letter-spacing:-.5px}
-.tagline{font-size:.95rem;color:var(--mu);margin-top:6px;font-weight:500}
+.section-title::before{content:'';width:3px;height:14px;background:var(--rd);border-radius:2px;display:inline-block}
+.lang-btn{
+  background:none;border:none;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:.78rem;
+  color:#aaa;font-weight:600;padding:4px 8px;
+  border-radius:6px;transition:color .2s;
+  flex-shrink:0;
+}
+.lang-btn:hover{color:#777}
+
+/* ══ البطاقة ══ */
 .card{
   background:var(--sur);border-radius:var(--r);padding:32px 28px;
-  box-shadow:var(--sh);border:1px solid rgba(37,99,235,.08);
+  box-shadow:var(--sh);border:1px solid rgba(220,38,38,.1);
 }
-.section-title{
-  font-size:.78rem;font-weight:800;color:var(--bl);text-transform:uppercase;
-  letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;
-}
-.section-title::before{content:'';width:3px;height:14px;background:var(--bl);border-radius:2px;display:inline-block}
 .fg{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
 .fl{font-size:.88rem;font-weight:700;color:var(--tx2)}
 .fi,.ft{
-  background:#f8fafc;border:2px solid var(--brd);border-radius:var(--r2);
+  background:#fafafa;border:2px solid var(--brd);border-radius:var(--r2);
   padding:14px 16px;color:var(--tx);font-family:'Tajawal',sans-serif;
   font-size:.95rem;width:100%;direction:rtl;transition:all .2s ease;
 }
-.fi:focus,.ft:focus{outline:none;border-color:var(--bl);background:var(--sur);box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+.fi:focus,.ft:focus{outline:none;border-color:var(--rd);background:var(--sur);box-shadow:0 0 0 4px rgba(220,38,38,.10)}
 .ft{resize:vertical;min-height:110px;line-height:1.7}
+[dir="ltr"] .fi,[dir="ltr"] .ft{direction:ltr;text-align:left}
+
+/* ══ الفروع ══ */
 .branch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .branch-btn{
-  background:#f8fafc;border:2px solid var(--brd);border-radius:var(--r3);
+  background:#fafafa;border:2px solid var(--brd);border-radius:var(--r3);
   padding:12px 8px;font-family:'Tajawal',sans-serif;font-size:.85rem;
   font-weight:700;cursor:pointer;transition:all .2s;color:var(--tx2);text-align:center;
 }
-.branch-btn:hover{border-color:var(--bl);color:var(--bl);background:var(--bll)}
-.branch-btn.on{background:var(--bll);border-color:var(--bl);color:var(--bl)}
+.branch-btn:hover{border-color:var(--rd);color:var(--rd);background:#fff5f5}
+.branch-btn.on{background:#fef2f2;border-color:var(--rd);color:var(--rd)}
+
+/* ══ الفاصل ══ */
+.divider{border:none;border-top:1px solid #fecaca;margin:20px 0}
+
+/* ══ زر الإرسال ══ */
 .submit-btn{
-  width:100%;padding:16px;background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  width:100%;padding:16px;background:linear-gradient(135deg,#dc2626,#b91c1c);
   color:#fff;border:none;border-radius:var(--r2);font-family:'Tajawal',sans-serif;
   font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;
-  box-shadow:0 4px 16px rgba(37,99,235,.35);margin-top:8px;
+  box-shadow:0 4px 16px rgba(220,38,38,.35);margin-top:8px;
 }
-.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,.45)}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(220,38,38,.45)}
 .submit-btn:active{transform:scale(.98)}
+
+/* ══ مربع النجاح — أبيض مع نصوص خضراء ══ */
 .success{
   display:none;text-align:center;padding:32px 24px;
-  background:linear-gradient(135deg,var(--gnl),#a7f3d0);
-  border:1px solid var(--gnb);border-radius:var(--r);margin-top:20px;
+  background:#ffffff;
+  border:1.5px solid var(--gnb);
+  border-radius:var(--r);
+  margin-top:20px;
+  box-shadow:0 4px 20px rgba(5,150,105,.10);
 }
 .success-icon{font-size:3rem;margin-bottom:12px}
 .success h3{font-size:1.2rem;font-weight:800;color:#064e3b;margin-bottom:8px}
 .success p{font-size:.9rem;color:#047857;font-weight:500;line-height:1.6}
 .success-ref{
-  display:inline-block;margin-top:16px;background:#fff;border:1px solid var(--gnb);
+  display:inline-block;margin-top:16px;background:var(--gnl);border:1px solid var(--gnb);
   border-radius:24px;padding:8px 20px;font-size:.85rem;font-weight:800;color:var(--gn);
   font-family:monospace;
 }
+
+/* ══ الفوتر ══ */
 .footer{text-align:center;margin-top:20px;font-size:.78rem;color:var(--mu);font-weight:500}
-.divider{border:none;border-top:1px solid var(--brd);margin:20px 0}
+
 @media(max-width:480px){
   body{padding:16px 12px;align-items:flex-start}
   .card{padding:24px 18px}
@@ -90,48 +117,53 @@ body{
 </head>
 <body>
 <div class="wrap">
+
   <div class="header">
-    <div class="brand">اي ام سبيشل</div>
-    <div class="tagline">نستمع إليك ونهتم بتجربتك</div>
+    <div class="brand">
+      <span class="am">اي ام</span> <span class="special">سبيشل</span>
+    </div>
+    <div class="tagline" id="tagline">نستمع إليك ونهتم بتجربتك</div>
   </div>
 
   <div class="card" id="form-card">
-    <div class="section-title">رقم الجوال <span style="color:var(--rd)">*</span></div>
-    <div class="fg">
+
+    <!-- صف: رقم الجوال + زر اللغة -->
+    <div class="lang-row">
+      <div class="section-title" id="lbl-mobile-title">رقم الجوال <span style="color:#dc2626">*</span></div>
+      <button class="lang-btn" id="lang-btn" onclick="toggleLang()">ENGLISH</button>
+    </div>
+
+    <div class="fg" style="margin-bottom:20px">
       <input class="fi" id="p-mobile" type="tel" placeholder="05XXXXXXXX" maxlength="15" inputmode="tel">
     </div>
 
     <hr class="divider">
-    <div class="section-title">الفرع </div>
+
     <div class="fg" style="margin-bottom:20px">
-      <div class="branch-grid" id="p-branches">
-        <button class="branch-btn" onclick="toggleBranch(this,'فرع القصر')">القصر مول</button>
-        <button class="branch-btn" onclick="toggleBranch(this,'فرع سلام مول')">سلام مول</button>
-        <button class="branch-btn" onclick="toggleBranch(this,'فرع الرياض جاليري')">الرياض جاليري</button>
-        <button class="branch-btn" onclick="toggleBranch(this,'فرع ذا ڤيو مول')">ذافيو مول</button>
-        <button class="branch-btn" onclick="toggleBranch(this,'فرع مركز المملكة')">مركز المملكة</button>
-        <button class="branch-btn" onclick="toggleBranch(this,'فرع شرق بلازا')">شرق بلازا</button>
-      </div>
+      <div class="section-title" id="lbl-branch-title">الفرع</div>
+      <div style="margin-top:12px" class="branch-grid" id="p-branches"></div>
     </div>
 
     <hr class="divider">
+
     <div class="fg">
-      <label class="fl">صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:var(--rd)">*</span></label>
-            <textarea class="ft" id="p-msg" rows="5" placeholder="... "></textarea>
+      <label class="fl" id="lbl-msg">
+        صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:#dc2626">*</span>
+      </label>
+      <textarea class="ft" id="p-msg" rows="5" placeholder="..."></textarea>
     </div>
 
-    <button class="submit-btn" onclick="submitMsg()">ارسال</button>
+    <button class="submit-btn" id="submit-btn" onclick="submitMsg()">إرسال</button>
   </div>
 
   <div class="success" id="success-box">
-    <div class="success-icon"></div>
-    <h3>تم ارسال رسالتك بنجاح</h3>
-    <p>سيتواصل معك فريقنا في أقرب وقت ممكن.</p>
+    <div class="success-icon">✅</div>
+    <h3 id="success-title">تم ارسال رسالتك بنجاح</h3>
+    <p id="success-desc">سيتواصل معك فريقنا في أقرب وقت ممكن.</p>
     <div class="success-ref" id="success-ref"></div>
-    <br><br>
   </div>
 
-  <div class="footer">اي ام سبيشل ·إدارة تجربة العملاء</div>
+  <div class="footer" id="footer-txt">اي ام سبيشل · إدارة تجربة العملاء</div>
 </div>
 
 <script type="module">
@@ -150,59 +182,160 @@ const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 const COL = "ims";
 
-window.selectedBranch = '';
+// ══ بيانات الفروع بالعربية والإنجليزية ══
+const BRANCHES = [
+  { ar: 'فرع القصر',          en: 'AlQasr Mall',      key: 'فرع القصر' },
+  { ar: 'فرع سلام مول',       en: 'Salam Mall',       key: 'فرع سلام مول' },
+  { ar: 'فرع الرياض جاليري',  en: 'Riyadh Gallery',   key: 'فرع الرياض جاليري' },
+  { ar: 'فرع ذا ڤيو مول',    en: 'TheView Mall',     key: 'فرع ذا ڤيو مول' },
+  { ar: 'فرع مركز المملكة',   en: 'Kingdom Center',   key: 'فرع مركز المملكة' },
+  { ar: 'فرع شرق بلازا',      en: 'Shrq Plaza',       key: 'فرع شرق بلازا' },
+];
 
-window.toggleBranch = function(btn, br) {
-  document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
-  if (window.selectedBranch === br) { window.selectedBranch = ''; return; }
-  btn.classList.add('on');
-  window.selectedBranch = br;
+// ══ النصوص ثنائية اللغة ══
+const TEXTS = {
+  ar: {
+    tagline:       'نستمع إليك ونهتم بتجربتك',
+    mobileTitle:   'رقم الجوال <span style="color:#dc2626">*</span>',
+    branchTitle:   'الفرع',
+    msgLabel:      'صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:#dc2626">*</span>',
+    placeholder:   '05XXXXXXXX',
+    msgPlaceholder:'...',
+    submitBtn:     'إرسال',
+    successTitle:  'تم ارسال رسالتك بنجاح',
+    successDesc:   'سيتواصل معك فريقنا في أقرب وقت ممكن.',
+    refLabel:      'رقم رسالتك: ',
+    footer:        'اي ام سبيشل · إدارة تجربة العملاء',
+    langBtn:       'ENGLISH',
+    errMobile:     'يرجى إدخال رقم الجوال',
+    errMobileInvalid:'رقم الجوال غير صحيح. يرجى إدخال رقم سعودي صحيح',
+    errMsg:        'يرجى كتابة رسالتك',
+    sending:       'جارٍ الإرسال…',
+    errSend:       'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.',
+    dir:           'rtl',
+  },
+  en: {
+    tagline:       'We listen and care about your experience',
+    mobileTitle:   'Mobile Number <span style="color:#dc2626">*</span>',
+    branchTitle:   'Branch',
+    msgLabel:      'Describe your experience, inquiry or suggestion <span style="color:#dc2626">*</span>',
+    placeholder:   '05XXXXXXXX',
+    msgPlaceholder:'...',
+    submitBtn:     'Send',
+    successTitle:  'Your message was sent successfully',
+    successDesc:   'Our team will contact you as soon as possible.',
+    refLabel:      'Message ID: ',
+    footer:        'AM Special · Customer Experience Management',
+    langBtn:       'العربية',
+    errMobile:     'Please enter your mobile number',
+    errMobileInvalid:'Invalid mobile number. Please enter a valid Saudi number',
+    errMsg:        'Please write your message',
+    sending:       'Sending…',
+    errSend:       'An error occurred while sending. Please try again.',
+    dir:           'ltr',
+  }
 };
 
-// تطبيع رقم الجوال السعودي — يُرجع رقماً بدون صفر (5XXXXXXXX) أو null
+let currentLang = 'ar';
+window.selectedBranch = '';
+
+function renderBranches() {
+  const grid = document.getElementById('p-branches');
+  grid.innerHTML = BRANCHES.map(b => `
+    <button class="branch-btn ${window.selectedBranch === b.key ? 'on' : ''}"
+      onclick="toggleBranch(this,'${b.key}')">
+      ${currentLang === 'ar' ? b.ar.replace('فرع ','') : b.en}
+    </button>`).join('');
+}
+
+window.toggleBranch = function(btn, key) {
+  document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
+  if(window.selectedBranch === key){ window.selectedBranch = ''; return; }
+  btn.classList.add('on');
+  window.selectedBranch = key;
+};
+
+window.toggleLang = function() {
+  currentLang = currentLang === 'ar' ? 'en' : 'ar';
+  applyLang();
+};
+
+function applyLang() {
+  const t = TEXTS[currentLang];
+  const html = document.documentElement;
+  html.setAttribute('lang', currentLang === 'ar' ? 'ar' : 'en');
+  html.setAttribute('dir', t.dir);
+
+  document.getElementById('tagline').textContent         = t.tagline;
+  document.getElementById('lbl-mobile-title').innerHTML  = t.mobileTitle;
+  document.getElementById('lbl-branch-title').innerHTML  = t.branchTitle;
+  document.getElementById('lbl-msg').innerHTML            = t.msgLabel;
+  document.getElementById('p-mobile').placeholder         = t.placeholder;
+  document.getElementById('p-msg').placeholder            = t.msgPlaceholder;
+  document.getElementById('submit-btn').textContent       = t.submitBtn;
+  document.getElementById('success-title').textContent    = t.successTitle;
+  document.getElementById('success-desc').textContent     = t.successDesc;
+  document.getElementById('footer-txt').textContent       = t.footer;
+  document.getElementById('lang-btn').textContent         = t.langBtn;
+
+  // direction للـ textarea
+  const fi = document.getElementById('p-mobile');
+  const ft = document.getElementById('p-msg');
+  fi.style.direction = t.dir;
+  ft.style.direction = t.dir;
+  fi.style.textAlign = t.dir === 'ltr' ? 'left' : 'right';
+  ft.style.textAlign = t.dir === 'ltr' ? 'left' : 'right';
+
+  renderBranches();
+}
+
+// تهيئة الفروع
+renderBranches();
+
 function normalizeSaudiMobile(raw) {
   let d = raw.replace(/[\s\-]/g, '');
-  if (d.startsWith('+966')) d = d.slice(4);
-  else if (d.startsWith('00966')) d = d.slice(5);
-  else if (d.startsWith('966')) d = d.slice(3);
-  if (d.startsWith('0')) d = d.slice(1);
+  if(d.startsWith('+966')) d = d.slice(4);
+  else if(d.startsWith('00966')) d = d.slice(5);
+  else if(d.startsWith('966')) d = d.slice(3);
+  if(d.startsWith('0')) d = d.slice(1);
   return /^5[0-9]{8}$/.test(d) ? d : null;
 }
 
 window.submitMsg = async function() {
+  const t = TEXTS[currentLang];
   const mobRaw = document.getElementById('p-mobile').value.trim();
-  const msg = document.getElementById('p-msg').value.trim();
-  if (!mobRaw) { alert('يرجى إدخال رقم الجوال'); document.getElementById('p-mobile').focus(); return; }
-  const mob = normalizeSaudiMobile(mobRaw);
-  if (!mob) { alert('رقم الجوال غير صحيح. يرجى إدخال رقم سعودي صحيح (مثال: 0512345678 أو 512345678 أو 966512345678)'); document.getElementById('p-mobile').focus(); return; }
-  if (!msg) { alert('يرجى كتابة رسالتك'); document.getElementById('p-msg').focus(); return; }
+  const msg    = document.getElementById('p-msg').value.trim();
 
-  // تعطيل الزر أثناء الحفظ
-  const btn = document.querySelector('button[onclick="submitMsg()"]');
-  if (btn) { btn.disabled = true; btn.textContent = 'جارٍ الإرسال…'; }
+  if(!mobRaw){ alert(t.errMobile); document.getElementById('p-mobile').focus(); return; }
+  const mob = normalizeSaudiMobile(mobRaw);
+  if(!mob){ alert(t.errMobileInvalid); document.getElementById('p-mobile').focus(); return; }
+  if(!msg){ alert(t.errMsg); document.getElementById('p-msg').focus(); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = t.sending;
 
   try {
-    // جلب الرسائل الحالية من Firestore
     const snap = await getDoc(doc(db, COL, "messages"));
     const messages = snap.exists() ? (snap.data().items ?? []) : [];
-
-    // إضافة الرسالة الجديدة
     messages.unshift({
-      id: mob, mobile: mob, branch: window.selectedBranch || '', text: msg,
-      ts: new Date().toISOString(), converted: false, convertedBy: null
+      id: mob, mobile: mob,
+      branch: window.selectedBranch || '',
+      text: msg,
+      ts: new Date().toISOString(),
+      converted: false, convertedBy: null
     });
-
-    // حفظ في Firestore (يُزامَن فوراً مع جميع الأجهزة)
     await setDoc(doc(db, COL, "messages"), { items: messages });
 
     document.getElementById('form-card').style.display = 'none';
     const sb = document.getElementById('success-box');
     sb.style.display = 'block';
-    document.getElementById('success-ref').textContent = 'رقم رسالتك: ' + mob;
+    document.getElementById('success-ref').textContent = t.refLabel + '0' + mob;
   } catch(e) {
     console.error('خطأ في الحفظ:', e);
-    alert('حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.');
-    if (btn) { btn.disabled = false; btn.textContent = 'إرسال'; }
+    alert(t.errSend);
+    btn.disabled = false;
+    btn.textContent = t.submitBtn;
   }
 };
 
@@ -210,11 +343,12 @@ window.resetForm = function() {
   document.getElementById('p-mobile').value = '';
   document.getElementById('p-msg').value = '';
   window.selectedBranch = '';
-  document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
+  renderBranches();
   document.getElementById('form-card').style.display = 'block';
   document.getElementById('success-box').style.display = 'none';
-  const btn = document.querySelector('button[onclick="submitMsg()"]');
-  if (btn) { btn.disabled = false; btn.textContent = 'إرسال'; }
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = false;
+  btn.textContent = TEXTS[currentLang].submitBtn;
 };
 </script>
 </body>
