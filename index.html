@@ -4,113 +4,183 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>اي ام سبيشل — تواصل معنا</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
+/* ══ الإعدادات العامة والمتغيرات (تصميم مؤسسي رسمي) ══ */
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#fff5f5;--sur:#ffffff;--tx:#1a1f2e;--tx2:#3d4a5c;
-  --mu:#7b8a9a;--rd:#dc2626;--rdm:#b91c1c;--rdd:#991b1b;
-  --gn:#059669;--gnl:#ecfdf5;--gnb:#a7f3d0;
-  --brd:#fecaca;--sh:0 8px 40px rgba(220,38,38,.12);
-  --r:20px;--r2:14px;--r3:10px;
+  --bg: #f8fafc;        /* خلفية رئيسية رمادية فاتحة جداً */
+  --sur: #ffffff;       /* لون البطاقات (أبيض) */
+  --tx: #1e293b;        /* نصوص رئيسية (داكن جداً) */
+  --tx2: #475569;       /* نصوص ثانوية */
+  --mu: #64748b;        /* نصوص صامتة */
+  
+  --primary: #1e3a8a;   /* أزرق داكن (رسمي وموثوق) */
+  --primary-hover: #172554; 
+  --accent: #ca8a04;    /* ذهبي هادئ لكلمة سبيشل */
+  
+  --err: #b91c1c;       /* أحمر رسمي للأخطاء والإلزاميات */
+  --gn: #0f766e;        /* أخضر مؤسسي للنجاح */
+  --gnl: #f0fdfa;       /* خلفية النجاح */
+  --gnb: #14b8a6;       /* حدود النجاح */
+  
+  --brd: #cbd5e1;       /* حدود ناعمة */
+  --sh: 0 10px 30px rgba(15, 23, 42, 0.06); /* ظل احترافي ناعم */
+  
+  --r: 8px;             /* زوايا شبه حادة لطابع رسمي */
+  --r2: 6px;
+  --r3: 4px;
 }
+
 body{
-  font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--tx);
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  padding:24px 16px;
-  background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(220,38,38,.10) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(185,28,28,.07) 0%, transparent 60%);
+  font-family:'Tajawal',sans-serif;
+  background:var(--bg);
+  color:var(--tx);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
 }
-.wrap{width:100%;max-width:500px}
+.wrap{width:100%;max-width:540px}
 
 /* ══ الهيدر ══ */
-.header{text-align:center;margin-bottom:32px}
-.brand{font-size:1.9rem;font-weight:900;letter-spacing:-.5px;line-height:1.1}
-.brand .am{color:#dc2626}
-.brand .special{color:#f5c000}
-.tagline{font-size:.95rem;color:var(--mu);margin-top:8px;font-weight:500}
+.header{text-align:center;margin-bottom:36px}
+.brand{font-size:2rem;font-weight:900;letter-spacing:-0.5px;line-height:1.2}
+.brand .am{color:var(--primary)}
+.brand .special{color:var(--accent)}
+.tagline{font-size:1rem;color:var(--mu);margin-top:8px;font-weight:500}
 
-/* ══ زر اللغة ══ */
+/* ══ البطاقة الرئيسية ══ */
+.card{
+  background:var(--sur);
+  border-radius:var(--r);
+  padding:36px 32px;
+  box-shadow:var(--sh);
+  border:1px solid var(--brd);
+}
+
+/* ══ العناوين والأزرار العلوية ══ */
 .lang-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:8px}
 .section-title{
-  font-size:.78rem;font-weight:800;color:var(--rd);text-transform:uppercase;
-  letter-spacing:.8px;display:flex;align-items:center;gap:8px;
+  font-size:.85rem;font-weight:800;color:var(--primary);text-transform:uppercase;
+  letter-spacing:.5px;display:flex;align-items:center;gap:8px;
 }
-.section-title::before{content:'';width:3px;height:14px;background:var(--rd);border-radius:2px;display:inline-block}
+.section-title::before{content:'';width:4px;height:14px;background:var(--primary);border-radius:2px;display:inline-block}
+
 .lang-btn{
   background:none;border:none;cursor:pointer;
-  font-family:'Tajawal',sans-serif;font-size:.78rem;
-  color:#aaa;font-weight:600;padding:4px 8px;
-  border-radius:6px;transition:color .2s;
-  flex-shrink:0;
+  font-family:'Tajawal',sans-serif;font-size:.8rem;
+  color:var(--mu);font-weight:700;padding:6px 12px;
+  border-radius:var(--r2);transition:all .2s;
+  border:1px solid transparent;
 }
-.lang-btn:hover{color:#777}
+.lang-btn:hover{color:var(--primary);background:rgba(30,58,138,0.05);border-color:var(--brd)}
 
-/* ══ البطاقة ══ */
-.card{
-  background:var(--sur);border-radius:var(--r);padding:32px 28px;
-  box-shadow:var(--sh);border:1px solid rgba(220,38,38,.1);
-}
-.fg{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-.fl{font-size:.88rem;font-weight:700;color:var(--tx2)}
+/* ══ الحقول والنماذج ══ */
+.fg{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.fl{font-size:.9rem;font-weight:700;color:var(--tx2)}
 .fi,.ft{
-  background:#fafafa;border:2px solid var(--brd);border-radius:var(--r2);
-  padding:14px 16px;color:var(--tx);font-family:'Tajawal',sans-serif;
-  font-size:.95rem;width:100%;direction:rtl;transition:all .2s ease;
+  background:#ffffff;
+  border:1px solid var(--brd);
+  border-radius:var(--r2);
+  padding:14px 16px;
+  color:var(--tx);
+  font-family:'Tajawal',sans-serif;
+  font-size:.95rem;
+  width:100%;
+  direction:rtl;
+  transition:all .2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02) inset;
 }
-.fi:focus,.ft:focus{outline:none;border-color:var(--rd);background:var(--sur);box-shadow:0 0 0 4px rgba(220,38,38,.10)}
-.ft{resize:vertical;min-height:110px;line-height:1.7}
+.fi:focus,.ft:focus{
+  outline:none;
+  border-color:var(--primary);
+  background:var(--sur);
+  box-shadow:0 0 0 3px rgba(30, 58, 138, 0.12);
+}
+.ft{resize:vertical;min-height:120px;line-height:1.7}
 [dir="ltr"] .fi,[dir="ltr"] .ft{direction:ltr;text-align:left}
 
 /* ══ الفروع ══ */
-.branch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.branch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .branch-btn{
-  background:#fafafa;border:2px solid var(--brd);border-radius:var(--r3);
-  padding:12px 8px;font-family:'Tajawal',sans-serif;font-size:.85rem;
-  font-weight:700;cursor:pointer;transition:all .2s;color:var(--tx2);text-align:center;
+  background:#ffffff;
+  border:1px solid var(--brd);
+  border-radius:var(--r3);
+  padding:14px 8px;
+  font-family:'Tajawal',sans-serif;
+  font-size:.85rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  color:var(--tx2);
+  text-align:center;
 }
-.branch-btn:hover{border-color:var(--rd);color:var(--rd);background:#fff5f5}
-.branch-btn.on{background:#fef2f2;border-color:var(--rd);color:var(--rd)}
+.branch-btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(30,58,138,0.02)}
+.branch-btn.on{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#ffffff;
+}
 
 /* ══ الفاصل ══ */
-.divider{border:none;border-top:1px solid #fecaca;margin:20px 0}
+.divider{border:none;border-top:1px solid var(--brd);margin:24px 0}
 
 /* ══ زر الإرسال ══ */
 .submit-btn{
-  width:100%;padding:16px;background:linear-gradient(135deg,#dc2626,#b91c1c);
-  color:#fff;border:none;border-radius:var(--r2);font-family:'Tajawal',sans-serif;
-  font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;
-  box-shadow:0 4px 16px rgba(220,38,38,.35);margin-top:8px;
+  width:100%;
+  padding:16px;
+  background:var(--primary);
+  color:#ffffff;
+  border:none;
+  border-radius:var(--r2);
+  font-family:'Tajawal',sans-serif;
+  font-size:1.05rem;
+  font-weight:800;
+  cursor:pointer;
+  transition:all .2s;
+  margin-top:12px;
 }
-.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(220,38,38,.45)}
-.submit-btn:active{transform:scale(.98)}
+.submit-btn:hover{background:var(--primary-hover);box-shadow:0 4px 12px rgba(30, 58, 138, 0.2)}
+.submit-btn:active{transform:scale(0.99)}
+.submit-btn:disabled{background:var(--mu);cursor:not-allowed;box-shadow:none}
 
-/* ══ مربع النجاح — أبيض مع نصوص خضراء ══ */
+/* ══ مربع النجاح ══ */
 .success{
-  display:none;text-align:center;padding:32px 24px;
+  display:none;
+  text-align:center;
+  padding:40px 24px;
   background:#ffffff;
-  border:1.5px solid var(--gnb);
+  border:1px solid var(--gnb);
   border-radius:var(--r);
   margin-top:20px;
-  box-shadow:0 4px 20px rgba(5,150,105,.10);
+  box-shadow:0 10px 25px rgba(15, 118, 110, 0.08);
 }
-.success-icon{font-size:3rem;margin-bottom:12px}
-.success h3{font-size:1.2rem;font-weight:800;color:#064e3b;margin-bottom:8px}
-.success p{font-size:.9rem;color:#047857;font-weight:500;line-height:1.6}
+.success-icon{font-size:3.5rem;margin-bottom:16px}
+.success h3{font-size:1.3rem;font-weight:800;color:var(--gn);margin-bottom:10px}
+.success p{font-size:.95rem;color:var(--tx2);font-weight:500;line-height:1.6}
 .success-ref{
-  display:inline-block;margin-top:16px;background:var(--gnl);border:1px solid var(--gnb);
-  border-radius:24px;padding:8px 20px;font-size:.85rem;font-weight:800;color:var(--gn);
+  display:inline-block;
+  margin-top:20px;
+  background:var(--gnl);
+  border:1px dashed var(--gnb);
+  border-radius:var(--r2);
+  padding:10px 24px;
+  font-size:.95rem;
+  font-weight:800;
+  color:var(--gn);
   font-family:monospace;
+  letter-spacing:1px;
 }
 
 /* ══ الفوتر ══ */
-.footer{text-align:center;margin-top:20px;font-size:.78rem;color:var(--mu);font-weight:500}
+.footer{text-align:center;margin-top:24px;font-size:.8rem;color:var(--mu);font-weight:500}
 
 @media(max-width:480px){
-  body{padding:16px 12px;align-items:flex-start}
-  .card{padding:24px 18px}
-  .brand{font-size:1.5rem}
+  body{padding:20px 16px;align-items:flex-start}
+  .card{padding:28px 20px}
+  .brand{font-size:1.7rem}
   .branch-grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
@@ -127,28 +197,27 @@ body{
 
   <div class="card" id="form-card">
 
-    <!-- صف: رقم الجوال + زر اللغة -->
     <div class="lang-row">
-      <div class="section-title" id="lbl-mobile-title">رقم الجوال <span style="color:#dc2626">*</span></div>
+      <div class="section-title" id="lbl-mobile-title">رقم الجوال <span style="color:var(--err)">*</span></div>
       <button class="lang-btn" id="lang-btn" onclick="toggleLang()">ENGLISH</button>
     </div>
 
-    <div class="fg" style="margin-bottom:20px">
+    <div class="fg" style="margin-bottom:24px">
       <input class="fi" id="p-mobile" type="tel" placeholder="05XXXXXXXX" maxlength="15" inputmode="tel">
     </div>
 
     <hr class="divider">
 
-    <div class="fg" style="margin-bottom:20px">
+    <div class="fg" style="margin-bottom:24px">
       <div class="section-title" id="lbl-branch-title">الفرع</div>
-      <div style="margin-top:12px" class="branch-grid" id="p-branches"></div>
+      <div style="margin-top:16px" class="branch-grid" id="p-branches"></div>
     </div>
 
     <hr class="divider">
 
     <div class="fg">
       <label class="fl" id="lbl-msg">
-        صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:#dc2626">*</span>
+        صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:var(--err)">*</span>
       </label>
       <textarea class="ft" id="p-msg" rows="5" placeholder="..."></textarea>
     </div>
@@ -196,15 +265,15 @@ const BRANCHES = [
 const TEXTS = {
   ar: {
     tagline:       'نستمع إليك ونهتم بتجربتك',
-    mobileTitle:   'رقم الجوال <span style="color:#dc2626">*</span>',
+    mobileTitle:   'رقم الجوال <span style="color:var(--err)">*</span>',
     branchTitle:   'الفرع',
-    msgLabel:      'صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:#dc2626">*</span>',
+    msgLabel:      'صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:var(--err)">*</span>',
     placeholder:   '05XXXXXXXX',
     msgPlaceholder:'...',
     submitBtn:     'إرسال',
     successTitle:  'تم ارسال رسالتك بنجاح',
     successDesc:   'سيتواصل معك فريقنا في أقرب وقت ممكن.',
-    refLabel:      'رقم رسالتك: ',
+    refLabel:      'رقم التذكرة: ',
     footer:        'اي ام سبيشل · إدارة تجربة العملاء',
     langBtn:       'ENGLISH',
     errMobile:     'يرجى إدخال رقم الجوال',
@@ -216,15 +285,15 @@ const TEXTS = {
   },
   en: {
     tagline:       'We listen and care about your experience',
-    mobileTitle:   'Mobile Number <span style="color:#dc2626">*</span>',
+    mobileTitle:   'Mobile Number <span style="color:var(--err)">*</span>',
     branchTitle:   'Branch',
-    msgLabel:      'Describe your experience, inquiry or suggestion <span style="color:#dc2626">*</span>',
+    msgLabel:      'Describe your experience, inquiry or suggestion <span style="color:var(--err)">*</span>',
     placeholder:   '05XXXXXXXX',
     msgPlaceholder:'...',
-    submitBtn:     'Send',
+    submitBtn:     'Submit',
     successTitle:  'Your message was sent successfully',
     successDesc:   'Our team will contact you as soon as possible.',
-    refLabel:      'Message ID: ',
+    refLabel:      'Ticket ID: ',
     footer:        'AM Special · Customer Experience Management',
     langBtn:       'العربية',
     errMobile:     'Please enter your mobile number',
