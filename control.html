@@ -618,14 +618,18 @@ window.mpEmpHTML = function () {
       <div style="font-size:.83rem;font-weight:800;color:var(--bl);margin-bottom:10px">${br}</div>
       ${(employees[br] || []).map(e => `
         <div class="ctrl-row" style="padding:6px 0">
-          <span class="ctrl-name" style="font-size:.85rem">${e.name}</span>
+          <span class="ctrl-name" style="font-size:.85rem">${e.name}${e.noLogin ? ' <span style="font-size:.72rem;font-weight:600;color:var(--mu)">(مشرفة أطفال)</span>' : ''}</span>
           <div style="display:flex;gap:5px">
+            <button class="btn" style="font-size:.72rem;padding:4px 9px;min-height:30px" onclick="mpToggleEmpType('${br}','${e.id}')">${e.noLogin ? 'تفعيل الدخول' : 'مشرفة أطفال'}</button>
             <button class="btn" style="font-size:.72rem;padding:4px 9px;min-height:30px" onclick="mpRenameEmp('${br}','${e.id}')">تعديل</button>
             <button class="btn dan" style="font-size:.72rem;padding:4px 9px;min-height:30px" onclick="mpDelEmp('${br}','${e.id}')">حذف</button>
           </div>
         </div>`).join('')}
-      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
         <input class="fi" id="ep-${br.replace(/\s/g,'_')}" placeholder="إضافة موظفة" style="flex:1;max-width:200px;font-size:.85rem;min-height:40px;padding:8px 12px">
+        <label style="font-size:.74rem;color:var(--mu);display:flex;align-items:center;gap:5px;font-weight:600">
+          <input type="checkbox" id="ep-nl-${br.replace(/\s/g,'_')}" style="width:16px;height:16px">مشرفة أطفال
+        </label>
         <button class="btn" style="font-size:.78rem;padding:8px 14px;min-height:40px" onclick="mpAddEmp('${br}')">إضافة</button>
       </div>
     </div>`).join('');

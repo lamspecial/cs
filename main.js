@@ -254,15 +254,16 @@ function buildSummary(c,withComments=false){
   const mobile5='0'+(c.mobile||'');
   const gSentiment=s=>{if(!s||isMc)return s;const m={'غاضب':'غاضبة','محبط':'محبطة','قلق':'قلقة','هادئ':'هادئة','محايد':'محايدة','مضطرب':'مضطربة'};return m[s]||s;};
 
+  const submittedLabel=isMc?'قدمها':'قدمتها';
   let t='';
   if(hasClient&&hasChild){
-    t=`شكوى قدمها/قدمتها ${clientLabel} ${c.client} ${parentLabel} ${childLabel} ${c.child} من رقم ${phoneLabel} ${mobile5}`;
+    t=`شكوى ${submittedLabel} ${clientLabel} ${c.client} ${parentLabel} ${childLabel} ${c.child} من رقم ${phoneLabel} ${mobile5}`;
   } else if(!hasClient&&hasChild){
-    t=`شكوى قدمها/قدمتها ${parentLabel} ${childLabel} ${c.child} من رقم ${phoneLabel} ${mobile5}`;
+    t=`شكوى ${submittedLabel} ${parentLabel} ${childLabel} ${c.child} من رقم ${phoneLabel} ${mobile5}`;
   } else if(hasClient&&!hasChild){
-    t=`شكوى قدمها/قدمتها ${clientLabel} ${c.client} من رقم ${phoneLabel} ${mobile5}`;
+    t=`شكوى ${submittedLabel} ${clientLabel} ${c.client} من رقم ${phoneLabel} ${mobile5}`;
   } else {
-    t=`شكوى قدمها/قدمتها ${isMc?'عميل':'عميلة'} من رقم ${phoneLabel} ${mobile5}`;
+    t=`شكوى ${submittedLabel} ${isMc?'عميل':'عميلة'} من رقم ${phoneLabel} ${mobile5}`;
   }
 
   t+=`\n${saidLabel}: ${c.desc}`;
@@ -274,7 +275,7 @@ function buildSummary(c,withComments=false){
     if(c.branchComment&&c.branchComment.trim()){t+=`\nوأفادت مديرة الفرع: ${c.branchComment}`;if(c.hasEmp&&c.branchEmployee)t+=`\nوحددت الموظفة المشار إليها: ${c.branchEmployee}`;}
     if(c.adminComment&&c.adminComment.trim()){t+=`\nووضح/وضحت ${getOwnerDisplayName()}: ${c.adminComment}`;}
   }
-  if(c.negative&&c.negText)t+=`\nقام ${clientLabel} بكتابة تقييم سلبي: ${c.negText}`;
+  if(c.negative&&c.negText)t+=`\n${isMc?'قام':'قامت'} ${clientLabel} بكتابة تقييم سلبي: ${c.negText}`;
   return t;
 }
 
@@ -368,7 +369,7 @@ function openBranchEmpLogin(branch,el){
   el.classList.add('sel');
   const scr=document.getElementById('branch-login-scr');
   scr.classList.add('on');
-  const brEmps=employees[branch]||[];
+  const brEmps=(employees[branch]||[]).filter(e=>!e.noLogin);
   const grid=document.getElementById('branch-login-grid');
   if(!brEmps.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;color:var(--mu);font-size:.85rem;padding:20px">لا يوجد موظفون مسجلون لهذا الفرع</div>`;return;}
   grid.innerHTML=brEmps.map(e=>`<button class="branch-login-btn" onclick="selectBranchEmp('${branch}','${e.id}','${e.name.replace(/'/g,"\\'")}')">${e.name}</button>`).join('');
@@ -680,7 +681,7 @@ function uploadSignature(){const f=document.getElementById('mp-sig-file').files[
 function clearSignature(){signatureBase64='';window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64:''});document.getElementById('mp-sig-preview').style.display='none';}
 function mpUsersHTML(){return users.map(u=>`<div class="murow"><div><div class="munm">${u.name}</div><div class="muinf">${u.role}${u.branch?' | '+u.branch:''}</div></div><div><button class="mbtn" onclick="mpRename('${u.id}')">rn</button><button class="mbtn" onclick="mpChPass('${u.id}')">pw</button>${u.role!=='owner'?`<button class="mbtn mbd" onclick="mpDelU('${u.id}')">del</button>`:''}</div></div>`).join('');}
 function mpListHTML(arr,key){return arr.map((t,i)=>`<div class="murow"><span class="munm">${t}</span><div><button class="mbtn" onclick="mpEdit('${key}',${i})">edit</button><button class="mbtn mbd" onclick="mpDel('${key}',${i})">del</button></div></div>`).join('');}
-function mpEmpHTML(){return Object.entries(employees).map(([br,emps])=>`<div style="margin-bottom:9px"><div style="font-size:.71rem;color:#666;margin-bottom:3px">${br}</div>${emps.map(e=>`<div class="emprow"><span class="munm" style="font-size:.74rem">${e.name}</span><div><button class="mbtn" onclick="mpRenameEmp('${br}','${e.id}')">rn</button><button class="mbtn mbd" onclick="mpDelEmp('${br}','${e.id}')">del</button></div></div>`).join('')}<div style="margin-top:4px"><input class="mfi" id="ep-${br.replace(/\s/g,'_')}" placeholder="New employee" style="width:150px"><button class="mbtn" onclick="mpAddEmp('${br}')">add</button></div></div>`).join('');}
+function mpEmpHTML(){return Object.entries(employees).map(([br,emps])=>`<div style="margin-bottom:9px"><div style="font-size:.71rem;color:#666;margin-bottom:3px">${br}</div>${emps.map(e=>`<div class="emprow"><span class="munm" style="font-size:.74rem">${e.name}${e.noLogin?' <span style="color:#999">(مشرفة أطفال)</span>':''}</span><div><button class="mbtn" onclick="mpToggleEmpType('${br}','${e.id}')">${e.noLogin?'un-cs':'cs'}</button><button class="mbtn" onclick="mpRenameEmp('${br}','${e.id}')">rn</button><button class="mbtn mbd" onclick="mpDelEmp('${br}','${e.id}')">del</button></div></div>`).join('')}<div style="margin-top:4px;display:flex;gap:4px;align-items:center"><input class="mfi" id="ep-${br.replace(/\s/g,'_')}" placeholder="New employee" style="width:150px"><label style="font-size:.68rem;color:#666;display:flex;align-items:center;gap:3px"><input type="checkbox" id="ep-nl-${br.replace(/\s/g,'_')}">مشرفة أطفال</label><button class="mbtn" onclick="mpAddEmp('${br}')">add</button></div></div>`).join('');}
 function mpBWAHTML(){return BRANCHES_LIST.map(br=>`<div class="emprow"><span class="munm" style="font-size:.74rem">${br}</span><input class="mfi" id="bwa-${br.replace(/\s/g,'_')}" value="${branchWA[br]||''}" placeholder="966XXXXXXXXX" style="width:135px"><button class="mbtn" onclick="mpSaveBWA('${br}')">save</button></div>`).join('');}
 function changeMaintPass(){const n=document.getElementById('mp-new').value,c2=document.getElementById('mp-conf').value;if(!n)return;if(n!==c2){showMpMsg('mismatch');return;}maintPass=n;window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64});showMpMsg('updated');document.getElementById('mp-new').value='';document.getElementById('mp-conf').value='';}
 function mpRename(id){const u=users.find(x=>x.id===id);if(!u)return;const n=prompt('New name:',u.name);if(!n)return;u.name=n;sv();document.getElementById('mp-users').innerHTML=mpUsersHTML();}
@@ -693,7 +694,8 @@ function mpEdit(k,i){const arr=getArr(k);const n=prompt('Edit:',arr[i]);if(!n)re
 function mpDel(k,i){if(!confirm('Delete?'))return;getArr(k).splice(i,1);sv();document.getElementById(`mp-${k}`).innerHTML=mpListHTML(getArr(k),k);renderAllForms();}
 function mpRenameEmp(br,eid){const e=(employees[br]||[]).find(x=>x.id===eid);if(!e)return;const n=prompt('New name:',e.name);if(!n)return;e.name=n;sv();document.getElementById('mp-emp').innerHTML=mpEmpHTML();}
 function mpDelEmp(br,eid){if(!confirm('Delete?'))return;employees[br]=(employees[br]||[]).filter(x=>x.id!==eid);sv();document.getElementById('mp-emp').innerHTML=mpEmpHTML();}
-function mpAddEmp(br){const k=br.replace(/\s/g,'_');const inp=document.getElementById(`ep-${k}`);if(!inp||!inp.value.trim())return;if(!employees[br])employees[br]=[];employees[br].push({id:'e'+Date.now(),name:inp.value.trim()});sv();document.getElementById('mp-emp').innerHTML=mpEmpHTML();inp.value='';}
+function mpAddEmp(br){const k=br.replace(/\s/g,'_');const inp=document.getElementById(`ep-${k}`);if(!inp||!inp.value.trim())return;const nlChk=document.getElementById(`ep-nl-${k}`);const noLogin=!!(nlChk&&nlChk.checked);if(!employees[br])employees[br]=[];employees[br].push({id:'e'+Date.now(),name:inp.value.trim(),noLogin});sv();document.getElementById('mp-emp').innerHTML=mpEmpHTML();inp.value='';if(nlChk)nlChk.checked=false;}
+function mpToggleEmpType(br,eid){const e=(employees[br]||[]).find(x=>x.id===eid);if(!e)return;e.noLogin=!e.noLogin;sv();document.getElementById('mp-emp').innerHTML=mpEmpHTML();}
 function mpSaveBWA(br){const k=br.replace(/\s/g,'_');const v=document.getElementById(`bwa-${k}`).value.trim();branchWA[br]=v;sv();}
 
 function renderAllForms(){renderCtypeForm();renderSentimentForm();renderDemoForm();}
@@ -1510,7 +1512,7 @@ Object.assign(window,{
   showMpMsg,uploadSignature,clearSignature,
   mpUsersHTML,mpListHTML,mpEmpHTML,mpBWAHTML,
   changeMaintPass,mpRename,mpChPass,mpDelU,mpAddUser,
-  mpAdd,mpEdit,mpDel,mpRenameEmp,mpDelEmp,mpAddEmp,mpSaveBWA,
+  mpAdd,mpEdit,mpDel,mpRenameEmp,mpDelEmp,mpAddEmp,mpToggleEmpType,mpSaveBWA,
   renderAllForms,renderCtypeForm,renderSentimentForm,renderDemoForm,
   setG,cond,genRefUI,goPage,previewC,closePrev,confirmSubmit,clearForm,
   renderList,setTab,markSeen,showDetail,closeDetail,
