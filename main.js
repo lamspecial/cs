@@ -41,17 +41,19 @@ window.DB = {
     demos:p.demos??[], employees:p.employees??{}, branchWA:p.branchWA??{},
     adminWANum:p.adminWANum??"", maintPass:p.maintPass??"010",
     signatureBase64:p.signatureBase64??"",
+    shifts:p.shifts??{}, greviews:p.greviews??{},
   }),
   saveComplaints: items => saveDoc("complaints",{items}),
   saveMessages:   items => saveDoc("messages",{items}),
   saveBranchMsgs: items => saveDoc("branchMsgs",{items}),
   saveWarnings:   items => saveDoc("warnings",{items}),
+  saveReviews:    items => saveDoc("reviews",{items}),
 };
 
 async function loadAllFromFirestore() {
-  const [cfgR,cmpR,msgR,bmR,wR] = await Promise.allSettled([
+  const [cfgR,cmpR,msgR,bmR,wR,rvR] = await Promise.allSettled([
     loadDoc("config"), loadDoc("complaints"), loadDoc("messages"),
-    loadDoc("branchMsgs"), loadDoc("warnings"),
+    loadDoc("branchMsgs"), loadDoc("warnings"), loadDoc("reviews"),
   ]);
   return {
     config:     cfgR.status==="fulfilled"?cfgR.value:null,
@@ -59,6 +61,7 @@ async function loadAllFromFirestore() {
     messages:   msgR.status==="fulfilled"?msgR.value:null,
     branchMsgs: bmR.status==="fulfilled"?bmR.value:null,
     warnings:   wR.status==="fulfilled"?wR.value:null,
+    reviews:    rvR.status==="fulfilled"?rvR.value:null,
   };
 }
 function _applyConfigToState(cfg) {
@@ -71,6 +74,8 @@ function _applyConfigToState(cfg) {
   if(cfg.adminWANum!=null) adminWANum = cfg.adminWANum;
   if(cfg.maintPass!=null)  maintPass  = cfg.maintPass;
   if(cfg.signatureBase64!=null) signatureBase64 = cfg.signatureBase64;
+  if(cfg.shifts)           shifts     = cfg.shifts;
+  if(cfg.greviews)         greviews   = cfg.greviews;
 }
 
 window._pendingSync = [];
@@ -83,7 +88,7 @@ window._imsFlushPending = () => {
 };
 
 function setupRealtimeListeners() {
-  let _cR=false,_mR=false,_bR=false,_wR=false;
+  let _cR=false,_mR=false,_bR=false,_wR=false,_rvR=false;
   const watchItems=(key,syncKey,isReady,setReady,setState)=>{
     onSnapshot(doc(db,COL,key),snap=>{
       if(!snap.exists())return;
@@ -98,6 +103,7 @@ function setupRealtimeListeners() {
   watchItems("messages","messages",()=>_mR,()=>{_mR=true;},v=>{messages=v;});
   watchItems("branchMsgs","branchMsgs",()=>_bR,()=>{_bR=true;},v=>{branchMsgs=v;});
   watchItems("warnings","warnings",()=>_wR,()=>{_wR=true;},v=>{warnings=v;});
+  watchItems("reviews","reviews",()=>_rvR,()=>{_rvR=true;},v=>{reviews=v;});
   let _cfgR=false;
   onSnapshot(doc(db,COL,"config"),snap=>{
     if(!snap.exists())return;
@@ -134,6 +140,10 @@ function _applySync(key,data) {
     warnings=data;
     if(document.getElementById('page-warnings')?.classList.contains('on')) renderWarnings();
     updateDots();
+  } else if(key==='reviews'){
+    reviews=data;
+    if(document.getElementById('page-perf')?.classList.contains('on')) renderPerf();
+    if(document.getElementById('page-rep')?.classList.contains('on')) renderRep();
   } else if(key==='config'){
     _applyConfigToState(data);
     if(document.getElementById('page-settings')?.classList.contains('on')) renderSettings();
@@ -184,17 +194,19 @@ let ctypes=['السياسات','الأسلوب','السلامة','الجودة']
 let sentiments=['غاضب','محبط','قلق','محايد','هادئ'];
 let demos=['أسرة','أم','أب','أخرى'];
 let employees=DEFAULT_EMP,branchWA={},adminWANum='',maintPass='010',signatureBase64='';
+let shifts={},reviews=[],greviews={};
 
 let session=JSON.parse(sessionStorage.getItem('ims_s')||'null');
 let pageSeen=JSON.parse(localStorage.getItem('ims_ps')||'{}');
 let currentRef=null,prevTxt='',pendingC=null;
 let gC='m',gK='m',currentTab='all';
 
-const sv=()=>window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64});
+const sv=()=>window.DB?.saveConfig({users,ctypes,sentiments,demos,employees,branchWA,adminWANum,maintPass,signatureBase64,shifts,greviews});
 const saveC=()=>window.DB?.saveComplaints(complaints);
 const saveM=()=>window.DB?.saveMessages(messages);
 const saveBM=()=>window.DB?.saveBranchMsgs(branchMsgs);
 const saveW=()=>window.DB?.saveWarnings(warnings);
+const saveReviews_=()=>window.DB?.saveReviews(reviews);
 const saveS=s=>sessionStorage.setItem('ims_s',JSON.stringify(s));
 const savePSeen=()=>localStorage.setItem('ims_ps',JSON.stringify(pageSeen));
 
@@ -341,11 +353,41 @@ let loginRole=null;
 const BRANCHES_LIST=['فرع القصر','فرع سلام مول','فرع الرياض جاليري','فرع ذا ڤيو مول','فرع مركز المملكة','فرع شرق بلازا'];
 const BRANCHES_LABELS=['القصر','سلام مول','الرياض جاليري','ذا ڤيو','المملكة','شرق بلازا'];
 
+// ══ صفحة الأداء: فترات الشفت وأدوات التاريخ ══
+const SHIFT_PERIODS=[{key:'morning',label:'الفترة الصباحية',from:0,to:16},{key:'evening',label:'الفترة المسائية',from:16,to:24}];
+function periodKeyFor(d){const h=d.getHours();return(SHIFT_PERIODS.find(p=>h>=p.from&&h<p.to)||SHIFT_PERIODS[0]).key;}
+function periodLabel(k){return(SHIFT_PERIODS.find(p=>p.key===k)||{}).label||k||'—';}
+function dkOf(d){return pad(d.getDate(),2)+pad(d.getMonth()+1,2)+d.getFullYear();}
+function dkDisplay(dk){return dk&&dk.length===8?`${dk.slice(0,2)}/${dk.slice(2,4)}/${dk.slice(4)}`:(dk||'—');}
+function toDateInputVal(dk){if(!dk||dk.length!==8)return '';return`${dk.slice(4)}-${dk.slice(2,4)}-${dk.slice(0,2)}`;}
+function fromDateInputVal(v){if(!v)return '';const[yr,mm,dd]=v.split('-');return dd+mm+yr;}
+function getShiftDay(branch,dateKey){if(!shifts[branch])shifts[branch]={};if(!shifts[branch][dateKey])shifts[branch][dateKey]={morning:[],evening:[]};return shifts[branch][dateKey];}
+function empNameById(branch,id){return((employees[branch]||[]).find(e=>e.id===id)||{}).name||null;}
+
 function getOwnerPass(){const d=new Date();return pad(d.getDate(),2)+pad(d.getMonth()+1,2);}
 
+const CS_ROLE_ICON=`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+const MAINT_ROLE_ICON=`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
+
 function buildRoleGrid(){
+  const rg=document.getElementById('role-grid');
+  if(!rg)return;
+  // صفحة كونترول (خدمة العملاء + الصيانة فقط) — يتم تحديدها عبر window.__IMS_CONTROL_PAGE
+  // هذا الفرع موجود هنا (وليس فقط في سكربت override) حتى لا يعتمد ظهور الأزرار على ترتيب تحميل السكربتات
+  if(window.__IMS_CONTROL_PAGE){
+    rg.innerHTML=`
+      <div class="rc" style="padding:20px" onclick="ctrlSelCS(this)">
+        <div style="display:flex;justify-content:center;margin-bottom:8px">${CS_ROLE_ICON}</div>
+        <div class="rn" style="font-size:1rem;font-weight:800">خدمة العملاء</div>
+      </div>
+      <div class="rc" style="padding:20px" onclick="ctrlSelMaint(this)">
+        <div style="display:flex;justify-content:center;margin-bottom:8px">${MAINT_ROLE_ICON}</div>
+        <div class="rn" style="font-size:1rem;font-weight:800">الصيانة</div>
+      </div>`;
+    return;
+  }
   const ownerUser=users.find(u=>u.role==='owner')||{id:'o1',name:'الإدارة العليا',role:'owner',branch:null};
-  document.getElementById('role-grid').innerHTML=`
+  rg.innerHTML=`
     <div class="rc rc-owner" onclick="selRole('owner',this)"><div class="rn">${ownerUser.name}</div></div>
     <div class="rc-row">
       ${BRANCHES_LIST.map((br,i)=>`<div class="rc" onclick="openBranchEmpLogin('${br}',this)"><div class="rn">${BRANCHES_LABELS[i]}</div></div>`).join('')}
@@ -435,6 +477,12 @@ function saveMyPass(){
 }
 
 function initApp(){
+  // حماية صفحة كونترول: تسمح فقط لخدمة العملاء والصيانة بالدخول
+  if(window.__IMS_CONTROL_PAGE && session && session.role!=='cs' && session.role!=='maint'){
+    logout();
+    buildRoleGrid();
+    return;
+  }
   runAuto();
   renderAllForms();
   buildRoleGrid();
@@ -457,6 +505,8 @@ function initApp(){
   show('nav-settings',r==='maint');
   show('nav-stats',r!=='branch'&&r!=='maint');
   show('nav-warnings',r!=='cs');
+  show('nav-perf',r!=='owner');
+  show('nav-greviews',r==='maint');
   buildBottomNav();
   genRefUI();
   renderList();
@@ -521,6 +571,8 @@ function getBNavItems(role){
     {id:'stats',label:'الإحصائيات',icon:NAV_ICONS.stats,show:role!=='branch'&&role!=='maint',drawer:true},
     {id:'filter',label:'التحليل',icon:NAV_ICONS.filter,show:role!=='branch'&&role!=='owner',drawer:true},
     {id:'rep',label:'السمعة',icon:NAV_ICONS.rep,show:true,drawer:true},
+    {id:'perf',label:'الأداء',icon:NAV_ICONS.stats,show:true,drawer:true},
+    {id:'greviews',label:'تقييمات قوقل',icon:NAV_ICONS.settings,show:role==='maint',drawer:true},
     {id:'settings',label:'المستخدمين',icon:NAV_ICONS.settings,show:role==='maint',drawer:true},
     {id:'chpass',label:'كلمة السر',icon:NAV_ICONS.chpass,show:role!=='owner',drawer:true},
   ];
@@ -721,7 +773,7 @@ function goPage(p){
   const nb=document.getElementById('nav-'+p);if(nb)nb.classList.add('on');
   const isOwner=session&&session.role==='owner';
   const ownerTitles={list:'الملاحظات',branchmsgs:'الإشعارات الصادرة',rep:'حماية السمعة'};
-  const tt={new:'تسجيل شكوى',list:'سجل الشكاوى',msgs:'رسائل العملاء',branchmsgs:'الإشعارات الصادرة',warnings:'سجل الإنذارات',stats:'الإحصائيات',filter:'تحليل الشكاوى',rep:'حماية السمعة',settings:'إدارة المستخدمين',chpass:'تغيير الرقم السري'};
+  const tt={new:'تسجيل شكوى',list:'سجل الشكاوى',msgs:'رسائل العملاء',branchmsgs:'الإشعارات الصادرة',warnings:'سجل الإنذارات',stats:'الإحصائيات',filter:'تحليل الشكاوى',rep:'حماية السمعة',settings:'إدارة المستخدمين',chpass:'تغيير الرقم السري',perf:'الأداء',greviews:'ربط تقييمات قوقل'};
   const title=isOwner&&ownerTitles[p]?ownerTitles[p]:(tt[p]||'');
   const titleEl=document.getElementById('tbtitle');if(titleEl)titleEl.textContent=title;
   closeDetail();
@@ -733,6 +785,8 @@ function goPage(p){
   if(p==='stats')renderStats();
   if(p==='filter')runFilter();
   if(p==='rep')renderRep();
+  if(p==='perf')renderPerf();
+  if(p==='greviews')renderGReviews();
   if(p==='settings')renderSettings();
   if(p==='new')genRefUI();
   if(session){if(!pageSeen[session.id])pageSeen[session.id]={};pageSeen[session.id][p]=nowISO();savePSeen();}
@@ -776,7 +830,10 @@ function previewC(){
   if(!mobileNorm){showToast('رقم الجوال غير صحيح','err');return;}
   if(hdQ==='yes'&&!hdA){showToast('يرجى تحديد المطلب غير المعلن','err');return;}
   const now=new Date(),dd=pad(now.getDate(),2),mm=pad(now.getMonth()+1,2),yr=now.getFullYear();
-  pendingC={ref,branch,ctype,dateKey:`${dd}${mm}${yr}`,dateDisplay:`${dd}/${mm}/${yr}`,timeDisplay:`${pad(now.getHours(),2)}:${pad(now.getMinutes(),2)}`,createdAt:nowISO(),mobile:mobileNorm,client,child,desc,demand,hdQ,hdA:hdQ==='yes'?hdA:null,origin,financial,hasEmp,negative,negText:negative?negText:'',sentiment,demo,csnote,gC,gK,status:'جارية حاليا',ownerPriority:false,adminComment:null,branchComment:null,branchEmployee:null,seenBy:{},tasks:[{id:'t1',label:'إرسال إشعار للعميل باستلام الشكوى',done:false},{id:'t2',label:'معالجة الشكوى',done:false}],audit:[{who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:'تم إنشاء الشكوى'}],addedBy:session.name};
+  const shiftPeriod=periodKeyFor(now);
+  const shiftEmpIds=(shifts[branch]?.[`${dd}${mm}${yr}`]?.[shiftPeriod])||[];
+  const shiftEmployees=shiftEmpIds.map(id=>empNameById(branch,id)).filter(Boolean);
+  pendingC={ref,branch,ctype,dateKey:`${dd}${mm}${yr}`,dateDisplay:`${dd}/${mm}/${yr}`,timeDisplay:`${pad(now.getHours(),2)}:${pad(now.getMinutes(),2)}`,createdAt:nowISO(),mobile:mobileNorm,client,child,desc,demand,hdQ,hdA:hdQ==='yes'?hdA:null,origin,financial,hasEmp,negative,negText:negative?negText:'',sentiment,demo,csnote,gC,gK,status:'جارية حاليا',ownerPriority:false,adminComment:null,branchComment:null,branchEmployee:null,shiftPeriod,shiftEmployees,seenBy:{},tasks:[{id:'t1',label:'إرسال إشعار للعميل باستلام الشكوى',done:false},{id:'t2',label:'معالجة الشكوى',done:false}],audit:[{who:session.name,uid:session.id,role:session.role,ts:nowISO(),body:'تم إنشاء الشكوى'}],addedBy:session.name};
   prevTxt=buildSummary(pendingC,false);
   document.getElementById('prev-text').textContent=prevTxt;
   document.getElementById('prov').classList.add('on');
@@ -872,6 +929,11 @@ function showDetail(ref){
 
 function closeDetail(){if(currentRef){const el=document.getElementById('detail-inline-'+currentRef);if(el)el.remove();}currentRef=null;}
 
+function shiftInfoHTML(c){
+  const names=c.shiftEmployees||[];
+  return `<div style="font-size:.8rem;color:var(--mu);margin:10px 0;padding:9px 12px;background:var(--bg);border-radius:var(--r3)">الموظفات في الشفت وقت الشكوى (${periodLabel(c.shiftPeriod)}): <strong style="color:var(--tx2)">${names.length?names.join('، '):'لم يتم تحديد شفت لهذا اليوم'}</strong></div>`;
+}
+
 function renderDetail(c,inner,r){
   if(r==='owner')renderOwnerDetail(c,inner);
   else if(r==='branch')renderBranchDetail(c,inner);
@@ -899,6 +961,7 @@ function renderOwnerDetail(c,inner){
       </div>
     </div>
     ${c.ownerPriority?`<div class="pri-banner">يجب البدء فورًا بمعالجة هذه الشكوى <small>(${ownerName})</small></div>`:''}
+    ${shiftInfoHTML(c)}
     <div class="owner-text">${txt}</div>
   </div>`;
 }
@@ -915,6 +978,7 @@ function renderBranchDetail(c,inner){
       <div><div class="dh-dt">${fmtShort(c.createdAt)}</div><div class="dh-tm">${fmtTime(c.createdAt)}</div></div>
     </div>
     ${c.ownerPriority?`<div class="pri-banner" style="margin-bottom:14px">يجب البدء فورًا بمعالجة هذه الشكوى <small>(${getOwnerDisplayName()})</small></div>`:''}
+    ${shiftInfoHTML(c)}
     <div class="branch-text">${txt}</div>
     ${empSec}
     ${!isExc?`<div class="fg" style="margin-top:14px"><label class="fl">إفادة مديرة الفرع</label><textarea class="ft" id="bcmt" rows="3" placeholder="أضف إفادتك وتوضيحك هنا...">${c.branchComment||''}</textarea></div>
@@ -971,6 +1035,7 @@ function renderFullDetail(c,inner,r){
     </div>
   </div>
   ${c.ownerPriority?`<div class="pri-banner" style="margin-bottom:14px">يجب البدء فورًا بمعالجة هذه الشكوى <small>(${getOwnerDisplayName()})</small></div>`:''}
+  ${shiftInfoHTML(c)}
   <div id="summary-sec" style="margin-bottom:14px">
     <div class="sbox" style="margin-bottom:10px">${sumTxt}</div>
     <div class="cmsg-box">${buildClientMsg(c)}</div>
@@ -1432,7 +1497,204 @@ function renderRep(){
   const buildSec=(title,data)=>{if(!data.length)return'';const maxV=data[0][1];const fills=['#4f46e5','#7c3aed','#e11d48','#ea580c','#059669','#0ea5e9','#65a30d'];return`<div class="rep-section"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-size:.93rem;font-weight:800;color:var(--tx)">${title}</span></div>${data.map(([name,cnt],i)=>`<div class="rep-row"><div class="rep-rank">${i+1}</div><div class="rep-name">${name}</div><div class="rep-track"><div class="rep-fill" style="width:${Math.round(cnt/maxV*100)}%;background:${fills[i%fills.length]}"></div></div><div class="rep-cnt" style="color:${fills[i%fills.length]}">${cnt}</div></div>`).join('')}</div>`;};
   const fCC=filtered(cc),fEC=filtered(ec),fBC=filtered(bc),fTC=filtered(tc);
   const hasData=fCC.length||fEC.length||fBC.length||fTC.length;
-  el.innerHTML=`<div class="rep-page"><div class="rep-section"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-size:.93rem;font-weight:800;color:var(--tx)">مخاطر السمعة النشطة</span><span style="font-size:.73rem;font-weight:600;color:var(--mu);margin-right:auto">آخر ٣ أشهر</span></div>${riskHTML}</div>${!hasData?`<div class="rep-section" style="text-align:center;padding:28px"><div style="font-size:.93rem;font-weight:700;color:var(--tx)">لا توجد بيانات كافية حالياً</div><div style="font-size:.83rem;color:var(--mu);margin-top:5px">تظهر المؤشرات عند تجاوز ٣ تكرارات</div></div>`:''}${buildSec('العملاء الأكثر تكراراً',fCC)}${buildSec('الموظفات المشار إليهن',fEC)}${buildSec('تحليل الفروع',fBC)}${buildSec('تكرار أنواع الشكاوى',fTC)}</div>`;
+  el.innerHTML=`<div class="rep-page"><div class="rep-section"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-size:.93rem;font-weight:800;color:var(--tx)">مخاطر السمعة النشطة</span><span style="font-size:.73rem;font-weight:600;color:var(--mu);margin-right:auto">آخر ٣ أشهر</span></div>${riskHTML}</div>${!hasData?`<div class="rep-section" style="text-align:center;padding:28px"><div style="font-size:.93rem;font-weight:700;color:var(--tx)">لا توجد بيانات كافية حالياً</div><div style="font-size:.83rem;color:var(--mu);margin-top:5px">تظهر المؤشرات عند تجاوز ٣ تكرارات</div></div>`:''}${buildSec('العملاء الأكثر تكراراً',fCC)}${buildSec('الموظفات المشار إليهن',fEC)}${buildSec('تحليل الفروع',fBC)}${buildSec('تكرار أنواع الشكاوى',fTC)}${buildEmpRepSection()}</div>`;
+}
+
+// ══ تقييمات الموظفات — تجميع تقييمات قوقل/اليدوية وتوزيعها حسب الشفت ══
+function computeEmpTallies(){
+  const map={};
+  reviews.forEach(r=>{
+    const ids=r.empIds||[];
+    if(!ids.length)return;
+    const n=ids.length;
+    const posBase=Math.floor((r.positive||0)/n),posRem=(r.positive||0)%n;
+    const negBase=Math.floor((r.negative||0)/n),negRem=(r.negative||0)%n;
+    ids.forEach((id,i)=>{
+      const key=r.branch+'|'+id;
+      if(!map[key]){const nm=empNameById(r.branch,id)||'—';map[key]={branch:r.branch,empId:id,name:nm,pos:0,neg:0};}
+      map[key].pos+=posBase+(i<posRem?1:0);
+      map[key].neg+=negBase+(i<negRem?1:0);
+    });
+  });
+  return Object.values(map).sort((a,b)=>(b.pos+b.neg)-(a.pos+a.neg));
+}
+function empCommentsFor(branch,empId){
+  return reviews.filter(r=>r.branch===branch&&(r.empIds||[]).includes(empId)&&r.clientComment&&r.clientComment.trim())
+    .map(r=>({text:r.clientComment,dateKey:r.dateKey,period:r.period}))
+    .sort((a,b)=>b.dateKey.localeCompare(a.dateKey));
+}
+function buildEmpRepSection(){
+  const list=computeEmpTallies();
+  if(!list.length)return'';
+  return`<div class="rep-section"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span style="font-size:.93rem;font-weight:800;color:var(--tx)">تقييمات الموظفات</span><span style="font-size:.73rem;font-weight:600;color:var(--mu);margin-right:auto">موزّعة حسب الشفت</span></div>${list.map((e,i)=>`<div class="rep-row" style="cursor:pointer" onclick="showEmpComments('${e.branch}','${e.empId}')"><div class="rep-rank">${i+1}</div><div class="rep-name">${e.name}<span style="color:var(--mu);font-weight:500"> / ${e.branch.replace('فرع ','')}</span></div><div style="display:flex;gap:9px;align-items:baseline;flex-shrink:0"><span style="font-weight:300;font-size:.76rem;color:var(--rd)">-${e.neg}</span><span style="font-weight:800;font-size:.88rem;color:var(--gn)">+${e.pos}</span></div></div>`).join('')}</div>`;
+}
+function showEmpComments(branch,empId){
+  const nm=empNameById(branch,empId)||'—';
+  const cmts=empCommentsFor(branch,empId);
+  if(!cmts.length){showModal(nm,'لا توجد تعليقات عملاء مرتبطة بهذه الموظفة');return;}
+  const html=cmts.map(c=>`${dkDisplay(c.dateKey)} — ${periodLabel(c.period)}:\n${c.text}`).join('\n\n');
+  showModal(nm,html);
+}
+
+// ══ صفحة الأداء: تحديد الشفت اليومي (مديرة الفرع) + إدخال التقييمات (خدمة العملاء) ══
+function renderPerf(){
+  const el=document.getElementById('perf-content');if(!el)return;
+  if(session.role==='branch'){el.innerHTML=buildShiftAssignUI();}
+  else{el.innerHTML=buildRatingEntryUI();refreshRtEmpPreview();}
+}
+function buildShiftAssignUI(){
+  const branch=session.branch,todayKey=dkOf(new Date()),curPeriod=periodKeyFor(new Date());
+  return`<div class="card">
+    <div class="fg"><label class="fl">التاريخ</label><input class="fi" type="date" id="perf-date" value="${toDateInputVal(todayKey)}" onchange="onPerfDateChange()"></div>
+    <input type="hidden" id="perf-date-key" value="${todayKey}">
+    <div class="fg"><label class="fl">الفترة</label><div class="rg">${SHIFT_PERIODS.map(p=>`<label class="rl"><input type="radio" name="perf-period-r" value="${p.key}" ${p.key===curPeriod?'checked':''} onchange="onPerfPeriodChange()">${p.label}</label>`).join('')}</div><input type="hidden" id="perf-period" value="${curPeriod}"></div>
+    <div class="fg"><label class="fl">الموظفات المسؤولات عن تجربة العميل في هذا الشفت</label><div class="ms-wrap" id="perf-emp-list">${empChecklist(branch,todayKey,curPeriod)}</div></div>
+    <button class="btn pri" onclick="savePerfShift()">حفظ</button>
+  </div>
+  <div class="card"><div class="ctrl-sect-title">آخر التعيينات</div><div id="perf-history">${buildShiftHistory(branch)}</div></div>`;
+}
+function empChecklist(branch,dk,period){
+  const day=(shifts[branch]||{})[dk]||{morning:[],evening:[]};
+  const chosen=day[period]||[];
+  const list=employees[branch]||[];
+  if(!list.length)return`<div style="color:var(--mu);font-size:.85rem">لا يوجد موظفات مسجلات لهذا الفرع</div>`;
+  return list.map(e=>`<label class="ms-item"><input type="checkbox" value="${e.id}" ${chosen.includes(e.id)?'checked':''}>${e.name}</label>`).join('');
+}
+function onPerfDateChange(){const v=document.getElementById('perf-date').value;if(!v)return;const dk=fromDateInputVal(v);document.getElementById('perf-date-key').value=dk;refreshPerfEmpList();}
+function onPerfPeriodChange(){const p=document.querySelector('input[name="perf-period-r"]:checked').value;document.getElementById('perf-period').value=p;refreshPerfEmpList();}
+function refreshPerfEmpList(){
+  const branch=session.branch,dk=document.getElementById('perf-date-key').value,period=document.getElementById('perf-period').value;
+  document.getElementById('perf-emp-list').innerHTML=empChecklist(branch,dk,period);
+}
+function savePerfShift(){
+  const branch=session.branch;
+  const dateKey=document.getElementById('perf-date-key').value;
+  const period=document.getElementById('perf-period').value;
+  const chosen=Array.from(document.querySelectorAll('#perf-emp-list input:checked')).map(x=>x.value);
+  const day=getShiftDay(branch,dateKey);
+  day[period]=chosen;
+  sv();
+  showToast('تم حفظ تحديد المسؤولات عن هذا الشفت','ok');
+  document.getElementById('perf-history').innerHTML=buildShiftHistory(branch);
+}
+function buildShiftHistory(branch){
+  const days=Object.keys(shifts[branch]||{}).sort((a,b)=>b.localeCompare(a)).slice(0,10);
+  if(!days.length)return`<div style="color:var(--mu);font-size:.85rem">لا يوجد سجل بعد</div>`;
+  return days.map(dk=>{
+    const day=shifts[branch][dk];
+    return`<div class="ctrl-row"><div><div class="ctrl-name">${dkDisplay(dk)}</div><div class="ctrl-sub">${SHIFT_PERIODS.map(p=>`${p.label}: ${(day[p.key]||[]).map(id=>empNameById(branch,id)).filter(Boolean).join('، ')||'—'}`).join(' | ')}</div></div></div>`;
+  }).join('');
+}
+function buildRatingEntryUI(){
+  const todayKey=dkOf(new Date());
+  return`<div class="card">
+    <div class="fg"><label class="fl">الفرع</label><select class="fsel" id="rt-branch" onchange="refreshRtEmpPreview()"><option value="">-- اختر الفرع --</option>${BRANCHES_LIST.map(b=>`<option>${b}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">التاريخ</label><input class="fi" type="date" id="rt-date" value="${toDateInputVal(todayKey)}" onchange="refreshRtEmpPreview()"></div>
+    <div class="fg"><label class="fl">الفترة</label><div class="rg">${SHIFT_PERIODS.map((p,i)=>`<label class="rl"><input type="radio" name="rt-period" value="${p.key}" ${i===0?'checked':''} onchange="refreshRtEmpPreview()">${p.label}</label>`).join('')}</div></div>
+    <div id="rt-emp-preview" style="font-size:.8rem;color:var(--mu);margin-bottom:6px"></div>
+    <div class="fg"><label class="fl">عدد التقييمات الإيجابية</label><input class="fi" type="number" min="0" id="rt-pos" value="0"></div>
+    <div class="fg"><label class="fl">عدد التقييمات السلبية</label><input class="fi" type="number" min="0" id="rt-neg" value="0"></div>
+    <div class="fg"><label class="fl">تعليق العميل <span style="font-weight:500;color:var(--mu2)">(اختياري)</span></label><textarea class="ft" id="rt-comment" rows="2" placeholder="نص تعليق العميل إن وجد..."></textarea></div>
+    <button class="btn pri" onclick="saveRatingEntry()">حفظ التقييمات</button>
+  </div>
+  <div class="card"><div class="ctrl-sect-title">سجل التقييمات المُدخلة</div><div id="rt-log">${buildRatingsLog()}</div></div>`;
+}
+function refreshRtEmpPreview(){
+  const branchEl=document.getElementById('rt-branch'),dateEl=document.getElementById('rt-date'),prev=document.getElementById('rt-emp-preview');
+  if(!branchEl||!dateEl||!prev)return;
+  const branch=branchEl.value,dv=dateEl.value,period=(document.querySelector('input[name="rt-period"]:checked')||{}).value;
+  if(!branch||!dv||!period){prev.textContent='';return;}
+  const dk=fromDateInputVal(dv);
+  const names=((shifts[branch]||{})[dk]?.[period]||[]).map(id=>empNameById(branch,id)).filter(Boolean);
+  prev.textContent=names.length?`سيتم توزيع التقييمات على: ${names.join('، ')}`:'لا يوجد موظفات محددات لهذا الشفت — سيتم حفظ التقييم دون ربطه بموظفة';
+}
+function saveRatingEntry(){
+  const branch=document.getElementById('rt-branch').value;
+  const dv=document.getElementById('rt-date').value;
+  const period=(document.querySelector('input[name="rt-period"]:checked')||{}).value;
+  const pos=parseInt(document.getElementById('rt-pos').value||'0',10)||0;
+  const neg=parseInt(document.getElementById('rt-neg').value||'0',10)||0;
+  const comment=document.getElementById('rt-comment').value.trim();
+  if(!branch){showToast('يرجى اختيار الفرع','err');return;}
+  if(!dv){showToast('يرجى اختيار التاريخ','err');return;}
+  if(pos===0&&neg===0){showToast('يرجى إدخال عدد تقييمات أكبر من صفر','err');return;}
+  const dateKey=fromDateInputVal(dv);
+  const empIds=((shifts[branch]||{})[dateKey]?.[period])||[];
+  addReviewRecord({branch,dateKey,period,positive:pos,negative:neg,clientComment:comment,empIds:[...empIds],source:'manual',enteredBy:session.id,enteredByName:session.name});
+  showToast('تم حفظ التقييمات','ok');
+  document.getElementById('rt-pos').value='0';document.getElementById('rt-neg').value='0';document.getElementById('rt-comment').value='';
+  renderPerf();
+}
+function addReviewRecord(rec){
+  reviews.unshift({id:'rv'+Date.now()+Math.random().toString(36).slice(2,6),ts:nowISO(),...rec});
+  saveReviews_();
+}
+function buildRatingsLog(){
+  if(!reviews.length)return`<div style="color:var(--mu);font-size:.85rem">لا يوجد تقييمات بعد</div>`;
+  return reviews.slice(0,25).map(r=>{
+    const names=(r.empIds||[]).map(id=>empNameById(r.branch,id)).filter(Boolean);
+    return`<div class="ctrl-row"><div>
+      <div class="ctrl-name">${r.branch} — ${dkDisplay(r.dateKey)} — ${periodLabel(r.period)}</div>
+      <div class="ctrl-sub">+${r.positive||0} / -${r.negative||0} ${names.length?'— '+names.join('، '):''} ${r.source==='google'?'(قوقل)':''}</div>
+      ${r.clientComment?`<div class="ctrl-sub" style="margin-top:3px">"${r.clientComment}"</div>`:''}
+      </div>
+      ${(session.role==='maint'||session.role==='owner')?`<button class="btn dan" style="font-size:.72rem;padding:5px 10px;min-height:32px" onclick="delReview('${r.id}')">حذف</button>`:''}
+    </div>`;
+  }).join('');
+}
+function delReview(id){if(!confirm('حذف هذا التقييم؟'))return;reviews=reviews.filter(r=>r.id!==id);saveReviews_();renderPerf();renderRep();}
+
+// ══ صفحة ربط تقييمات قوقل (الصيانة) ══
+function renderGReviews(){
+  const el=document.getElementById('greviews-content');if(!el)return;
+  el.innerHTML=`<div style="font-size:.82rem;color:var(--mu);margin-bottom:14px;line-height:1.8">اربط كل فرع بحساب قوقل الخاص به (Place ID ومفتاح API) لجلب تقييماته تلقائياً. ملاحظة: قد تحتاج المزامنة المباشرة من المتصفح إلى خادم وسيط (Proxy/Cloud Function) بسبب سياسة CORS الخاصة بواجهة قوقل.</div>
+  ${BRANCHES_LIST.map(br=>{
+    const cfg=greviews[br]||{};
+    const k=br.replace(/\s/g,'_');
+    return`<div class="card"><div class="ctrl-sect-title">${br}</div>
+      <div class="fg"><label class="fl">Google Place ID</label><input class="fi" id="gr-pid-${k}" value="${cfg.placeId||''}" placeholder="ChIJ..."></div>
+      <div class="fg"><label class="fl">مفتاح API</label><input class="fi" id="gr-key-${k}" value="${cfg.apiKey||''}" placeholder="AIza..."></div>
+      <div class="brow"><button class="btn pri" onclick="saveGRLink('${br}')">حفظ الربط</button><button class="btn teal" onclick="syncGoogleReviews('${br}')">مزامنة الآن</button></div>
+      <div style="font-size:.76rem;color:var(--mu);margin-top:8px">${cfg.lastSync?'آخر مزامنة: '+fmtShort(cfg.lastSync)+' '+fmtTime(cfg.lastSync):'لم تتم أي مزامنة بعد'}</div>
+    </div>`;
+  }).join('')}`;
+}
+function saveGRLink(br){
+  const k=br.replace(/\s/g,'_');
+  const placeId=document.getElementById('gr-pid-'+k).value.trim();
+  const apiKey=document.getElementById('gr-key-'+k).value.trim();
+  greviews[br]={...(greviews[br]||{}),placeId,apiKey};
+  sv();showToast('تم حفظ ربط الفرع','ok');
+}
+async function syncGoogleReviews(br){
+  const cfg=greviews[br]||{};
+  if(!cfg.placeId||!cfg.apiKey){showToast('يرجى إدخال Place ID ومفتاح API أولاً','err');return;}
+  showToast('جارٍ المزامنة...','');
+  try{
+    const url=`https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(cfg.placeId)}&fields=reviews&key=${encodeURIComponent(cfg.apiKey)}`;
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.status!=='OK'){showToast('تعذر الجلب من قوقل: '+data.status,'err');return;}
+    const revs=data.result?.reviews||[];
+    cfg.importedIds=cfg.importedIds||[];
+    let added=0;
+    revs.forEach(r=>{
+      const gid=String(r.time)+'_'+(r.author_name||'');
+      if(cfg.importedIds.includes(gid))return;
+      const d=new Date(r.time*1000);
+      const dateKey=dkOf(d),period=periodKeyFor(d);
+      const empIds=((shifts[br]||{})[dateKey]?.[period])||[];
+      addReviewRecord({branch:br,dateKey,period,positive:r.rating>=4?1:0,negative:r.rating<4?1:0,clientComment:r.text||'',empIds:[...empIds],source:'google',enteredBy:'google',enteredByName:'Google Reviews'});
+      cfg.importedIds.push(gid);added++;
+    });
+    cfg.lastSync=nowISO();
+    greviews[br]=cfg;sv();
+    showToast(added?`تمت إضافة ${added} تقييم جديد`:'لا توجد تقييمات جديدة','ok');
+    renderGReviews();
+  }catch(e){
+    console.error(e);
+    showToast('فشل الاتصال بواجهة قوقل — غالباً بسبب سياسة CORS، يُفضّل استخدام خادم وسيط (Cloud Function)','err');
+  }
 }
 
 function gSearch(q){
@@ -1526,6 +1788,9 @@ Object.assign(window,{
   reviewA4,saveAndApproveWarning,execCmd,saveWarningText,
   closeA4,approveWarning,revokeWarning,excludeWarning,
   renderStats,runFilter,clearFilters,renderRep,gSearch,jumpTo,
+  renderPerf,onPerfDateChange,onPerfPeriodChange,savePerfShift,
+  saveRatingEntry,refreshRtEmpPreview,delReview,showEmpComments,
+  renderGReviews,saveGRLink,syncGoogleReviews,
   renderSettings,editPass,editName,delUser,showAddUser,toggleBF,saveNewUser,
   doCopy,showModal,closeModal,showToast,applyFontSize,changeFontSize,applyTheme,toggleTheme,
   getOwnerDisplayName,
@@ -1547,6 +1812,7 @@ try {
   if(remote.messages?.items)   messages=remote.messages.items;
   if(remote.branchMsgs?.items) branchMsgs=remote.branchMsgs.items;
   if(remote.warnings?.items)   warnings=remote.warnings.items;
+  if(remote.reviews?.items)    reviews=remote.reviews.items;
 } catch(err){ console.warn('[IMS] تعذّر التزامن الأولي:',err); }
 
 setupRealtimeListeners();
