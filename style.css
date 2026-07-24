@@ -298,6 +298,11 @@ hr.d{border:none;border-top:1px solid var(--brd);margin:16px 0}
 .rep-track{flex:2;height:8px;background:var(--bg);border-radius:10px;overflow:hidden}
 .rep-fill{height:100%;border-radius:10px;transition:width .5s cubic-bezier(.4,0,.2,1)}
 .rep-cnt{font-size:.86rem;font-weight:800;min-width:26px;text-align:left;flex-shrink:0}
+.ctrl-sect-title{font-size:.9rem;font-weight:800;color:var(--bl);padding-bottom:10px;border-bottom:1px solid var(--brd);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ctrl-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--brd);gap:10px;flex-wrap:wrap}
+.ctrl-row:last-child{border-bottom:none}
+.ctrl-name{font-size:.88rem;font-weight:700;color:var(--tx)}
+.ctrl-sub{font-size:.75rem;color:var(--mu);margin-top:2px}
 .risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .risk-card{border-radius:var(--r2);padding:15px;position:relative;overflow:hidden;transition:var(--tr)}
 .risk-card:hover{transform:translateY(-2px)}
