@@ -229,6 +229,8 @@
       <button class="nb hid" id="nav-stats"      onclick="goPage('stats')">الإحصائيات<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-filter"     onclick="goPage('filter')">تحليل الشكاوى<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-rep"        onclick="goPage('rep')">حماية السمعة<span class="nb-dot"></span></button>
+      <button class="nb hid" id="nav-perf"       onclick="goPage('perf')">الأداء<span class="nb-dot"></span></button>
+      <button class="nb hid" id="nav-greviews"   onclick="goPage('greviews')">ربط تقييمات قوقل<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-settings"   onclick="goPage('settings')">إدارة المستخدمين<span class="nb-dot"></span></button>
       <button class="nb hid" id="nav-control"    onclick="goPage('control')">إعدادات النظام<span class="nb-dot"></span></button>
     </div>
@@ -393,6 +395,18 @@
       <div id="rep-content"></div>
     </div>
 
+    <!-- الأداء (تحديد الشفت / إدخال التقييمات) -->
+    <div class="page" id="page-perf">
+      <div class="ph"><h2>الأداء</h2></div>
+      <div id="perf-content"></div>
+    </div>
+
+    <!-- ربط تقييمات قوقل -->
+    <div class="page" id="page-greviews">
+      <div class="ph"><h2>ربط تقييمات قوقل</h2></div>
+      <div id="greviews-content"></div>
+    </div>
+
     <!-- إدارة المستخدمين -->
     <div class="page" id="page-settings">
       <div class="ph"><h2>إدارة المستخدمين والصلاحيات</h2></div>
@@ -549,6 +563,11 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<script>
+// يجب ضبط هذا العلم قبل تحميل main.js (سكربت عادي غير مؤجَّل، لذا ينفذ فوراً أثناء تحليل الصفحة)
+// حتى تُبنى شاشة الدخول مباشرة بأزرار "خدمة العملاء" و"الصيانة" فقط، دون اعتماد على ترتيب تحميل السكربتات
+window.__IMS_CONTROL_PAGE = true;
+</script>
 <script type="module" src="main.js"></script>
 
 <!-- ══════════════════════════════════════════════════════════
@@ -560,25 +579,8 @@ const CTRL_BRANCHES = ['فرع القصر','فرع سلام مول','فرع ال
 
 const CTRL_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
 
-// ══ 1. بناء شاشة الدخول (CS / صيانة فقط) ══
-window.buildRoleGrid = function () {
-  const rg = document.getElementById('role-grid');
-  if (!rg) return;
-  rg.innerHTML = `
-    <div class="rc" style="padding:20px" onclick="ctrlSelCS(this)">
-      <div style="display:flex;justify-content:center;margin-bottom:8px">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
-      <div class="rn" style="font-size:1rem;font-weight:800">خدمة العملاء</div>
-    </div>
-    <div class="rc" style="padding:20px" onclick="ctrlSelMaint(this)">
-      <div style="display:flex;justify-content:center;margin-bottom:8px">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </div>
-      <div class="rn" style="font-size:1rem;font-weight:800">الصيانة</div>
-    </div>`;
-};
-window.buildRoleGrid();
+// ══ 1. شاشة الدخول (CS / صيانة فقط) — تُبنى الآن مباشرة داخل main.js عبر
+//       window.__IMS_CONTROL_PAGE، فلم تعد بحاجة لإعادة تعريفها هنا. ══
 
 // ══ 2. تنسيق عناصر لوحة التحكم بأسلوب النظام ══
 window.mpListHTML = function (arr, key) {
