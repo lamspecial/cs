@@ -1,424 +1,930 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>اي ام سبيشل — تواصل معنا</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shabih — Investor Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
-/* ══ الإعدادات العامة والمتغيرات (تصميم مؤسسي رسمي) ══ */
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg: #f8fafc;        /* خلفية رئيسية رمادية فاتحة جداً */
-  --sur: #ffffff;       /* لون البطاقات (أبيض) */
-  --tx: #1e293b;        /* نصوص رئيسية (داكن جداً) */
-  --tx2: #475569;       /* نصوص ثانوية */
-  --mu: #64748b;        /* نصوص صامتة */
-  
-  --primary: #1e3a8a;   /* أزرق داكن (رسمي وموثوق) */
-  --primary-hover: #172554; 
-  --accent: #ca8a04;    /* ذهبي هادئ لكلمة سبيشل */
-  
-  --err: #b91c1c;       /* أحمر رسمي للأخطاء والإلزاميات */
-  --gn: #0f766e;        /* أخضر مؤسسي للنجاح */
-  --gnl: #f0fdfa;       /* خلفية النجاح */
-  --gnb: #14b8a6;       /* حدود النجاح */
-  
-  --brd: #cbd5e1;       /* حدود ناعمة */
-  --sh: 0 10px 30px rgba(15, 23, 42, 0.06); /* ظل احترافي ناعم */
-  
-  --r: 8px;             /* زوايا شبه حادة لطابع رسمي */
-  --r2: 6px;
-  --r3: 4px;
-}
+  :root {
+    --bg: #3d4fc7;
+    --bg-deep: #2d3baa;
+    --bg-surface: rgba(255,255,255,0.06);
+    --bg-card: rgba(255,255,255,0.08);
+    --accent: #ffffff;
+    --accent-soft: rgba(255,255,255,0.7);
+    --accent-muted: rgba(255,255,255,0.35);
+    --accent-faint: rgba(255,255,255,0.12);
+    --gold: #e8c97a;
+    --gold-soft: rgba(232,201,122,0.15);
+    --wave-color: rgba(255,255,255,0.08);
+    --transition: 240ms cubic-bezier(0.4,0,0.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-  font-family:'Tajawal',sans-serif;
-  background:var(--bg);
-  color:var(--tx);
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:40px 16px;
-}
-.wrap{width:100%;max-width:540px}
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg-deep);
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden;
+    color: var(--accent);
+    user-select: none;
+  }
 
-/* ══ الهيدر ══ */
-.header{text-align:center;margin-bottom:36px}
-.brand{font-size:2rem;font-weight:900;letter-spacing:-0.5px;line-height:1.2}
-.brand .am{color:var(--primary)}
-.brand .special{color:var(--accent)}
-.tagline{font-size:1rem;color:var(--mu);margin-top:8px;font-weight:500}
+  /* ─── RIPPLE OVERLAY ─── */
+  #ripple {
+    position: fixed; inset: 0; pointer-events: none; z-index: 999;
+    border-radius: 50%; transform: scale(0); opacity: 0;
+    background: rgba(255,255,255,0.12);
+    transition: none;
+  }
+  #ripple.flash-right {
+    animation: rippleRight 220ms ease-out forwards;
+  }
+  #ripple.flash-left {
+    animation: rippleLeft 220ms ease-out forwards;
+  }
+  @keyframes rippleRight {
+    0% { transform: scale(0); opacity: 0.35; left: 0; top: 0; width: 100vw; height: 100vh; border-radius: 0; }
+    100% { transform: scale(1.05); opacity: 0; }
+  }
+  @keyframes rippleLeft {
+    0% { transform: scale(0); opacity: 0.35; right: 0; top: 0; width: 100vw; height: 100vh; border-radius: 0; }
+    100% { transform: scale(1.05); opacity: 0; }
+  }
 
-/* ══ البطاقة الرئيسية ══ */
-.card{
-  background:var(--sur);
-  border-radius:var(--r);
-  padding:36px 32px;
-  box-shadow:var(--sh);
-  border:1px solid var(--brd);
-}
+  /* ─── CLICK ZONES ─── */
+  #zone-prev, #zone-next {
+    position: fixed; top: 0; width: 35%; height: 100%;
+    z-index: 100; cursor: pointer;
+    display: flex; align-items: center; padding: 0 32px;
+    transition: background var(--transition);
+  }
+  #zone-prev { left: 0; justify-content: flex-start; }
+  #zone-next { right: 0; justify-content: flex-end; }
+  #zone-prev:hover { background: rgba(0,0,0,0.04); }
+  #zone-next:hover { background: rgba(0,0,0,0.04); }
 
-/* ══ العناوين والأزرار العلوية ══ */
-.lang-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:8px}
-.section-title{
-  font-size:.85rem;font-weight:800;color:var(--primary);text-transform:uppercase;
-  letter-spacing:.5px;display:flex;align-items:center;gap:8px;
-}
-.section-title::before{content:'';width:4px;height:14px;background:var(--primary);border-radius:2px;display:inline-block}
+  .nav-arrow {
+    opacity: 0; transition: opacity var(--transition);
+    pointer-events: none;
+  }
+  #zone-prev:hover .nav-arrow, #zone-next:hover .nav-arrow { opacity: 0.5; }
 
-.lang-btn{
-  background:none;border:none;cursor:pointer;
-  font-family:'Tajawal',sans-serif;font-size:.8rem;
-  color:var(--mu);font-weight:700;padding:6px 12px;
-  border-radius:var(--r2);transition:all .2s;
-  border:1px solid transparent;
-}
-.lang-btn:hover{color:var(--primary);background:rgba(30,58,138,0.05);border-color:var(--brd)}
+  /* ─── SLIDE CONTAINER ─── */
+  #deck {
+    position: relative; width: 100%; height: 100%;
+    overflow: hidden;
+  }
 
-/* ══ الحقول والنماذج ══ */
-.fg{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
-.fl{font-size:.9rem;font-weight:700;color:var(--tx2)}
-.fi,.ft{
-  background:#ffffff;
-  border:1px solid var(--brd);
-  border-radius:var(--r2);
-  padding:14px 16px;
-  color:var(--tx);
-  font-family:'Tajawal',sans-serif;
-  font-size:.95rem;
-  width:100%;
-  direction:rtl;
-  transition:all .2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02) inset;
-}
-.fi:focus,.ft:focus{
-  outline:none;
-  border-color:var(--primary);
-  background:var(--sur);
-  box-shadow:0 0 0 3px rgba(30, 58, 138, 0.12);
-}
-.ft{resize:vertical;min-height:120px;line-height:1.7}
-[dir="ltr"] .fi,[dir="ltr"] .ft{direction:ltr;text-align:left}
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 60px 90px;
+    opacity: 0; pointer-events: none;
+    transform: translateX(40px);
+    transition: opacity 240ms ease, transform 240ms ease;
+  }
+  .slide.active {
+    opacity: 1; pointer-events: none; transform: translateX(0);
+  }
+  .slide.exit-left {
+    opacity: 0; transform: translateX(-40px);
+  }
 
-/* ══ الفروع ══ */
-.branch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.branch-btn{
-  background:#ffffff;
-  border:1px solid var(--brd);
-  border-radius:var(--r3);
-  padding:14px 8px;
-  font-family:'Tajawal',sans-serif;
-  font-size:.85rem;
-  font-weight:700;
-  cursor:pointer;
-  transition:all .2s;
-  color:var(--tx2);
-  text-align:center;
-}
-.branch-btn:hover{border-color:var(--primary);color:var(--primary);background:rgba(30,58,138,0.02)}
-.branch-btn.on{
-  background:var(--primary);
-  border-color:var(--primary);
-  color:#ffffff;
-}
+  /* ─── SVG WAVE BACKGROUND (shared) ─── */
+  .wave-bg {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  }
 
-/* ══ الفاصل ══ */
-.divider{border:none;border-top:1px solid var(--brd);margin:24px 0}
+  /* ─── SLIDE COMPONENTS ─── */
+  .slide-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 18px; position: relative; z-index: 2;
+  }
 
-/* ══ زر الإرسال ══ */
-.submit-btn{
-  width:100%;
-  padding:16px;
-  background:var(--primary);
-  color:#ffffff;
-  border:none;
-  border-radius:var(--r2);
-  font-family:'Tajawal',sans-serif;
-  font-size:1.05rem;
-  font-weight:800;
-  cursor:pointer;
-  transition:all .2s;
-  margin-top:12px;
-}
-.submit-btn:hover{background:var(--primary-hover);box-shadow:0 4px 12px rgba(30, 58, 138, 0.2)}
-.submit-btn:active{transform:scale(0.99)}
-.submit-btn:disabled{background:var(--mu);cursor:not-allowed;box-shadow:none}
+  .slide-headline {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 3.5vw, 52px);
+    line-height: 1.12; font-weight: 400;
+    color: var(--accent); max-width: 820px;
+    position: relative; z-index: 2;
+    margin-bottom: 36px;
+  }
 
-/* ══ مربع النجاح ══ */
-.success{
-  display:none;
-  text-align:center;
-  padding:40px 24px;
-  background:#ffffff;
-  border:1px solid var(--gnb);
-  border-radius:var(--r);
-  margin-top:20px;
-  box-shadow:0 10px 25px rgba(15, 118, 110, 0.08);
-}
-.success-icon{font-size:3.5rem;margin-bottom:16px}
-.success h3{font-size:1.3rem;font-weight:800;color:var(--gn);margin-bottom:10px}
-.success p{font-size:.95rem;color:var(--tx2);font-weight:500;line-height:1.6}
-.success-ref{
-  display:inline-block;
-  margin-top:20px;
-  background:var(--gnl);
-  border:1px dashed var(--gnb);
-  border-radius:var(--r2);
-  padding:10px 24px;
-  font-size:.95rem;
-  font-weight:800;
-  color:var(--gn);
-  font-family:monospace;
-  letter-spacing:1px;
-}
+  .slide-body {
+    display: flex; flex-direction: column; gap: 14px;
+    max-width: 780px; position: relative; z-index: 2;
+  }
 
-/* ══ الفوتر ══ */
-.footer{text-align:center;margin-top:24px;font-size:.8rem;color:var(--mu);font-weight:500}
+  .bullet {
+    display: flex; align-items: flex-start; gap: 14px;
+    font-size: clamp(14px, 1.4vw, 17px);
+    color: var(--accent-soft); line-height: 1.55; font-weight: 300;
+  }
+  .bullet-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold); flex-shrink: 0; margin-top: 8px;
+  }
 
-@media(max-width:480px){
-  body{padding:20px 16px;align-items:flex-start}
-  .card{padding:28px 20px}
-  .brand{font-size:1.7rem}
-  .branch-grid{grid-template-columns:repeat(2,1fr)}
-}
+  /* ─── COVER SLIDE ─── */
+  #slide-cover {
+    align-items: center; justify-content: center; text-align: center;
+  }
+  #slide-cover .cover-label {
+    font-size: 13px; font-weight: 400; letter-spacing: 0.12em;
+    color: var(--accent-soft); margin-bottom: 28px; position: relative; z-index: 2;
+  }
+  #slide-cover .cover-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(60px, 8vw, 110px);
+    line-height: 1; letter-spacing: -0.02em;
+    color: var(--accent); position: relative; z-index: 2;
+    margin-bottom: 24px;
+  }
+  #slide-cover .cover-sub {
+    font-size: 16px; color: var(--accent-soft);
+    font-weight: 300; position: relative; z-index: 2;
+    margin-bottom: 48px;
+  }
+  #slide-cover .cover-meta {
+    display: flex; gap: 48px; font-size: 13px;
+    color: var(--accent-muted); position: relative; z-index: 2;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── LOGO ─── */
+  .logo-svg {
+    width: 72px; height: auto; margin-bottom: 24px;
+    position: relative; z-index: 2;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: var(--gold); transition: width 300ms ease;
+    z-index: 200;
+  }
+
+  /* ─── SLIDE COUNTER ─── */
+  #counter {
+    position: fixed; bottom: 28px; right: 40px;
+    font-size: 12px; font-weight: 500;
+    color: var(--accent-muted); letter-spacing: 0.08em;
+    z-index: 200;
+  }
+
+  /* ─── EDIT LINK ─── */
+  #edit-link {
+    position: fixed; bottom: 22px; left: 40px;
+    font-size: 12px; color: var(--accent-muted);
+    text-decoration: none; letter-spacing: 0.06em;
+    z-index: 200; transition: color var(--transition);
+    font-weight: 500;
+  }
+  #edit-link:hover { color: var(--gold); }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    width: 48px; height: 1px;
+    background: var(--gold); opacity: 0.5;
+    margin-bottom: 28px; position: relative; z-index: 2;
+  }
+
+  /* ─── TABLE ─── */
+  .comp-table {
+    position: relative; z-index: 2;
+    border-collapse: collapse; width: 100%;
+    max-width: 820px; font-size: 13px;
+  }
+  .comp-table th {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gold);
+    padding: 10px 14px; border-bottom: 1px solid var(--accent-faint);
+    text-align: center;
+  }
+  .comp-table th:first-child { text-align: left; }
+  .comp-table td {
+    padding: 10px 14px; border-bottom: 1px solid var(--accent-faint);
+    color: var(--accent-soft); text-align: center;
+  }
+  .comp-table td:first-child { text-align: left; color: var(--accent); font-weight: 500; }
+  .comp-table tr.highlight td { color: var(--accent); background: var(--bg-surface); }
+  .comp-table tr.highlight td:first-child { color: var(--gold); }
+  .check { color: #6ee7a0; font-size: 15px; }
+  .cross { color: var(--accent-muted); font-size: 15px; }
+
+  /* ─── FINANCIALS TABLE ─── */
+  .fin-table {
+    position: relative; z-index: 2;
+    border-collapse: collapse; width: 100%;
+    max-width: 780px; font-size: 13px;
+  }
+  .fin-table th {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gold);
+    padding: 10px 14px; border-bottom: 1px solid var(--accent-faint);
+    text-align: right;
+  }
+  .fin-table th:first-child { text-align: left; }
+  .fin-table td {
+    padding: 9px 14px; border-bottom: 1px solid var(--accent-faint);
+    color: var(--accent-soft); text-align: right;
+  }
+  .fin-table td:first-child { text-align: left; color: var(--accent); font-weight: 400; }
+
+  /* ─── FLOW VISUAL ─── */
+  .flow-row {
+    display: flex; align-items: center; gap: 16px;
+    position: relative; z-index: 2; margin-top: 8px;
+  }
+  .flow-node {
+    background: var(--bg-card);
+    border: 1px solid var(--accent-faint);
+    border-radius: 10px;
+    padding: 14px 20px; text-align: center;
+    min-width: 160px;
+  }
+  .flow-node-title {
+    font-size: 12px; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .flow-node-desc {
+    font-size: 12px; color: var(--accent-soft); line-height: 1.4;
+  }
+  .flow-arrow {
+    color: var(--accent-muted); font-size: 20px; flex-shrink: 0;
+  }
+
+  /* ─── CREDIT MODEL ─── */
+  .credit-model {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    position: relative; z-index: 2; margin-top: 16px;
+  }
+  .credit-card {
+    background: var(--bg-card); border: 1px solid var(--accent-faint);
+    border-radius: 10px; padding: 16px 20px; min-width: 180px;
+  }
+  .credit-card-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent-muted); margin-bottom: 6px;
+  }
+  .credit-card-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px; color: var(--gold);
+  }
+  .credit-card-sub {
+    font-size: 11px; color: var(--accent-muted); margin-top: 3px;
+  }
+
+  /* ─── TAM/SAM/SOM ─── */
+  .market-circles {
+    display: flex; align-items: center; gap: 24px;
+    position: relative; z-index: 2; margin-top: 10px;
+  }
+  .mkt-circle {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+  .mkt-circle-ring {
+    border-radius: 50%; border: 1px solid var(--accent-faint);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center;
+  }
+  .mkt-val {
+    font-family: 'DM Serif Display', serif; color: var(--gold);
+    font-size: 22px; line-height: 1.2;
+  }
+  .mkt-label {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent-muted); margin-top: 8px; font-weight: 600;
+  }
+  .mkt-desc {
+    font-size: 11px; color: var(--accent-muted); margin-top: 3px;
+    max-width: 130px; line-height: 1.4;
+  }
+
+  /* ─── TEAM CARDS ─── */
+  .team-row {
+    display: flex; gap: 20px; position: relative; z-index: 2;
+  }
+  .team-card {
+    background: var(--bg-card); border: 1px solid var(--accent-faint);
+    border-radius: 12px; padding: 22px 24px; min-width: 200px;
+  }
+  .team-card-role {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+  }
+  .team-card-name {
+    font-family: 'DM Serif Display', serif; font-size: 20px;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .team-card-desc {
+    font-size: 12px; color: var(--accent-soft); line-height: 1.5;
+  }
+
+  /* ─── ASK GRID ─── */
+  .ask-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px; position: relative; z-index: 2; margin-top: 10px;
+  }
+  .ask-card {
+    background: var(--bg-card); border: 1px solid var(--accent-faint);
+    border-radius: 10px; padding: 18px 20px;
+  }
+  .ask-card-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+  }
+  .ask-card-pct {
+    font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .ask-card-desc {
+    font-size: 12px; color: var(--accent-soft); line-height: 1.5;
+  }
+
+  /* ─── TRACTION PLACEHOLDERS ─── */
+  .traction-row {
+    display: flex; gap: 16px; position: relative; z-index: 2; margin-top: 8px;
+  }
+  .traction-stat {
+    background: var(--bg-card); border: 1px solid var(--accent-faint);
+    border-radius: 10px; padding: 16px 22px; text-align: center;
+  }
+  .traction-val {
+    font-family: 'DM Serif Display', serif; font-size: 30px;
+    color: var(--gold);
+  }
+  .traction-lbl {
+    font-size: 11px; color: var(--accent-muted); margin-top: 4px;
+    letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+  }
+
+  /* TOP NAV BAR */
+  #top-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px; z-index: 201;
+  }
+  #shabih-wordmark {
+    position: fixed; top: 22px; right: 36px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px; color: rgba(255,255,255,0.25);
+    z-index: 200; letter-spacing: 0.04em;
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div class="header">
-    <div class="brand">
-      <span class="am">اي ام</span> <span class="special">سبيشل</span>
-    </div>
-    <div class="tagline" id="tagline">نستمع إليك ونهتم بتجربتك</div>
-  </div>
+<div id="ripple"></div>
+<div id="progress-bar" style="width:0%"></div>
+<div id="shabih-wordmark">Shabih</div>
+<div id="counter">1 / 11</div>
+<a href="edit.html" id="edit-link">Edit Deck</a>
 
-  <div class="card" id="form-card">
-
-    <div class="lang-row">
-      <div class="section-title" id="lbl-mobile-title">رقم الجوال <span style="color:var(--err)">*</span></div>
-      <button class="lang-btn" id="lang-btn" onclick="toggleLang()">ENGLISH</button>
-    </div>
-
-    <div class="fg" style="margin-bottom:24px">
-      <input class="fi" id="p-mobile" type="tel" placeholder="05XXXXXXXX" maxlength="15" inputmode="tel">
-    </div>
-
-    <hr class="divider">
-
-    <div class="fg" style="margin-bottom:24px">
-      <div class="section-title" id="lbl-branch-title">الفرع</div>
-      <div style="margin-top:16px" class="branch-grid" id="p-branches"></div>
-    </div>
-
-    <hr class="divider">
-
-    <div class="fg">
-      <label class="fl" id="lbl-msg">
-        صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:var(--err)">*</span>
-      </label>
-      <textarea class="ft" id="p-msg" rows="5" placeholder="..."></textarea>
-    </div>
-
-    <button class="submit-btn" id="submit-btn" onclick="submitMsg()">إرسال</button>
-  </div>
-
-  <div class="success" id="success-box">
-    <div class="success-icon">✅</div>
-    <h3 id="success-title">تم ارسال رسالتك بنجاح</h3>
-    <p id="success-desc">سيتواصل معك فريقنا في أقرب وقت ممكن.</p>
-    <div class="success-ref" id="success-ref"></div>
-  </div>
-
-  <div class="footer" id="footer-txt">اي ام سبيشل · إدارة تجربة العملاء</div>
+<!-- NAV ZONES -->
+<div id="zone-prev" onclick="navigate(-1)">
+  <svg class="nav-arrow" width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <path d="M15 18l-6-6 6-6" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+<div id="zone-next" onclick="navigate(1)">
+  <svg class="nav-arrow" width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <path d="M9 18l6-6-6-6" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+<div id="deck">
 
-const firebaseConfig = {
-  apiKey:            "AIzaSyAF6F5N0t7NAbtvXLqBU_W6LHpIZHhLefM",
-  authDomain:        "may2-ff7bd.firebaseapp.com",
-  projectId:         "may2-ff7bd",
-  storageBucket:     "may2-ff7bd.firebasestorage.app",
-  messagingSenderId: "439701463283",
-  appId:             "1:439701463283:web:1879d30f55496dcd729786",
-};
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
-const COL = "ims";
+<!-- ═══ COVER ═══ -->
+<div class="slide active" id="slide-cover">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#2d3baa"/>
+        <stop offset="100%" stop-color="#3d4fc7"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="url(#bgGrad)"/>
+    <!-- Wave patterns matching brand -->
+    <g opacity="0.13" stroke="white" stroke-width="1" fill="none">
+      <path d="M-100,200 C100,100 250,300 400,200 S650,50 800,200 S1050,350 1200,200 S1400,50 1600,200"/>
+      <path d="M-100,240 C100,140 250,340 400,240 S650,90 800,240 S1050,390 1200,240 S1400,90 1600,240"/>
+      <path d="M-100,280 C100,180 250,380 400,280 S650,130 800,280 S1050,430 1200,280 S1400,130 1600,280"/>
+      <path d="M-100,320 C100,220 250,420 400,320 S650,170 800,320 S1050,470 1200,320 S1400,170 1600,320"/>
+      <path d="M-100,360 C100,260 250,460 400,360 S650,210 800,360 S1050,510 1200,360 S1400,210 1600,360"/>
+      <path d="M-100,400 C100,300 250,500 400,400 S650,250 800,400 S1050,550 1200,400 S1400,250 1600,400"/>
+      <path d="M-100,440 C100,340 250,540 400,440 S650,290 800,440 S1050,590 1200,440 S1400,290 1600,440"/>
+      <path d="M-100,480 C100,380 250,580 400,480 S650,330 800,480 S1050,630 1200,480 S1400,330 1600,480"/>
+      <path d="M-100,140 C100,40 250,240 400,140 S650,-10 800,140 S1050,290 1200,140 S1400,-10 1600,140"/>
+      <path d="M-100,100 C100,0 250,200 400,100 S650,-50 800,100 S1050,250 1200,100 S1400,-50 1600,100"/>
+      <!-- Left waves -->
+      <path d="M0,-50 C50,100 -50,250 50,400 S-50,550 50,700 S-50,850 50,1000"/>
+      <path d="M40,-50 C90,100 -10,250 90,400 S-10,550 90,700 S-10,850 90,1000"/>
+      <path d="M80,-50 C130,100 30,250 130,400 S30,550 130,700 S30,850 130,1000"/>
+      <path d="M120,-50 C170,100 70,250 170,400 S70,550 170,700 S70,850 170,1000"/>
+      <!-- Right waves -->
+      <path d="M1340,-50 C1390,100 1290,250 1390,400 S1290,550 1390,700 S1290,850 1390,1000"/>
+      <path d="M1380,-50 C1430,100 1330,250 1430,400 S1330,550 1430,700 S1330,850 1430,1000"/>
+      <path d="M1420,-50 C1470,100 1370,250 1470,400 S1370,550 1470,700 S1370,850 1470,1000"/>
+      <path d="M1460,-50 C1510,100 1410,250 1510,400 S1410,550 1510,700 S1410,850 1510,1000"/>
+    </g>
+    <!-- Top line like brand reference -->
+    <line x1="0" y1="0" x2="1440" y2="0" stroke="rgba(255,255,255,0.15)" stroke-width="3"/>
+  </svg>
 
-// ══ بيانات الفروع بالعربية والإنجليزية ══
-const BRANCHES = [
-  { ar: 'فرع القصر',          en: 'AlQasr Mall',      key: 'فرع القصر' },
-  { ar: 'فرع سلام مول',       en: 'Salam Mall',       key: 'فرع سلام مول' },
-  { ar: 'فرع الرياض جاليري',  en: 'Riyadh Gallery',   key: 'فرع الرياض جاليري' },
-  { ar: 'فرع ذا ڤيو مول',    en: 'TheView Mall',     key: 'فرع ذا ڤيو مول' },
-  { ar: 'فرع مركز المملكة',   en: 'Kingdom Center',   key: 'فرع مركز المملكة' },
-  { ar: 'فرع شرق بلازا',      en: 'Shrq Plaza',       key: 'فرع شرق بلازا' },
-];
+  <!-- Shabih Logo SVG (transparent bg, white fill) -->
+  <svg class="logo-svg" viewBox="0 0 1536 1024" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(0,1024) scale(0.1,-0.1)" fill="white" stroke="none">
+      <path d="M4035 9504 c-501 -61 -931 -324 -1191 -726 -79 -122 -107 -176 -155 -304 -194 -516 -125 -1034 196 -1469 145 -196 393 -392 618 -487 39 -16 73 -31 75 -33 1 -1 -22 -49 -52 -106 -213 -402 -356 -880 -407 -1361 -19 -169 -16 -564 5 -733 79 -647 284 -1210 630 -1730 168 -253 324 -445 534 -659 326 -331 668 -581 1087 -795 506 -259 1034 -407 1690 -473 203 -20 876 -17 1090 5 609 63 1187 220 1680 456 963 461 1759 1311 2129 2274 172 446 250 870 250 1347 0 299 -24 516 -89 812 -55 246 -216 670 -342 896 -20 35 -34 64 -32 66 2 2 59 31 125 65 446 229 768 668 838 1143 48 323 -10 663 -165 957 -84 160 -164 268 -298 401 -483 479 -1212 601 -1826 306 -355 -171 -632 -463 -796 -839 -26 -60 -49 -110 -52 -113 -2 -3 -51 14 -108 37 -658 262 -1416 385 -2101 339 -507 -35 -1060 -158 -1521 -341 -53 -22 -101 -39 -105 -39 -5 0 -16 26 -26 57 -31 97 -152 323 -227 423 -172 231 -384 400 -641 511 -237 103 -546 146 -813 113z m445 -644 c275 -71 511 -262 637 -515 49 -98 78 -184 67 -195 -5 -5 -62 -42 -126 -83 -406 -260 -812 -632 -1113 -1020 -79 -103 -67 -101 -214 -31 -117 56 -198 113 -277 195 -111 117 -190 256 -236 415 -20 69 -23 100 -22 254 0 161 2 182 27 263 118 382 467 678 872 737 98 14 289 4 385 -20z m6871 -4 c319 -81 574 -302 700 -606 53 -127 72 -242 66 -405 -3 -80 -13 -166 -22 -200 -63 -235 -203 -436 -395 -565 -72 -49 -224 -120 -255 -119 -13 0 -38 24 -70 66 -142 190 -436 503 -630 673 -185 161 -376 302 -563 414 -73 44 -73 39 -17 169 124 287 402 516 705 581 114 24 125 25 260 21 91 -3 151 -11 221 -29z m-2821 -3016 c743 -47 1362 -148 1790 -290 458 -153 753 -411 846 -740 28 -99 26 -272 -5 -370 -90 -292 -325 -498 -746 -655 -267 -100 -716 -179 -1280 -225 -192 -16 -2344 -31 -2710 -19 -999 32 -1575 166 -1952 456 -242 184 -366 450 -333 711 47 366 353 660 861 826 504 166 1271 281 2099 316 259 11 1211 4 1430 -10z"/>
+      <path d="M5770 5190 c-237 -31 -435 -190 -503 -405 -32 -102 -31 -262 2 -363 60 -183 213 -329 397 -377 75 -19 223 -19 298 0 109 29 185 74 277 165 92 92 134 163 163 276 34 130 9 312 -57 423 -40 68 -137 167 -198 203 -105 62 -258 93 -379 78z m39 -218 c141 -86 112 -297 -48 -351 -46 -15 -85 -14 -129 5 -129 54 -169 208 -80 310 69 79 166 92 257 36z"/>
+      <path d="M9427 5188 c-94 -11 -210 -59 -288 -118 -189 -142 -270 -378 -209 -614 26 -104 62 -167 143 -252 112 -119 240 -174 405 -174 176 0 307 54 432 180 186 185 230 433 119 667 -40 85 -157 205 -244 250 -105 55 -232 77 -358 61z m38 -206 c76 -37 109 -97 103 -188 -3 -52 -9 -70 -35 -101 -40 -50 -80 -72 -142 -80 -42 -5 -59 -1 -105 21 -62 30 -94 73 -107 142 -30 157 139 279 286 206z"/>
+    </g>
+  </svg>
 
-// ══ النصوص ثنائية اللغة ══
-const TEXTS = {
-  ar: {
-    tagline:       'نستمع إليك ونهتم بتجربتك',
-    mobileTitle:   'رقم الجوال <span style="color:var(--err)">*</span>',
-    branchTitle:   'الفرع',
-    msgLabel:      'صف / صفي تجربتك أو استفسارك أو اقتراحك <span style="color:var(--err)">*</span>',
-    placeholder:   '05XXXXXXXX',
-    msgPlaceholder:'...',
-    submitBtn:     'إرسال',
-    successTitle:  'تم ارسال رسالتك بنجاح',
-    successDesc:   'سيتواصل معك فريقنا في أقرب وقت ممكن.',
-    refLabel:      'رقم التذكرة: ',
-    footer:        'اي ام سبيشل · إدارة تجربة العملاء',
-    langBtn:       'ENGLISH',
-    errMobile:     'يرجى إدخال رقم الجوال',
-    errMobileInvalid:'رقم الجوال غير صحيح. يرجى إدخال رقم سعودي صحيح',
-    errMsg:        'يرجى كتابة رسالتك',
-    sending:       'جارٍ الإرسال…',
-    errSend:       'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.',
-    dir:           'rtl',
-  },
-  en: {
-    tagline:       'We listen and care about your experience',
-    mobileTitle:   'Mobile Number <span style="color:var(--err)">*</span>',
-    branchTitle:   'Branch',
-    msgLabel:      'Describe your experience, inquiry or suggestion <span style="color:var(--err)">*</span>',
-    placeholder:   '05XXXXXXXX',
-    msgPlaceholder:'...',
-    submitBtn:     'Submit',
-    successTitle:  'Your message was sent successfully',
-    successDesc:   'Our team will contact you as soon as possible.',
-    refLabel:      'Ticket ID: ',
-    footer:        'AM Special · Customer Experience Management',
-    langBtn:       'العربية',
-    errMobile:     'Please enter your mobile number',
-    errMobileInvalid:'Invalid mobile number. Please enter a valid Saudi number',
-    errMsg:        'Please write your message',
-    sending:       'Sending…',
-    errSend:       'An error occurred while sending. Please try again.',
-    dir:           'ltr',
+  <p class="cover-label">Investor Pitch Deck</p>
+  <h1 class="cover-title">Shabih</h1>
+  <p class="cover-sub">The referral marketplace where every customer is proof of performance.</p>
+  <div class="cover-meta">
+    <span>shabih.sa</span>
+    <span>Riyadh, Saudi Arabia</span>
+    <span>Pre-Seed 2025</span>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 1 — PROBLEM ═══ -->
+<div class="slide" id="slide-1">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3d4fc7"/>
+    <g opacity="0.07" stroke="white" stroke-width="1" fill="none">
+      <path d="M-100,600 C200,500 400,700 600,600 S900,450 1100,600 S1350,750 1540,600"/>
+      <path d="M-100,640 C200,540 400,740 600,640 S900,490 1100,640 S1350,790 1540,640"/>
+      <path d="M-100,680 C200,580 400,780 600,680 S900,530 1100,680 S1350,830 1540,680"/>
+      <path d="M-100,720 C200,620 400,820 600,720 S900,570 1100,720 S1350,870 1540,720"/>
+      <path d="M-100,760 C200,660 400,860 600,760 S900,610 1100,760 S1350,910 1540,760"/>
+    </g>
+  </svg>
+  <p class="slide-label">01 — Problem</p>
+  <h2 class="slide-headline">Marketing spend in Saudi Arabia is largely unaccountable, and the people best placed to sell are locked out of earning.</h2>
+  <div class="divider"></div>
+  <div class="slide-body" id="body-1">
+    <div class="bullet"><div class="bullet-dot"></div><span>Saudi Arabia has one of the world's highest social media penetration rates, yet businesses pay for impressions with no guarantee of a real customer walking through the door.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Over 700,000 registered SMEs operate in the Kingdom — the majority rely on word-of-mouth but have no structured way to reward it or measure its impact.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Millions of everyday social media users have engaged, loyal audiences but no accessible path to monetize their influence without being a "verified" macro-influencer.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Consumers distrust digital ads; they trust recommendations from people they follow. There is no platform that converts that trust into a verified, measurable commercial transaction.</span></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 2 — SOLUTION ═══ -->
+<div class="slide" id="slide-2">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3d4fc7"/>
+    <g opacity="0.07" stroke="white" stroke-width="1" fill="none">
+      <path d="M-100,150 C200,50 400,250 600,150 S900,0 1100,150 S1350,300 1540,150"/>
+      <path d="M-100,190 C200,90 400,290 600,190 S900,40 1100,190 S1350,340 1540,190"/>
+      <path d="M-100,230 C200,130 400,330 600,230 S900,80 1100,230 S1350,380 1540,230"/>
+    </g>
+  </svg>
+  <p class="slide-label">02 — Solution</p>
+  <h2 class="slide-headline">Shabih closes the loop: verified in-store referrals, powered by micro-ambassadors, settled in an internal economy.</h2>
+  <div class="divider"></div>
+  <div class="flow-row">
+    <div class="flow-node">
+      <div class="flow-node-title">1 — Shabeeh Scans</div>
+      <div class="flow-node-desc">Ambassador scans business QR, receives unique referral link</div>
+    </div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-node">
+      <div class="flow-node-title">2 — Content Posted</div>
+      <div class="flow-node-desc">Posts video, followers register via phone for a promo offer</div>
+    </div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-node">
+      <div class="flow-node-title">3 — In-Store Redeem</div>
+      <div class="flow-node-desc">Consumer visits, branch scans QR — referral verified, credits earned</div>
+    </div>
+  </div>
+  <div class="slide-body" style="margin-top:28px" id="body-2">
+    <div class="bullet"><div class="bullet-dot"></div><span>Physical QR verification eliminates fraud — every credit earned corresponds to a real customer visit.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>No follower minimum required — the platform aggregates thousands of micro-audiences into collective commercial scale.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Internal credits are spendable across the partner ecosystem, creating a closed-loop economy that retains value on platform.</span></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 3 — MARKET ═══ -->
+<div class="slide" id="slide-3">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3a4cc0"/>
+    <g opacity="0.07" stroke="white" stroke-width="1" fill="none">
+      <path d="M0,800 C300,700 600,900 900,800 S1200,650 1440,800"/>
+      <path d="M0,840 C300,740 600,940 900,840 S1200,690 1440,840"/>
+    </g>
+  </svg>
+  <p class="slide-label">03 — Market</p>
+  <h2 class="slide-headline">A large, underpenetrated market at the intersection of social commerce, affiliate marketing, and physical retail.</h2>
+  <div class="divider"></div>
+  <div class="market-circles">
+    <div class="mkt-circle">
+      <div class="mkt-circle-ring" style="width:160px;height:160px;border-color:rgba(232,201,122,0.4)">
+        <div class="mkt-val">$4.2B</div>
+        <div style="font-size:10px;color:var(--accent-muted);margin-top:2px">est.</div>
+      </div>
+      <div class="mkt-label">TAM</div>
+      <div class="mkt-desc">Saudi digital ad & affiliate marketing addressable market</div>
+    </div>
+    <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L24 8 M18 2 L24 8 L18 14" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none"/></svg>
+    <div class="mkt-circle">
+      <div class="mkt-circle-ring" style="width:128px;height:128px;border-color:rgba(232,201,122,0.5)">
+        <div class="mkt-val" style="font-size:18px">$820M</div>
+        <div style="font-size:10px;color:var(--accent-muted);margin-top:2px">est.</div>
+      </div>
+      <div class="mkt-label">SAM</div>
+      <div class="mkt-desc">SME performance marketing with physical retail footprint</div>
+    </div>
+    <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L24 8 M18 2 L24 8 L18 14" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="none"/></svg>
+    <div class="mkt-circle">
+      <div class="mkt-circle-ring" style="width:100px;height:100px;border-color:var(--gold);background:rgba(232,201,122,0.07)">
+        <div class="mkt-val" style="font-size:16px">$82M</div>
+        <div style="font-size:10px;color:var(--accent-muted);margin-top:2px">yr 3</div>
+      </div>
+      <div class="mkt-label">SOM</div>
+      <div class="mkt-desc">Achievable 3-year share in Riyadh + 2 cities</div>
+    </div>
+  </div>
+  <div class="slide-body" style="margin-top:28px" id="body-3">
+    <div class="bullet"><div class="bullet-dot"></div><span>Saudi Arabia ranks among the top 10 countries globally for social media usage per capita — with TikTok and Snapchat penetration above 80% among 18–34 year olds.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Vision 2030 SME development targets create regulatory tailwind: the Kingdom aims for SMEs to contribute 35% of GDP by 2030, requiring efficient marketing infrastructure.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>GCC expansion (UAE, Kuwait, Bahrain) replicates the model into adjacent markets with similar social behavior and SME density. All figures marked as estimates.</span></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 4 — BUSINESS MODEL ═══ -->
+<div class="slide" id="slide-4">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3d4fc7"/>
+    <g opacity="0.06" stroke="white" stroke-width="1" fill="none">
+      <path d="M1440,100 C1200,200 1000,0 800,100 S500,250 300,100 S100,-50 -100,100"/>
+      <path d="M1440,140 C1200,240 1000,40 800,140 S500,290 300,140 S100,-10 -100,140"/>
+      <path d="M1440,180 C1200,280 1000,80 800,180 S500,330 300,180 S100,30 -100,180"/>
+    </g>
+  </svg>
+  <p class="slide-label">04 — Business Model</p>
+  <h2 class="slide-headline">Three revenue streams that scale with transaction volume, not headcount.</h2>
+  <div class="divider"></div>
+  <div class="credit-model">
+    <div class="credit-card">
+      <div class="credit-card-label">Referral Spread</div>
+      <div class="credit-card-value">10</div>
+      <div class="credit-card-sub">credits per verified referral<br>Business pays 100 / Shabeeh gets 90</div>
+    </div>
+    <div class="credit-card">
+      <div class="credit-card-label">Exchange Spread</div>
+      <div class="credit-card-value">10</div>
+      <div class="credit-card-sub">credits per internal spend<br>Shabeeh pays 100 / merchant gets 90</div>
+    </div>
+    <div class="credit-card">
+      <div class="credit-card-label">Withdrawal Fee</div>
+      <div class="credit-card-value">~5%</div>
+      <div class="credit-card-sub">conversion fee on cash out<br>incentivizes keeping credits in-platform</div>
+    </div>
+  </div>
+  <div class="slide-body" style="margin-top:24px" id="body-4">
+    <div class="bullet"><div class="bullet-dot"></div><span>Worked example: 1,000 Shabeehs, 10 referrals each/month = 10,000 verified visits. Platform earns 100,000 credits in spread. At a 1 SAR/credit rate, that is 100,000 SAR monthly from referral spread alone.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Internal spending generates a second layer — 70% of credits spent internally doubles the spread per credit unit before it leaves the system.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Margin is embedded in every transaction; no ad budget required to grow revenue.</span></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 5 — COMPETITORS ═══ -->
+<div class="slide" id="slide-5">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3a4cc0"/>
+    <g opacity="0.06" stroke="white" stroke-width="1" fill="none">
+      <path d="M-100,450 C200,350 400,550 700,450 S1000,300 1300,450 S1440,600 1540,450"/>
+      <path d="M-100,490 C200,390 400,590 700,490 S1000,340 1300,490 S1440,640 1540,490"/>
+    </g>
+  </svg>
+  <p class="slide-label">05 — Competitive Landscape</p>
+  <h2 class="slide-headline">No existing platform combines physical verification, micro-audience aggregation, and an internal economy in one product.</h2>
+  <div class="divider"></div>
+  <table class="comp-table" id="comp-table">
+    <thead>
+      <tr>
+        <th>Platform</th>
+        <th>Physical Redemption</th>
+        <th>Micro-Audience Support</th>
+        <th>Internal Currency</th>
+        <th>Pay-per-Verified Customer</th>
+        <th>Arabic Market Focus</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>Shabih</td>
+        <td><span class="check">&#10003;</span></td>
+        <td><span class="check">&#10003;</span></td>
+        <td><span class="check">&#10003;</span></td>
+        <td><span class="check">&#10003;</span></td>
+        <td><span class="check">&#10003;</span></td>
+      </tr>
+      <tr>
+        <td>Zid Affiliate</td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="check">&#10003;</span></td>
+      </tr>
+      <tr>
+        <td>Salla Affiliate</td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="check">&#10003;</span></td>
+      </tr>
+      <tr>
+        <td>Impact.com</td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+      </tr>
+      <tr>
+        <td>CJ Affiliate</td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+      </tr>
+      <tr>
+        <td>Meta / Snapchat Ads</td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+        <td><span class="cross">&#8212;</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══ SLIDE 6 — TRACTION ═══ -->
+<div class="slide" id="slide-6">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3d4fc7"/>
+    <g opacity="0.07" stroke="white" stroke-width="1" fill="none">
+      <path d="M-100,300 C300,200 600,400 900,300 S1200,150 1540,300"/>
+      <path d="M-100,340 C300,240 600,440 900,340 S1200,190 1540,340"/>
+      <path d="M-100,380 C300,280 600,480 900,380 S1200,230 1540,380"/>
+    </g>
+  </svg>
+  <p class="slide-label">06 — Traction</p>
+  <h2 class="slide-headline">Pre-launch — validated by market research, system architecture complete, and early partnerships in motion.</h2>
+  <div class="divider"></div>
+  <div class="traction-row">
+    <div class="traction-stat">
+      <div class="traction-val">[X]</div>
+      <div class="traction-lbl">Businesses in Pipeline</div>
+    </div>
+    <div class="traction-stat">
+      <div class="traction-val">[X]</div>
+      <div class="traction-lbl">Shabeehs Registered</div>
+    </div>
+    <div class="traction-stat">
+      <div class="traction-val">[X]</div>
+      <div class="traction-lbl">Waitlist Size</div>
+    </div>
+    <div class="traction-stat">
+      <div class="traction-val">500</div>
+      <div class="traction-lbl">Global Application</div>
+    </div>
+  </div>
+  <div class="slide-body" style="margin-top:28px" id="body-6">
+    <div class="bullet"><div class="bullet-dot"></div><span>Market research completed: consumer trust behavior in social referrals studied across Riyadh, Jeddah, and Khobar.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Full system architecture designed covering platform, Shabeeh app, branch terminal, and credit ledger.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Application submitted to 500 Global accelerator program; founding business partnerships in active discussion.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>Pre-launch positioning: all figures above reflect current pipeline conversations, not live transactions.</span></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 7 — GROWTH STRATEGY ═══ -->
+<div class="slide" id="slide-7">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3a4cc0"/>
+    <g opacity="0.07" stroke="white" stroke-width="1" fill="none">
+      <path d="M1540,200 C1200,100 900,300 600,200 S300,50 -100,200"/>
+      <path d="M1540,240 C1200,140 900,340 600,240 S300,90 -100,240"/>
+      <path d="M1540,280 C1200,180 900,380 600,280 S300,130 -100,280"/>
+      <path d="M1540,700 C1200,600 900,800 600,700 S300,550 -100,700"/>
+      <path d="M1540,740 C1200,640 900,840 600,740 S300,590 -100,740"/>
+    </g>
+  </svg>
+  <p class="slide-label">07 — Growth Strategy</p>
+  <h2 class="slide-headline">Growth is driven by ambassador activity — not paid acquisition. Every Shabeeh is a distribution node.</h2>
+  <div class="divider"></div>
+  <div class="slide-body" id="body-7">
+    <div class="bullet">
+      <div class="bullet-dot"></div>
+      <span><strong style="color:var(--gold);font-weight:600">Phase 1 — Prove the Loop (Months 1–6):</strong> Single district in Riyadh. Anchor in food, beauty, and wellness. Onboard 20–30 businesses and 500 Shabeehs. Measure referral-to-visit conversion rate and credit retention. Iterate product.</span>
+    </div>
+    <div class="bullet">
+      <div class="bullet-dot"></div>
+      <span><strong style="color:var(--gold);font-weight:600">Phase 2 — Flywheel (Months 7–18):</strong> Expand to multiple Riyadh districts, then Jeddah and Dammam. Shabeehs recruit other Shabeehs through referral incentives. Growth becomes self-reinforcing — businesses join because Shabeehs are there; Shabeehs join because businesses are there.</span>
+    </div>
+    <div class="bullet">
+      <div class="bullet-dot"></div>
+      <span><strong style="color:var(--gold);font-weight:600">Phase 3 — Open Platform (Month 19+):</strong> Expand across all business categories. Introduce tiered Shabeeh ranking system with status rewards. Launch GCC expansion starting with UAE. Explore B2B licensing of the verification infrastructure.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 8 — TEAM ═══ -->
+<div class="slide" id="slide-8">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3d4fc7"/>
+    <g opacity="0.07" stroke="white" stroke-width="1" fill="none">
+      <path d="M-100,500 C200,400 500,600 800,500 S1100,350 1400,500 S1540,650 1640,500"/>
+      <path d="M-100,540 C200,440 500,640 800,540 S1100,390 1400,540 S1540,690 1640,540"/>
+    </g>
+  </svg>
+  <p class="slide-label">08 — Team</p>
+  <h2 class="slide-headline">A focused founding team with the local knowledge and technical capability to build and scale Shabih.</h2>
+  <div class="divider"></div>
+  <div class="team-row" id="team-row">
+    <div class="team-card">
+      <div class="team-card-role">Founder &amp; CEO</div>
+      <div class="team-card-name">[Name]</div>
+      <div class="team-card-desc">Product strategy and business development. Deep understanding of Saudi SME landscape and consumer behavior.</div>
+    </div>
+    <div class="team-card">
+      <div class="team-card-role">Co-Founder &amp; CTO</div>
+      <div class="team-card-name">[Name]</div>
+      <div class="team-card-desc">Platform architecture and technical execution. Responsible for the QR verification system, ambassador app, and credit ledger.</div>
+    </div>
+    <div class="team-card" style="border-style:dashed;opacity:0.6">
+      <div class="team-card-role">Advisor</div>
+      <div class="team-card-name">[Name]</div>
+      <div class="team-card-desc">[Area of expertise — e.g., MENA venture, retail operations, fintech]</div>
+    </div>
+  </div>
+  <div class="slide-body" style="margin-top:24px" id="body-8">
+    <div class="bullet"><div class="bullet-dot"></div><span>Early-stage team is expected to be lean. The founding pair covers the two critical competencies: market access and product execution.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>First hires post-funding: Head of Business Partnerships and a mobile developer to accelerate the Shabeeh app build.</span></div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 9 — FINANCIALS ═══ -->
+<div class="slide" id="slide-9">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3a4cc0"/>
+    <g opacity="0.06" stroke="white" stroke-width="1" fill="none">
+      <path d="M-100,800 C300,700 600,900 900,800 S1200,650 1540,800"/>
+      <path d="M-100,760 C300,660 600,860 900,760 S1200,610 1540,760"/>
+    </g>
+  </svg>
+  <p class="slide-label">09 — Financial Projections</p>
+  <h2 class="slide-headline">Revenue scales with the number of active Shabeehs — three scenarios, all projections.</h2>
+  <div class="divider"></div>
+  <table class="fin-table">
+    <thead>
+      <tr>
+        <th style="text-align:left">Scenario / Metric</th>
+        <th>Year 1</th>
+        <th>Year 2</th>
+        <th>Year 3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4" style="padding:8px 14px;color:var(--accent-muted);font-size:11px;letter-spacing:0.08em;text-transform:uppercase">Conservative — 1,000 Active Shabeehs</td></tr>
+      <tr><td>Referral Volume (annual)</td><td>120,000</td><td>150,000</td><td>180,000</td></tr>
+      <tr><td>Platform Spread Revenue (SAR)</td><td>120,000</td><td>150,000</td><td>180,000</td></tr>
+      <tr><td colspan="4" style="padding:8px 14px;color:var(--accent-muted);font-size:11px;letter-spacing:0.08em;text-transform:uppercase">Base — 5,000 Active Shabeehs</td></tr>
+      <tr><td>Referral Volume (annual)</td><td>600,000</td><td>750,000</td><td>900,000</td></tr>
+      <tr><td>Platform Spread Revenue (SAR)</td><td>600,000</td><td>750,000</td><td>900,000</td></tr>
+      <tr><td colspan="4" style="padding:8px 14px;color:var(--accent-muted);font-size:11px;letter-spacing:0.08em;text-transform:uppercase">Optimistic — 10,000 Active Shabeehs</td></tr>
+      <tr><td>Referral Volume (annual)</td><td>1,200,000</td><td>1,500,000</td><td>1,800,000</td></tr>
+      <tr><td>Platform Spread Revenue (SAR)</td><td>1,200,000</td><td>1,500,000</td><td>1,800,000</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:11px;color:var(--accent-muted);margin-top:12px;position:relative;z-index:2">
+    Assumptions: 10 referrals/Shabeeh/month, 10 SAR spread per referral, 70% credits spent internally (adds second spread layer), 30% withdrawn at ~5% fee. All figures are forward-looking projections.
+  </p>
+</div>
+
+<!-- ═══ SLIDE 10 — THE ASK ═══ -->
+<div class="slide" id="slide-10">
+  <svg class="wave-bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1440" height="900" fill="#3d4fc7"/>
+    <g opacity="0.08" stroke="white" stroke-width="1" fill="none">
+      <path d="M-100,200 C100,100 250,300 400,200 S650,50 800,200 S1050,350 1200,200 S1400,50 1600,200"/>
+      <path d="M-100,240 C100,140 250,340 400,240 S650,90 800,240 S1050,390 1200,240 S1400,90 1600,240"/>
+      <path d="M-100,280 C100,180 250,380 400,280 S650,130 800,280 S1050,430 1200,280 S1400,130 1600,280"/>
+      <path d="M-100,600 C100,500 250,700 400,600 S650,450 800,600 S1050,750 1200,600 S1400,450 1600,600"/>
+      <path d="M-100,640 C100,540 250,740 400,640 S650,490 800,640 S1050,790 1200,640 S1400,490 1600,640"/>
+    </g>
+  </svg>
+  <p class="slide-label">10 — The Ask</p>
+  <h2 class="slide-headline">We are raising [X SAR / USD] to prove the referral loop at scale and reach [X] verified transactions within 12 months.</h2>
+  <div class="divider"></div>
+  <div class="ask-grid">
+    <div class="ask-card">
+      <div class="ask-card-label">Technology</div>
+      <div class="ask-card-pct">40%</div>
+      <div class="ask-card-desc">Platform development, Shabeeh app, branch QR terminal, and credit ledger infrastructure.</div>
+    </div>
+    <div class="ask-card">
+      <div class="ask-card-label">Market Activation</div>
+      <div class="ask-card-pct">40%</div>
+      <div class="ask-card-desc">First business onboarding, Shabeeh acquisition in pilot district, and initial promotional campaigns.</div>
+    </div>
+    <div class="ask-card">
+      <div class="ask-card-label">Operations &amp; Team</div>
+      <div class="ask-card-pct">20%</div>
+      <div class="ask-card-desc">Core team hires, legal, compliance, and 12-month operational runway.</div>
+    </div>
+  </div>
+  <div class="slide-body" style="margin-top:24px" id="body-10">
+    <div class="bullet"><div class="bullet-dot"></div><span>Milestone: complete platform build, onboard [X] businesses, activate [X] Shabeehs, and record first [X] verified referral transactions — all within 12 months of closing.</span></div>
+    <div class="bullet"><div class="bullet-dot"></div><span>This round positions Shabih for a Series A raise with live data, unit economics, and a replicable city-rollout playbook.</span></div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+  // Load slide content from localStorage (edited via edit.html)
+  const TOTAL = 11; // 0 = cover, 1–10 = slides
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+
+  function updateProgress() {
+    const pct = ((current) / (TOTAL - 1)) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + TOTAL;
   }
-};
 
-let currentLang = 'ar';
-window.selectedBranch = '';
+  function navigate(dir) {
+    const next = current + dir;
+    if (next < 0 || next >= TOTAL) return;
 
-function renderBranches() {
-  const grid = document.getElementById('p-branches');
-  grid.innerHTML = BRANCHES.map(b => `
-    <button class="branch-btn ${window.selectedBranch === b.key ? 'on' : ''}"
-      onclick="toggleBranch(this,'${b.key}')">
-      ${currentLang === 'ar' ? b.ar.replace('فرع ','') : b.en}
-    </button>`).join('');
-}
+    // Flash effect
+    const ripple = document.getElementById('ripple');
+    ripple.className = '';
+    void ripple.offsetWidth;
+    ripple.className = dir > 0 ? 'flash-right' : 'flash-left';
 
-window.toggleBranch = function(btn, key) {
-  document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
-  if(window.selectedBranch === key){ window.selectedBranch = ''; return; }
-  btn.classList.add('on');
-  window.selectedBranch = key;
-};
+    slides[current].classList.remove('active');
+    slides[current].classList.add(dir > 0 ? 'exit-left' : '');
 
-window.toggleLang = function() {
-  currentLang = currentLang === 'ar' ? 'en' : 'ar';
-  applyLang();
-};
-
-function applyLang() {
-  const t = TEXTS[currentLang];
-  const html = document.documentElement;
-  html.setAttribute('lang', currentLang === 'ar' ? 'ar' : 'en');
-  html.setAttribute('dir', t.dir);
-
-  document.getElementById('tagline').textContent         = t.tagline;
-  document.getElementById('lbl-mobile-title').innerHTML  = t.mobileTitle;
-  document.getElementById('lbl-branch-title').innerHTML  = t.branchTitle;
-  document.getElementById('lbl-msg').innerHTML            = t.msgLabel;
-  document.getElementById('p-mobile').placeholder         = t.placeholder;
-  document.getElementById('p-msg').placeholder            = t.msgPlaceholder;
-  document.getElementById('submit-btn').textContent       = t.submitBtn;
-  document.getElementById('success-title').textContent    = t.successTitle;
-  document.getElementById('success-desc').textContent     = t.successDesc;
-  document.getElementById('footer-txt').textContent       = t.footer;
-  document.getElementById('lang-btn').textContent         = t.langBtn;
-
-  // direction للـ textarea
-  const fi = document.getElementById('p-mobile');
-  const ft = document.getElementById('p-msg');
-  fi.style.direction = t.dir;
-  ft.style.direction = t.dir;
-  fi.style.textAlign = t.dir === 'ltr' ? 'left' : 'right';
-  ft.style.textAlign = t.dir === 'ltr' ? 'left' : 'right';
-
-  renderBranches();
-}
-
-// تهيئة الفروع
-renderBranches();
-
-function normalizeSaudiMobile(raw) {
-  let d = raw.replace(/[\s\-]/g, '');
-  if(d.startsWith('+966')) d = d.slice(4);
-  else if(d.startsWith('00966')) d = d.slice(5);
-  else if(d.startsWith('966')) d = d.slice(3);
-  if(d.startsWith('0')) d = d.slice(1);
-  return /^5[0-9]{8}$/.test(d) ? d : null;
-}
-
-window.submitMsg = async function() {
-  const t = TEXTS[currentLang];
-  const mobRaw = document.getElementById('p-mobile').value.trim();
-  const msg    = document.getElementById('p-msg').value.trim();
-
-  if(!mobRaw){ alert(t.errMobile); document.getElementById('p-mobile').focus(); return; }
-  const mob = normalizeSaudiMobile(mobRaw);
-  if(!mob){ alert(t.errMobileInvalid); document.getElementById('p-mobile').focus(); return; }
-  if(!msg){ alert(t.errMsg); document.getElementById('p-msg').focus(); return; }
-
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = t.sending;
-
-  try {
-    const snap = await getDoc(doc(db, COL, "messages"));
-    const messages = snap.exists() ? (snap.data().items ?? []) : [];
-    messages.unshift({
-      id: mob, mobile: mob,
-      branch: window.selectedBranch || '',
-      text: msg,
-      ts: new Date().toISOString(),
-      converted: false, convertedBy: null
-    });
-    await setDoc(doc(db, COL, "messages"), { items: messages });
-
-    document.getElementById('form-card').style.display = 'none';
-    const sb = document.getElementById('success-box');
-    sb.style.display = 'block';
-    document.getElementById('success-ref').textContent = t.refLabel + '0' + mob;
-  } catch(e) {
-    console.error('خطأ في الحفظ:', e);
-    alert(t.errSend);
-    btn.disabled = false;
-    btn.textContent = t.submitBtn;
+    setTimeout(() => {
+      slides[current].classList.remove('exit-left');
+      current = next;
+      slides[current].classList.add('active');
+      updateProgress();
+      loadSlideContent(current);
+    }, 60);
   }
-};
 
-window.resetForm = function() {
-  document.getElementById('p-mobile').value = '';
-  document.getElementById('p-msg').value = '';
-  window.selectedBranch = '';
-  renderBranches();
-  document.getElementById('form-card').style.display = 'block';
-  document.getElementById('success-box').style.display = 'none';
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = false;
-  btn.textContent = TEXTS[currentLang].submitBtn;
-};
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') navigate(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+  });
+
+  // Load edited content from localStorage
+  function loadSlideContent(idx) {
+    const stored = localStorage.getItem('shabih_slide_' + idx);
+    if (!stored) return;
+    try {
+      const data = JSON.parse(stored);
+      if (data.headline) {
+        const hl = slides[idx].querySelector('.slide-headline, .cover-title');
+        if (hl) hl.textContent = data.headline;
+      }
+      if (data.bullets && Array.isArray(data.bullets)) {
+        const bodyEl = slides[idx].querySelector('.slide-body');
+        if (bodyEl) {
+          const bDots = bodyEl.querySelectorAll('.bullet');
+          data.bullets.forEach((txt, i) => {
+            if (bDots[i]) {
+              bDots[i].querySelector('span').innerHTML = txt;
+            }
+          });
+        }
+      }
+    } catch(e) {}
+  }
+
+  // Load all slides on init
+  for (let i = 0; i < TOTAL; i++) loadSlideContent(i);
+  updateProgress();
 </script>
 </body>
 </html>
