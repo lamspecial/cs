@@ -1,35 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shabih — Edit Deck</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<title>شبيح — تعديل العرض</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display:ital@0;1&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #181c2e;
-    --bg-panel: #1e2338;
-    --bg-card: #252b42;
-    --bg-input: #2a3150;
-    --border: rgba(255,255,255,0.08);
-    --border-focus: rgba(232,201,122,0.5);
+    --bg-deep: #2d3baa;
+    --bg: #3d4fc7;
+    --bg-card: rgba(255,255,255,0.08);
+    --bg-input: rgba(255,255,255,0.07);
+    --bg-input-focus: rgba(255,255,255,0.12);
+    --border: rgba(255,255,255,0.12);
+    --border-focus: rgba(232,201,122,0.6);
     --accent: #ffffff;
-    --accent-soft: rgba(255,255,255,0.65);
-    --accent-muted: rgba(255,255,255,0.3);
+    --accent-soft: rgba(255,255,255,0.7);
+    --accent-muted: rgba(255,255,255,0.35);
+    --accent-faint: rgba(255,255,255,0.12);
     --gold: #e8c97a;
-    --gold-soft: rgba(232,201,122,0.12);
-    --brand: #3d4fc7;
+    --gold-soft: rgba(232,201,122,0.15);
     --green: #6ee7a0;
-    --red: #f87171;
+    --green-soft: rgba(110,231,160,0.15);
     --transition: 200ms ease;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   html, body {
     min-height: 100vh;
-    background: var(--bg);
-    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-deep);
+    font-family: 'Tajawal', 'DM Sans', sans-serif;
     color: var(--accent);
+    direction: rtl;
+  }
+
+  /* ─── WAVE BACKGROUND (fixed, behind everything) ─── */
+  #global-waves {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
   }
 
   /* ─── LAYOUT ─── */
@@ -37,475 +44,530 @@
     display: grid;
     grid-template-columns: 260px 1fr;
     min-height: 100vh;
+    position: relative; z-index: 1;
   }
 
   /* ─── SIDEBAR ─── */
   .sidebar {
-    background: var(--bg-panel);
-    border-right: 1px solid var(--border);
+    background: rgba(30,35,80,0.85);
+    backdrop-filter: blur(12px);
+    border-left: 1px solid var(--border);
     display: flex; flex-direction: column;
-    padding: 28px 0; position: sticky; top: 0;
+    padding: 0; position: sticky; top: 0;
     height: 100vh; overflow-y: auto;
   }
   .sidebar-logo {
-    padding: 0 24px 28px;
+    padding: 28px 20px 22px;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 12px;
   }
   .sidebar-logo-text {
     font-family: 'DM Serif Display', serif;
-    font-size: 24px; color: var(--accent);
+    font-size: 22px; color: var(--accent); direction: ltr; text-align: right;
   }
   .sidebar-logo-sub {
-    font-size: 11px; color: var(--accent-muted);
-    margin-top: 3px; letter-spacing: 0.06em;
+    font-size: 12px; color: var(--accent-muted);
+    margin-top: 4px; font-weight: 300;
   }
 
   .slide-nav-item {
     display: flex; align-items: center; gap: 12px;
-    padding: 10px 24px; cursor: pointer;
-    transition: background var(--transition), color var(--transition);
-    border-radius: 0;
+    padding: 11px 20px; cursor: pointer;
+    transition: background var(--transition);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
   }
-  .slide-nav-item:hover { background: var(--bg-card); }
+  .slide-nav-item:hover { background: rgba(255,255,255,0.06); }
   .slide-nav-item.active { background: var(--gold-soft); }
   .slide-nav-num {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--bg-card); display: flex; align-items: center;
-    justify-content: center; font-size: 10px; font-weight: 600;
-    color: var(--accent-muted); flex-shrink: 0;
-    transition: background var(--transition), color var(--transition);
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: var(--accent-muted);
+    flex-shrink: 0; transition: all var(--transition);
+    font-family: 'DM Sans', sans-serif;
   }
-  .slide-nav-item.active .slide-nav-num {
-    background: var(--gold); color: #1a1a1a;
-  }
-  .slide-nav-label {
-    font-size: 13px; color: var(--accent-soft);
-    font-weight: 400;
-  }
-  .slide-nav-item.active .slide-nav-label {
-    color: var(--gold); font-weight: 500;
-  }
+  .slide-nav-item.active .slide-nav-num { background: var(--gold); color: #1a1a1a; }
+  .slide-nav-label { font-size: 13px; color: var(--accent-soft); font-weight: 400; }
+  .slide-nav-item.active .slide-nav-label { color: var(--gold); font-weight: 500; }
 
   .sidebar-actions {
-    margin-top: auto; padding: 20px 24px;
-    border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px;
+    margin-top: auto; padding: 18px 20px;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 10px;
   }
+
+  /* ─── BUTTONS ─── */
   .btn {
     display: inline-flex; align-items: center; justify-content: center;
     gap: 8px; padding: 10px 18px; border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500; cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; font-weight: 500; cursor: pointer;
     border: none; transition: all var(--transition); text-decoration: none;
-    letter-spacing: 0.02em;
+    width: 100%;
   }
-  .btn-gold {
-    background: var(--gold); color: #1a1a1a;
-  }
+  .btn-gold { background: var(--gold); color: #1a1a1a; }
   .btn-gold:hover { background: #f0d48a; }
   .btn-outline {
-    background: transparent; color: var(--accent-soft);
+    background: rgba(255,255,255,0.06); color: var(--accent-soft);
     border: 1px solid var(--border);
   }
-  .btn-outline:hover { border-color: var(--accent-muted); color: var(--accent); }
-  .btn-brand {
-    background: var(--brand); color: white;
-  }
-  .btn-brand:hover { background: #4a5cdb; }
-  .btn-green {
-    background: rgba(110,231,160,0.15); color: var(--green);
+  .btn-outline:hover { border-color: var(--accent-muted); color: var(--accent); background: rgba(255,255,255,0.1); }
+  .btn-green-sm {
+    background: var(--green-soft); color: var(--green);
     border: 1px solid rgba(110,231,160,0.25);
+    padding: 5px 10px; font-size: 12px; font-weight: 600;
+    border-radius: 6px; cursor: pointer; white-space: nowrap;
+    font-family: 'Tajawal', sans-serif; transition: all var(--transition);
+    width: auto;
   }
-  .btn-green:hover { background: rgba(110,231,160,0.25); }
+  .btn-green-sm:hover { background: rgba(110,231,160,0.25); }
+  .btn-green-sm:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-sm {
+    padding: 6px 14px; font-size: 12px; border-radius: 6px;
+    width: auto; cursor: pointer; font-family: 'Tajawal', sans-serif;
+    background: rgba(255,255,255,0.08); color: var(--accent-soft);
+    border: 1px solid var(--border); transition: all var(--transition);
+  }
+  .btn-sm:hover { background: rgba(255,255,255,0.14); }
+  .btn-save-slide {
+    background: var(--gold); color: #1a1a1a;
+    padding: 8px 20px; font-size: 13px; border-radius: 8px;
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    font-weight: 600; border: none; transition: all var(--transition); width: auto;
+  }
+  .btn-save-slide:hover { background: #f0d48a; }
 
   /* ─── MAIN EDITOR ─── */
   .editor-main {
-    padding: 48px 56px;
-    max-width: 900px;
+    padding: 40px 48px;
+    max-width: 860px;
+  }
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 36px; padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 12px;
+  }
+  .top-bar-title {
+    font-size: 13px; color: var(--accent-muted); font-weight: 300;
+  }
+  .badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 20px;
+    background: rgba(110,231,160,0.15); color: var(--green);
+    font-family: 'DM Sans', sans-serif;
   }
 
-  .editor-header {
-    margin-bottom: 36px;
-  }
+  /* ─── SLIDE EDITOR HEADER ─── */
+  .editor-header { margin-bottom: 28px; }
   .editor-slide-label {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+    font-family: 'DM Sans', sans-serif;
   }
   .editor-slide-title {
     font-family: 'DM Serif Display', serif;
-    font-size: 28px; color: var(--accent);
+    font-size: 26px; color: var(--accent); direction: ltr; text-align: right;
   }
 
-  .field-group {
-    margin-bottom: 28px;
+  /* ─── FIELD GROUPS ─── */
+  .field-group { margin-bottom: 22px; }
+  .field-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
   }
   .field-label {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--accent-muted);
-    margin-bottom: 8px; display: block;
+    font-family: 'DM Sans', sans-serif;
   }
+
   textarea, input[type="text"] {
-    width: 100%; background: var(--bg-input);
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 12px 16px; color: var(--accent);
-    font-family: 'DM Sans', sans-serif; font-size: 14px;
-    line-height: 1.6; resize: vertical;
-    transition: border-color var(--transition);
-    outline: none;
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--accent);
+    font-family: 'DM Sans', 'Tajawal', sans-serif;
+    font-size: 14px; line-height: 1.6;
+    resize: vertical; outline: none;
+    transition: border-color var(--transition), background var(--transition);
+    direction: ltr;
   }
   textarea:focus, input[type="text"]:focus {
     border-color: var(--border-focus);
+    background: var(--bg-input-focus);
   }
-  textarea { min-height: 80px; }
+  textarea { min-height: 72px; }
 
-  .bullets-section { margin-bottom: 28px; }
-  .bullet-row {
-    display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start;
+  /* ─── INLINE TRANSLATION OUTPUT ─── */
+  .inline-trans {
+    margin-top: 8px;
+    background: rgba(232,201,122,0.07);
+    border: 1px solid rgba(232,201,122,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px; color: var(--accent-soft);
+    line-height: 1.7; direction: auto;
+    display: none;
+  }
+  .inline-trans.visible { display: block; }
+  .inline-trans-header {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 6px; font-family: 'DM Sans', sans-serif;
+  }
+  .inline-trans-actions {
+    display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+  }
+
+  /* ─── BULLETS SECTION ─── */
+  .bullets-section { margin-bottom: 22px; }
+  .bullet-row { margin-bottom: 14px; }
+  .bullet-row-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
   }
   .bullet-index {
-    width: 24px; height: 24px; border-radius: 50%;
+    width: 22px; height: 22px; border-radius: 50%;
     background: var(--gold); color: #1a1a1a;
     display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 12px;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
   }
-  .bullet-row textarea { min-height: 60px; }
+  .bullet-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent-muted);
+    font-family: 'DM Sans', sans-serif; flex: 1;
+  }
 
-  .divider-line {
-    border: none; border-top: 1px solid var(--border);
-    margin: 32px 0;
+  /* ─── LANG SELECT ─── */
+  .lang-row {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 20px;
   }
-
-  /* ─── TRANSLATE PANEL ─── */
-  .translate-panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 32px;
-  }
-  .translate-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .translate-title {
-    font-size: 14px; font-weight: 600; color: var(--gold);
-    letter-spacing: 0.04em;
-  }
-  .translate-controls {
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
+  .lang-row label { font-size: 12px; color: var(--accent-muted); white-space: nowrap; }
   select {
     background: var(--bg-input); border: 1px solid var(--border);
-    border-radius: 6px; padding: 8px 12px; color: var(--accent);
-    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    border-radius: 6px; padding: 7px 10px; color: var(--accent);
+    font-family: 'Tajawal', 'DM Sans', sans-serif; font-size: 13px;
     cursor: pointer; outline: none;
+    transition: border-color var(--transition);
   }
   select:focus { border-color: var(--border-focus); }
 
-  .translate-output {
-    background: var(--bg-input); border: 1px solid var(--border);
-    border-radius: 8px; padding: 16px;
-    min-height: 100px; font-size: 13px; color: var(--accent-soft);
-    line-height: 1.7; white-space: pre-wrap;
-    direction: auto;
-  }
-  .translate-status {
-    font-size: 12px; color: var(--accent-muted); margin-top: 10px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--accent-muted);
-  }
-  .status-dot.active { background: var(--green); animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  /* ─── DIVIDER ─── */
+  .hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 
   /* ─── TOAST ─── */
   #toast {
-    position: fixed; bottom: 28px; right: 28px;
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(10px);
     background: var(--green); color: #1a1a1a;
-    padding: 12px 20px; border-radius: 8px;
-    font-size: 13px; font-weight: 600;
-    opacity: 0; transform: translateY(10px);
-    transition: all 300ms ease; pointer-events: none;
-    z-index: 999;
+    padding: 12px 28px; border-radius: 8px;
+    font-size: 14px; font-weight: 700;
+    opacity: 0; transition: all 300ms ease; pointer-events: none;
+    z-index: 999; font-family: 'Tajawal', sans-serif;
   }
-  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ─── TOP BAR ─── */
-  .top-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 40px; padding-bottom: 24px;
-    border-bottom: 1px solid var(--border);
-  }
-  .top-bar-title {
-    font-size: 13px; color: var(--accent-muted); letter-spacing: 0.06em;
-  }
-
-  /* Loading spinner */
+  /* ─── SPINNER ─── */
   .spinner {
-    display: inline-block; width: 14px; height: 14px;
-    border: 2px solid var(--accent-muted);
-    border-top-color: var(--gold);
+    display: inline-block; width: 12px; height: 12px;
+    border: 2px solid rgba(110,231,160,0.3);
+    border-top-color: var(--green);
     border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .badge {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; padding: 2px 8px; border-radius: 20px;
-    background: var(--gold-soft); color: var(--gold);
-  }
+  /* ─── PROGRESS BAR (top) ─── */
+  .page-progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--gold); width: 0; z-index: 100; transition: width 400ms ease; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 </style>
 </head>
 <body>
 
-<div id="toast">Saved</div>
+<div id="toast"></div>
+<div class="page-progress" id="page-progress"></div>
+
+<!-- GLOBAL WAVE BACKGROUND (same as index.html) -->
+<svg id="global-waves" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="bgGe" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2d3baa"/><stop offset="100%" stop-color="#3d4fc7"/></linearGradient></defs>
+  <rect width="1440" height="900" fill="url(#bgGe)"/>
+  <g opacity="0.09" stroke="white" stroke-width="1" fill="none">
+    <path d="M-100,180 C100,80 250,280 400,180 S650,30 800,180 S1050,330 1200,180 S1400,30 1600,180"/>
+    <path d="M-100,216 C100,116 250,316 400,216 S650,66 800,216 S1050,366 1200,216 S1400,66 1600,216"/>
+    <path d="M-100,252 C100,152 250,352 400,252 S650,102 800,252 S1050,402 1200,252 S1400,102 1600,252"/>
+    <path d="M-100,288 C100,188 250,388 400,288 S650,138 800,288 S1050,438 1200,288 S1400,138 1600,288"/>
+    <path d="M-100,324 C100,224 250,424 400,324 S650,174 800,324 S1050,474 1200,324 S1400,174 1600,324"/>
+    <path d="M-100,360 C100,260 250,460 400,360 S650,210 800,360 S1050,510 1200,360 S1400,210 1600,360"/>
+    <path d="M-100,540 C100,440 250,640 400,540 S650,390 800,540 S1050,690 1200,540 S1400,390 1600,540"/>
+    <path d="M-100,576 C100,476 250,676 400,576 S650,426 800,576 S1050,726 1200,576 S1400,426 1600,576"/>
+    <path d="M-100,612 C100,512 250,712 400,612 S650,462 800,612 S1050,762 1200,612 S1400,462 1600,612"/>
+    <path d="M-100,648 C100,548 250,748 400,648 S650,498 800,648 S1050,798 1200,648 S1400,498 1600,648"/>
+    <path d="M0,-50 C50,100 -50,250 50,400 S-50,550 50,700 S-50,850 50,1000"/>
+    <path d="M36,-50 C86,100 -14,250 86,400 S-14,550 86,700 S-14,850 86,1000"/>
+    <path d="M72,-50 C122,100 22,250 122,400 S22,550 122,700 S22,850 122,1000"/>
+    <path d="M108,-50 C158,100 58,250 158,400 S58,550 158,700 S58,850 158,1000"/>
+    <path d="M1300,-50 C1350,100 1250,250 1350,400 S1250,550 1350,700 S1250,850 1350,1000"/>
+    <path d="M1336,-50 C1386,100 1286,250 1386,400 S1286,550 1386,700 S1286,850 1386,1000"/>
+    <path d="M1372,-50 C1422,100 1322,250 1422,400 S1322,550 1422,700 S1322,850 1422,1000"/>
+    <path d="M1408,-50 C1458,100 1358,250 1458,400 S1358,550 1458,700 S1358,850 1458,1000"/>
+  </g>
+</svg>
 
 <div class="layout">
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-text">Shabih</div>
-      <div class="sidebar-logo-sub">Deck Editor</div>
+      <div class="sidebar-logo-sub">محرر العرض</div>
     </div>
-
     <nav id="slide-nav"></nav>
-
     <div class="sidebar-actions">
-      <button class="btn btn-gold" onclick="saveAll()">Save All Changes</button>
-      <a href="index.html" class="btn btn-brand">View Presentation</a>
-      <button class="btn btn-outline" onclick="resetAll()">Reset to Defaults</button>
+      <button class="btn btn-gold" onclick="saveCurrentSlide()">حفظ الشريحة الحالية</button>
+      <a href="index.html" class="btn btn-outline" style="text-align:center">عرض الشرائح</a>
     </div>
   </aside>
 
-  <!-- MAIN EDITOR -->
+  <!-- MAIN -->
   <main class="editor-main">
     <div class="top-bar">
-      <span class="top-bar-title">Editing slide content — changes are saved to your browser</span>
-      <span class="badge">Local Storage</span>
+      <span class="top-bar-title">تعديل المحتوى — يتم الحفظ في Firebase</span>
+      <span class="badge">Firebase Firestore</span>
     </div>
 
-    <!-- TRANSLATE PANEL -->
-    <div class="translate-panel">
-      <div class="translate-header">
-        <span class="translate-title">Translation Assistant</span>
-        <button class="btn btn-green" id="translateBtn" onclick="translateCurrentSlide()">Translate This Slide</button>
-      </div>
-      <div class="translate-controls">
-        <label style="font-size:12px;color:var(--accent-muted);letter-spacing:0.06em;text-transform:uppercase">Translate to:</label>
-        <select id="targetLang">
-          <option value="Arabic">Arabic (العربية)</option>
-          <option value="English">English</option>
-          <option value="French">French</option>
-          <option value="Spanish">Spanish</option>
-          <option value="German">German</option>
-          <option value="Chinese (Simplified)">Chinese (Simplified)</option>
-          <option value="Japanese">Japanese</option>
-          <option value="Korean">Korean</option>
-          <option value="Turkish">Turkish</option>
-          <option value="Urdu">Urdu</option>
-        </select>
-        <label style="font-size:12px;color:var(--accent-muted);letter-spacing:0.06em;text-transform:uppercase">Style:</label>
-        <select id="transStyle">
-          <option value="formal investor presentation">Formal (Investor)</option>
-          <option value="conversational">Conversational</option>
-          <option value="concise">Concise</option>
-        </select>
-      </div>
-      <div class="translate-output" id="translateOutput">Translation will appear here. Select a target language and click "Translate This Slide".</div>
-      <div class="translate-status">
-        <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Ready</span>
-      </div>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn btn-outline" onclick="copyTranslation()" style="font-size:12px;padding:8px 14px">Copy Translation</button>
-        <button class="btn btn-outline" onclick="applyTranslation()" style="font-size:12px;padding:8px 14px">Apply to Fields</button>
-      </div>
+    <!-- LANG SELECTOR (global) -->
+    <div class="lang-row">
+      <label>لغة الترجمة الافتراضية:</label>
+      <select id="globalLang">
+        <option value="Arabic">العربية</option>
+        <option value="English">الإنجليزية</option>
+        <option value="French">الفرنسية</option>
+        <option value="Spanish">الإسبانية</option>
+        <option value="German">الألمانية</option>
+        <option value="Turkish">التركية</option>
+        <option value="Urdu">الأردية</option>
+        <option value="Chinese Simplified">الصينية المبسطة</option>
+      </select>
+      <label>الأسلوب:</label>
+      <select id="globalStyle">
+        <option value="formal investor presentation">رسمي (مستثمرون)</option>
+        <option value="conversational">تحادثي</option>
+        <option value="concise">مختصر</option>
+      </select>
     </div>
 
-    <!-- DYNAMIC SLIDE EDITOR -->
     <div id="slide-editor"></div>
 
-    <div style="display:flex;gap:12px;margin-top:36px">
-      <button class="btn btn-gold" onclick="saveAll()">Save All Changes</button>
-      <button class="btn btn-outline" onclick="navigateSlide(-1)">Previous Slide</button>
-      <button class="btn btn-outline" onclick="navigateSlide(1)">Next Slide</button>
+    <div style="display:flex; gap:12px; margin-top:36px; flex-wrap:wrap;">
+      <button class="btn-save-slide" onclick="saveCurrentSlide()">حفظ الشريحة</button>
+      <button class="btn btn-outline" style="width:auto;padding:8px 18px" onclick="navigateSlide(-1)">الشريحة السابقة</button>
+      <button class="btn btn-outline" style="width:auto;padding:8px 18px" onclick="navigateSlide(1)">الشريحة التالية</button>
     </div>
   </main>
 </div>
 
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0-xXIpLZ_hI9-EYgy7OjJDkqdaHXYYn4",
+    authDomain: "shabih-3f90b.firebaseapp.com",
+    projectId: "shabih-3f90b",
+    storageBucket: "shabih-3f90b.firebasestorage.app",
+    messagingSenderId: "596330748325",
+    appId: "1:596330748325:web:be28a7751a0b38f5e3b04c"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.__db = db;
+
+  window.__loadSlide = async function(idx) {
+    try {
+      const snap = await getDoc(doc(db, 'slides', String(idx)));
+      return snap.exists() ? snap.data() : {};
+    } catch(e) { return {}; }
+  };
+
+  window.__saveSlide = async function(idx, data) {
+    await setDoc(doc(db, 'slides', String(idx)), data);
+  };
+</script>
+
 <script>
-// ─── SLIDE DATA ───
+// ─── SLIDE SCHEMA ───
 const SLIDES = [
-  {
-    id: 0, label: '00 — Cover', title: 'Cover Slide',
-    fields: [
-      { key: 'headline', label: 'Main Title', type: 'input', default: 'Shabih' },
-      { key: 'sub', label: 'Tagline', type: 'input', default: 'The referral marketplace where every customer is proof of performance.' },
-    ],
-    bullets: []
-  },
-  {
-    id: 1, label: '01 — Problem', title: 'Problem',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'Marketing spend in Saudi Arabia is largely unaccountable, and the people best placed to sell are locked out of earning.' }
-    ],
-    bullets: [
-      'Saudi Arabia has one of the world\'s highest social media penetration rates, yet businesses pay for impressions with no guarantee of a real customer walking through the door.',
+  { id:0, labelAr:'الغلاف', title:'Cover Slide',
+    fields:[
+      { key:'headline', labelAr:'العنوان الرئيسي', type:'input', default:'Shabih' },
+      { key:'sub', labelAr:'العبارة التعريفية', type:'textarea', default:'The referral marketplace where every customer is proof of performance.' },
+    ], bullets:[] },
+  { id:1, labelAr:'المشكلة', title:'Problem',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'Marketing spend in Saudi Arabia is largely unaccountable, and the people best placed to sell are locked out of earning.' }],
+    bullets:['Saudi Arabia has one of the world\'s highest social media penetration rates, yet businesses pay for impressions with no guarantee of a real customer walking through the door.',
       'Over 700,000 registered SMEs operate in the Kingdom — the majority rely on word-of-mouth but have no structured way to reward it or measure its impact.',
-      'Millions of everyday social media users have engaged, loyal audiences but no accessible path to monetize their influence without being a "verified" macro-influencer.',
-      'Consumers distrust digital ads; they trust recommendations from people they follow. There is no platform that converts that trust into a verified, measurable commercial transaction.'
-    ]
-  },
-  {
-    id: 2, label: '02 — Solution', title: 'Solution & Product',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'Shabih closes the loop: verified in-store referrals, powered by micro-ambassadors, settled in an internal economy.' }
-    ],
-    bullets: [
-      'Physical QR verification eliminates fraud — every credit earned corresponds to a real customer visit.',
+      'Millions of everyday social media users have engaged, loyal audiences but no accessible path to monetize their influence without being a verified macro-influencer.',
+      'Consumers distrust digital ads; they trust recommendations from people they follow. There is no platform that converts that trust into a verified, measurable commercial transaction.'] },
+  { id:2, labelAr:'الحل', title:'Solution',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'Shabih closes the loop: verified in-store referrals, powered by micro-ambassadors, settled in an internal economy.' }],
+    bullets:['Physical QR verification eliminates fraud — every credit earned corresponds to a real customer visit.',
       'No follower minimum required — the platform aggregates thousands of micro-audiences into collective commercial scale.',
-      'Internal credits are spendable across the partner ecosystem, creating a closed-loop economy that retains value on platform.'
-    ]
-  },
-  {
-    id: 3, label: '03 — Market', title: 'Market Size',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'A large, underpenetrated market at the intersection of social commerce, affiliate marketing, and physical retail.' }
-    ],
-    bullets: [
-      'Saudi Arabia ranks among the top 10 countries globally for social media usage per capita — with TikTok and Snapchat penetration above 80% among 18–34 year olds.',
+      'Internal credits are spendable across the partner ecosystem, creating a closed-loop economy that retains value on platform.'] },
+  { id:3, labelAr:'السوق', title:'Market',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'A large, underpenetrated market at the intersection of social commerce, affiliate marketing, and physical retail.' },
+      { key:'tam-val', labelAr:'قيمة TAM', type:'input', default:'$4.2B' },
+      { key:'sam-val', labelAr:'قيمة SAM', type:'input', default:'$820M' },
+      { key:'som-val', labelAr:'قيمة SOM', type:'input', default:'$82M' }],
+    bullets:['Saudi Arabia ranks among the top 10 countries globally for social media usage per capita — with TikTok and Snapchat penetration above 80% among 18–34 year olds.',
       'Vision 2030 SME development targets create regulatory tailwind: the Kingdom aims for SMEs to contribute 35% of GDP by 2030, requiring efficient marketing infrastructure.',
-      'GCC expansion (UAE, Kuwait, Bahrain) replicates the model into adjacent markets with similar social behavior and SME density. All figures marked as estimates.'
-    ]
-  },
-  {
-    id: 4, label: '04 — Business Model', title: 'Business Model',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'Three revenue streams that scale with transaction volume, not headcount.' }
-    ],
-    bullets: [
-      'Worked example: 1,000 Shabeehs, 10 referrals each/month = 10,000 verified visits. Platform earns 100,000 credits in spread. At a 1 SAR/credit rate, that is 100,000 SAR monthly from referral spread alone.',
+      'GCC expansion (UAE, Kuwait, Bahrain) replicates the model into adjacent markets with similar social behavior and SME density. All figures marked as estimates.'] },
+  { id:4, labelAr:'نموذج الأعمال', title:'Business Model',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'Three revenue streams that scale with transaction volume, not headcount.' },
+      { key:'cc1l', labelAr:'بطاقة 1 — العنوان', type:'input', default:'Referral Spread' },
+      { key:'cc1v', labelAr:'بطاقة 1 — القيمة', type:'input', default:'10' },
+      { key:'cc1s', labelAr:'بطاقة 1 — الوصف', type:'textarea', default:'credits per verified referral\nBusiness pays 100 / Shabeeh gets 90' },
+      { key:'cc2l', labelAr:'بطاقة 2 — العنوان', type:'input', default:'Exchange Spread' },
+      { key:'cc2v', labelAr:'بطاقة 2 — القيمة', type:'input', default:'10' },
+      { key:'cc2s', labelAr:'بطاقة 2 — الوصف', type:'textarea', default:'credits per internal spend\nShabeeh pays 100 / merchant gets 90' },
+      { key:'cc3l', labelAr:'بطاقة 3 — العنوان', type:'input', default:'Withdrawal Fee' },
+      { key:'cc3v', labelAr:'بطاقة 3 — القيمة', type:'input', default:'~5%' },
+      { key:'cc3s', labelAr:'بطاقة 3 — الوصف', type:'textarea', default:'conversion fee on cash out\nincentivizes keeping credits in-platform' }],
+    bullets:['Worked example: 1,000 Shabeehs, 10 referrals each/month = 10,000 verified visits. Platform earns 100,000 credits in spread. At a 1 SAR/credit rate, that is 100,000 SAR monthly from referral spread alone.',
       'Internal spending generates a second layer — 70% of credits spent internally doubles the spread per credit unit before it leaves the system.',
-      'Margin is embedded in every transaction; no ad budget required to grow revenue.'
-    ]
-  },
-  {
-    id: 5, label: '05 — Competitors', title: 'Competitive Landscape',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'No existing platform combines physical verification, micro-audience aggregation, and an internal economy in one product.' }
-    ],
-    bullets: []
-  },
-  {
-    id: 6, label: '06 — Traction', title: 'Traction',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'Pre-launch — validated by market research, system architecture complete, and early partnerships in motion.' }
-    ],
-    bullets: [
-      'Market research completed: consumer trust behavior in social referrals studied across Riyadh, Jeddah, and Khobar.',
+      'Margin is embedded in every transaction; no ad budget required to grow revenue.'] },
+  { id:5, labelAr:'المنافسون', title:'Competitors',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'No existing platform combines physical verification, micro-audience aggregation, and an internal economy in one product.' }],
+    bullets:[] },
+  { id:6, labelAr:'المرحلة الحالية', title:'Traction',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'Pre-launch — validated by market research, system architecture complete, and early partnerships in motion.' },
+      { key:'tr-1v', labelAr:'إحصاء 1 — القيمة', type:'input', default:'[X]' },
+      { key:'tr-1l', labelAr:'إحصاء 1 — التسمية', type:'input', default:'Businesses in Pipeline' },
+      { key:'tr-2v', labelAr:'إحصاء 2 — القيمة', type:'input', default:'[X]' },
+      { key:'tr-2l', labelAr:'إحصاء 2 — التسمية', type:'input', default:'Shabeehs Registered' },
+      { key:'tr-3v', labelAr:'إحصاء 3 — القيمة', type:'input', default:'[X]' },
+      { key:'tr-3l', labelAr:'إحصاء 3 — التسمية', type:'input', default:'Waitlist Size' },
+      { key:'tr-4v', labelAr:'إحصاء 4 — القيمة', type:'input', default:'500' },
+      { key:'tr-4l', labelAr:'إحصاء 4 — التسمية', type:'input', default:'Global Application' }],
+    bullets:['Market research completed: consumer trust behavior in social referrals studied across Riyadh, Jeddah, and Khobar.',
       'Full system architecture designed covering platform, Shabeeh app, branch terminal, and credit ledger.',
       'Application submitted to 500 Global accelerator program; founding business partnerships in active discussion.',
-      'Pre-launch positioning: all figures above reflect current pipeline conversations, not live transactions.'
-    ]
-  },
-  {
-    id: 7, label: '07 — Growth Strategy', title: 'Growth Strategy',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'Growth is driven by ambassador activity — not paid acquisition. Every Shabeeh is a distribution node.' }
-    ],
-    bullets: [
-      'Phase 1 — Prove the Loop (Months 1–6): Single district in Riyadh. Anchor in food, beauty, and wellness. Onboard 20–30 businesses and 500 Shabeehs. Measure referral-to-visit conversion rate and credit retention. Iterate product.',
-      'Phase 2 — Flywheel (Months 7–18): Expand to multiple Riyadh districts, then Jeddah and Dammam. Shabeehs recruit other Shabeehs through referral incentives. Growth becomes self-reinforcing — businesses join because Shabeehs are there; Shabeehs join because businesses are there.',
-      'Phase 3 — Open Platform (Month 19+): Expand across all business categories. Introduce tiered Shabeeh ranking system with status rewards. Launch GCC expansion starting with UAE. Explore B2B licensing of the verification infrastructure.'
-    ]
-  },
-  {
-    id: 8, label: '08 — Team', title: 'Team',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'A focused founding team with the local knowledge and technical capability to build and scale Shabih.' },
-      { key: 'ceo_name', label: 'CEO Name', type: 'input', default: '[Name]' },
-      { key: 'ceo_desc', label: 'CEO Description', type: 'textarea', default: 'Product strategy and business development. Deep understanding of Saudi SME landscape and consumer behavior.' },
-      { key: 'cto_name', label: 'CTO Name', type: 'input', default: '[Name]' },
-      { key: 'cto_desc', label: 'CTO Description', type: 'textarea', default: 'Platform architecture and technical execution. Responsible for the QR verification system, ambassador app, and credit ledger.' },
-      { key: 'advisor_name', label: 'Advisor Name', type: 'input', default: '[Name]' },
-      { key: 'advisor_desc', label: 'Advisor Description', type: 'textarea', default: '[Area of expertise — e.g., MENA venture, retail operations, fintech]' },
-    ],
-    bullets: [
-      'Early-stage team is expected to be lean. The founding pair covers the two critical competencies: market access and product execution.',
-      'First hires post-funding: Head of Business Partnerships and a mobile developer to accelerate the Shabeeh app build.'
-    ]
-  },
-  {
-    id: 9, label: '09 — Financials', title: 'Financial Projections',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'Revenue scales with the number of active Shabeehs — three scenarios, all projections.' }
-    ],
-    bullets: []
-  },
-  {
-    id: 10, label: '10 — The Ask', title: 'The Ask',
-    fields: [
-      { key: 'headline', label: 'Slide Headline', type: 'textarea', default: 'We are raising [X SAR / USD] to prove the referral loop at scale and reach [X] verified transactions within 12 months.' }
-    ],
-    bullets: [
-      'Milestone: complete platform build, onboard [X] businesses, activate [X] Shabeehs, and record first [X] verified referral transactions — all within 12 months of closing.',
-      'This round positions Shabih for a Series A raise with live data, unit economics, and a replicable city-rollout playbook.'
-    ]
-  }
+      'Pre-launch positioning: all figures above reflect current pipeline conversations, not live transactions.'] },
+  { id:7, labelAr:'استراتيجية النمو', title:'Growth Strategy',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'Growth is driven by ambassador activity — not paid acquisition. Every Shabeeh is a distribution node.' }],
+    bullets:['Phase 1 — Prove the Loop (Months 1–6): Single district in Riyadh. Anchor in food, beauty, and wellness. Onboard 20–30 businesses and 500 Shabeehs. Measure referral-to-visit conversion rate and credit retention.',
+      'Phase 2 — Flywheel (Months 7–18): Expand to multiple Riyadh districts, then Jeddah and Dammam. Shabeehs recruit other Shabeehs through referral incentives. Growth becomes self-reinforcing.',
+      'Phase 3 — Open Platform (Month 19+): Expand across all business categories. Introduce tiered Shabeeh ranking system with status rewards. Launch GCC expansion starting with UAE.'] },
+  { id:8, labelAr:'الفريق', title:'Team',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'A focused founding team with the local knowledge and technical capability to build and scale Shabih.' },
+      { key:'ceo-name', labelAr:'اسم المؤسس (CEO)', type:'input', default:'[Name]' },
+      { key:'ceo-desc', labelAr:'وصف المؤسس', type:'textarea', default:'Product strategy and business development. Deep understanding of Saudi SME landscape and consumer behavior.' },
+      { key:'cto-name', labelAr:'اسم المؤسس المشارك (CTO)', type:'input', default:'[Name]' },
+      { key:'cto-desc', labelAr:'وصف المؤسس المشارك', type:'textarea', default:'Platform architecture and technical execution. Responsible for the QR verification system, ambassador app, and credit ledger.' },
+      { key:'adv-name', labelAr:'اسم المستشار', type:'input', default:'[Name]' },
+      { key:'adv-desc', labelAr:'وصف المستشار', type:'textarea', default:'[Area of expertise — e.g., MENA venture, retail operations, fintech]' }],
+    bullets:['Early-stage team is expected to be lean. The founding pair covers the two critical competencies: market access and product execution.',
+      'First hires post-funding: Head of Business Partnerships and a mobile developer to accelerate the Shabeeh app build.'] },
+  { id:9, labelAr:'التوقعات المالية', title:'Financials',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'Revenue scales with the number of active Shabeehs — three scenarios, all projections.' }],
+    bullets:[] },
+  { id:10, labelAr:'طلب التمويل', title:'The Ask',
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'We are raising [X SAR / USD] to prove the referral loop at scale and reach [X] verified transactions within 12 months.' },
+      { key:'ak1l', labelAr:'فئة 1 — العنوان', type:'input', default:'Technology' },
+      { key:'ak1p', labelAr:'فئة 1 — النسبة', type:'input', default:'40%' },
+      { key:'ak1d', labelAr:'فئة 1 — الوصف', type:'textarea', default:'Platform development, Shabeeh app, branch QR terminal, and credit ledger infrastructure.' },
+      { key:'ak2l', labelAr:'فئة 2 — العنوان', type:'input', default:'Market Activation' },
+      { key:'ak2p', labelAr:'فئة 2 — النسبة', type:'input', default:'40%' },
+      { key:'ak2d', labelAr:'فئة 2 — الوصف', type:'textarea', default:'First business onboarding, Shabeeh acquisition in pilot district, and initial promotional campaigns.' },
+      { key:'ak3l', labelAr:'فئة 3 — العنوان', type:'input', default:'Operations & Team' },
+      { key:'ak3p', labelAr:'فئة 3 — النسبة', type:'input', default:'20%' },
+      { key:'ak3d', labelAr:'فئة 3 — الوصف', type:'textarea', default:'Core team hires, legal, compliance, and 12-month operational runway.' }],
+    bullets:['Milestone: complete platform build, onboard [X] businesses, activate [X] Shabeehs, and record first [X] verified referral transactions — all within 12 months of closing.',
+      'This round positions Shabih for a Series A raise with live data, unit economics, and a replicable city-rollout playbook.'] }
 ];
 
 let currentSlide = 0;
-let lastTranslation = '';
+let currentData = {}; // loaded from firebase
 
-// ─── BUILD SIDEBAR NAV ───
+// ─── BUILD SIDEBAR ───
 function buildNav() {
   const nav = document.getElementById('slide-nav');
-  nav.innerHTML = SLIDES.map((s, i) => `
-    <div class="slide-nav-item ${i === currentSlide ? 'active' : ''}" onclick="goToSlide(${i})">
+  nav.innerHTML = SLIDES.map((s,i) => `
+    <div class="slide-nav-item ${i===currentSlide?'active':''}" onclick="goToSlide(${i})">
       <div class="slide-nav-num">${s.id}</div>
-      <div class="slide-nav-label">${s.title}</div>
-    </div>
-  `).join('');
+      <div class="slide-nav-label">${s.labelAr}</div>
+    </div>`).join('');
+  // Update progress
+  const pct = ((currentSlide)/(SLIDES.length-1))*100;
+  document.getElementById('page-progress').style.width = pct+'%';
 }
 
 // ─── BUILD EDITOR ───
-function buildEditor() {
+async function buildEditor() {
   const s = SLIDES[currentSlide];
-  const stored = getStored(currentSlide);
+  const stored = await window.__loadSlide(currentSlide).catch(()=>{return {};});
+  currentData = stored;
+  const lang = document.getElementById('globalLang').value;
+
   const editor = document.getElementById('slide-editor');
 
-  let html = `
-    <div class="editor-header">
-      <div class="editor-slide-label">${s.label}</div>
-      <div class="editor-slide-title">${s.title}</div>
-    </div>
-  `;
+  let html = `<div class="editor-header">
+    <div class="editor-slide-label">الشريحة ${s.id} — ${s.labelAr}</div>
+    <div class="editor-slide-title">${s.title}</div>
+  </div>`;
 
   // Fields
   s.fields.forEach(f => {
     const val = stored[f.key] !== undefined ? stored[f.key] : f.default;
+    const fid = `field_${f.key}`;
+    const tid = `trans_${f.key}`;
     html += `<div class="field-group">
-      <label class="field-label">${f.label}</label>
-      ${f.type === 'textarea'
-        ? `<textarea id="field_${f.key}" rows="3">${escHtml(val)}</textarea>`
-        : `<input type="text" id="field_${f.key}" value="${escHtml(val)}">`
-      }
+      <div class="field-header">
+        <label class="field-label">${f.labelAr}</label>
+        <button class="btn-green-sm" onclick="translateField('${fid}','${tid}')">ترجم</button>
+      </div>
+      ${f.type==='textarea'
+        ? `<textarea id="${fid}" rows="3">${escHtml(val)}</textarea>`
+        : `<input type="text" id="${fid}" value="${escHtml(val)}">`}
+      <div class="inline-trans" id="${tid}">
+        <div class="inline-trans-header">الترجمة</div>
+        <div class="inline-trans-text"></div>
+        <div class="inline-trans-actions">
+          <button class="btn-sm" onclick="applyInlineTrans('${fid}','${tid}')">تطبيق</button>
+          <button class="btn-sm" onclick="copyInlineTrans('${tid}')">نسخ</button>
+        </div>
+      </div>
     </div>`;
   });
 
   // Bullets
   if (s.bullets && s.bullets.length > 0) {
-    html += `<div class="bullets-section">
-      <label class="field-label">Bullet Points</label>`;
+    html += `<hr class="hr"><div class="bullets-section"><label class="field-label" style="display:block;margin-bottom:14px">النقاط الرئيسية</label>`;
     s.bullets.forEach((b, i) => {
       const val = stored.bullets && stored.bullets[i] !== undefined ? stored.bullets[i] : b;
+      const fid = `bullet_${i}`;
+      const tid = `btrans_${i}`;
       html += `<div class="bullet-row">
-        <div class="bullet-index">${i + 1}</div>
-        <textarea id="bullet_${i}" rows="2">${escHtml(val)}</textarea>
+        <div class="bullet-row-header">
+          <div class="bullet-index">${i+1}</div>
+          <div class="bullet-label">نقطة ${i+1}</div>
+          <button class="btn-green-sm" onclick="translateField('${fid}','${tid}')">ترجم</button>
+        </div>
+        <textarea id="${fid}" rows="2">${escHtml(val)}</textarea>
+        <div class="inline-trans" id="${tid}">
+          <div class="inline-trans-header">الترجمة</div>
+          <div class="inline-trans-text"></div>
+          <div class="inline-trans-actions">
+            <button class="btn-sm" onclick="applyInlineTrans('${fid}','${tid}')">تطبيق</button>
+            <button class="btn-sm" onclick="copyInlineTrans('${tid}')">نسخ</button>
+          </div>
+        </div>
       </div>`;
     });
     html += `</div>`;
@@ -515,92 +577,28 @@ function buildEditor() {
 }
 
 function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── STORAGE ───
-function getStored(idx) {
-  const raw = localStorage.getItem('shabih_slide_' + idx);
-  try { return raw ? JSON.parse(raw) : {}; } catch(e) { return {}; }
-}
+// ─── TRANSLATE SINGLE FIELD ───
+async function translateField(fieldId, transId) {
+  const fieldEl = document.getElementById(fieldId);
+  const transEl = document.getElementById(transId);
+  if (!fieldEl || !transEl) return;
 
-function saveAll() {
-  const s = SLIDES[currentSlide];
-  const data = {};
-  s.fields.forEach(f => {
-    const el = document.getElementById('field_' + f.key);
-    if (el) data[f.key] = el.value;
-  });
-  if (s.bullets && s.bullets.length > 0) {
-    data.bullets = s.bullets.map((_, i) => {
-      const el = document.getElementById('bullet_' + i);
-      return el ? el.value : s.bullets[i];
-    });
-  }
-  localStorage.setItem('shabih_slide_' + currentSlide, JSON.stringify(data));
-  showToast('Saved');
-}
+  const text = fieldEl.value.trim();
+  if (!text) return;
 
-function resetAll() {
-  if (!confirm('Reset this slide to default content?')) return;
-  localStorage.removeItem('shabih_slide_' + currentSlide);
-  buildEditor();
-  showToast('Reset');
-}
+  const lang = document.getElementById('globalLang').value;
+  const style = document.getElementById('globalStyle').value;
 
-// ─── NAVIGATION ───
-function goToSlide(idx) {
-  saveAll();
-  currentSlide = idx;
-  buildNav();
-  buildEditor();
-  document.querySelector('.editor-main').scrollTo(0, 0);
-}
-
-function navigateSlide(dir) {
-  const next = currentSlide + dir;
-  if (next < 0 || next >= SLIDES.length) return;
-  goToSlide(next);
-}
-
-// ─── TRANSLATE ───
-async function translateCurrentSlide() {
-  const btn = document.getElementById('translateBtn');
-  const output = document.getElementById('translateOutput');
-  const dot = document.getElementById('statusDot');
-  const statusText = document.getElementById('statusText');
-  const lang = document.getElementById('targetLang').value;
-  const style = document.getElementById('transStyle').value;
-  const s = SLIDES[currentSlide];
-
-  // Gather current content
-  let content = '';
-  s.fields.forEach(f => {
-    const el = document.getElementById('field_' + f.key);
-    if (el) content += f.label + ':\n' + el.value + '\n\n';
-  });
-  if (s.bullets && s.bullets.length > 0) {
-    content += 'Bullet Points:\n';
-    s.bullets.forEach((_, i) => {
-      const el = document.getElementById('bullet_' + i);
-      if (el) content += (i + 1) + '. ' + el.value + '\n';
-    });
-  }
-
-  if (!content.trim()) {
-    output.textContent = 'No content to translate on this slide.';
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Translating...';
-  dot.className = 'status-dot active';
-  statusText.textContent = 'Translating via Claude API...';
-  output.textContent = 'Working...';
+  // Show loading
+  const btn = transEl.previousElementSibling
+    ? transEl.closest('.field-group, .bullet-row').querySelector('.btn-green-sm')
+    : null;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
+  transEl.classList.add('visible');
+  transEl.querySelector('.inline-trans-text').textContent = '...';
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -609,78 +607,90 @@ async function translateCurrentSlide() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: `Translate the following investor pitch deck slide content into ${lang}. Use a ${style} tone. Maintain the same structure (label names in the source language are fine to keep, but translate all content values). Output only the translated content, preserving the label structure.\n\n${content}`
-        }]
+        messages: [{ role: 'user', content: `Translate the following text to ${lang} using a ${style} tone. Output ONLY the translated text with no preamble, no quotes, no explanation:\n\n${text}` }]
       })
     });
-
     const data = await response.json();
-    const translated = data.content && data.content[0] && data.content[0].text
-      ? data.content[0].text
-      : 'Translation failed. Please try again.';
-
-    lastTranslation = translated;
-    output.textContent = translated;
-    dot.className = 'status-dot';
-    statusText.textContent = 'Translation complete';
-  } catch (err) {
-    output.textContent = 'Error: ' + err.message;
-    dot.className = 'status-dot';
-    statusText.textContent = 'Error occurred';
+    const translated = data.content?.[0]?.text || 'فشلت الترجمة';
+    transEl.querySelector('.inline-trans-text').textContent = translated;
+    transEl.dataset.translation = translated;
+  } catch(e) {
+    transEl.querySelector('.inline-trans-text').textContent = 'خطأ: ' + e.message;
   }
 
-  btn.disabled = false;
-  btn.textContent = 'Translate This Slide';
+  if (btn) { btn.disabled = false; btn.textContent = 'ترجم'; }
 }
 
-function copyTranslation() {
-  if (!lastTranslation) return;
-  navigator.clipboard.writeText(lastTranslation).then(() => showToast('Copied'));
+function applyInlineTrans(fieldId, transId) {
+  const fieldEl = document.getElementById(fieldId);
+  const transEl = document.getElementById(transId);
+  if (!fieldEl || !transEl) return;
+  const txt = transEl.dataset.translation || transEl.querySelector('.inline-trans-text').textContent;
+  if (txt) { fieldEl.value = txt; showToast('تم التطبيق'); }
 }
 
-function applyTranslation() {
-  if (!lastTranslation) return;
-  // Try to parse and apply line by line
-  const lines = lastTranslation.split('\n');
+function copyInlineTrans(transId) {
+  const transEl = document.getElementById(transId);
+  if (!transEl) return;
+  const txt = transEl.dataset.translation || transEl.querySelector('.inline-trans-text').textContent;
+  if (txt) navigator.clipboard.writeText(txt).then(() => showToast('تم النسخ'));
+}
+
+// ─── SAVE ───
+async function saveCurrentSlide() {
   const s = SLIDES[currentSlide];
-  let bulletIdx = 0;
-  let inBullets = false;
-
-  lines.forEach(line => {
-    // Check for headline patterns
-    s.fields.forEach(f => {
-      if (line.toLowerCase().includes(f.label.toLowerCase() + ':')) {
-        const val = line.split(':').slice(1).join(':').trim();
-        if (val) {
-          const el = document.getElementById('field_' + f.key);
-          if (el) el.value = val;
-        }
-      }
-    });
-    // Check for bullets (numbered lines)
-    const bulletMatch = line.match(/^(\d+)\.\s+(.+)/);
-    if (bulletMatch) {
-      const i = parseInt(bulletMatch[1]) - 1;
-      const el = document.getElementById('bullet_' + i);
-      if (el) el.value = bulletMatch[2];
-    }
+  const data = {};
+  s.fields.forEach(f => {
+    const el = document.getElementById('field_' + f.key);
+    if (el) data[f.key] = el.value;
   });
-  showToast('Applied translation');
+  if (s.bullets && s.bullets.length > 0) {
+    data.bullets = s.bullets.map((_,i) => {
+      const el = document.getElementById('bullet_' + i);
+      return el ? el.value : s.bullets[i];
+    });
+  }
+  try {
+    await window.__saveSlide(currentSlide, data);
+    showToast('تم الحفظ في Firebase');
+  } catch(e) {
+    showToast('خطأ في الحفظ');
+  }
+}
+
+// ─── NAVIGATION ───
+async function goToSlide(idx) {
+  currentSlide = idx;
+  buildNav();
+  document.getElementById('slide-editor').innerHTML = '<div style="color:var(--accent-muted);padding:40px;text-align:center">جارٍ التحميل...</div>';
+  await buildEditor();
+  document.querySelector('.editor-main').scrollTo(0,0);
+}
+
+async function navigateSlide(dir) {
+  const next = currentSlide + dir;
+  if (next < 0 || next >= SLIDES.length) return;
+  await goToSlide(next);
 }
 
 // ─── TOAST ───
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 // ─── INIT ───
 buildNav();
 buildEditor();
+
+// expose for onclick
+window.goToSlide = goToSlide;
+window.navigateSlide = navigateSlide;
+window.saveCurrentSlide = saveCurrentSlide;
+window.translateField = translateField;
+window.applyInlineTrans = applyInlineTrans;
+window.copyInlineTrans = copyInlineTrans;
 </script>
 </body>
 </html>
