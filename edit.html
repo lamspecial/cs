@@ -423,6 +423,19 @@ function buildFinTableFields() {
   return fields;
 }
 
+// ─── DEFAULT DATA: competitors table (slide 5) — columns/checks/row-count all editable ───
+const DEFAULT_COMP_TABLE = {
+  columns: ['Physical Redemption','Micro-Audience Support','Internal Currency','Pay-per-Verified Customer','Arabic Market Focus'],
+  rows: [
+    { name: 'Shabih', values: [true,true,true,true,true] },
+    { name: 'Zid Affiliate', values: [false,false,false,false,true] },
+    { name: 'Salla Affiliate', values: [false,false,false,false,true] },
+    { name: 'Impact.com', values: [false,false,false,false,false] },
+    { name: 'CJ Affiliate', values: [false,false,false,false,false] },
+    { name: 'Meta / Snapchat Ads', values: [false,false,false,false,false] }
+  ]
+};
+
 // ─── SLIDE SCHEMA ───
 const SLIDES = [
   { id:0, labelAr:'الغلاف', title:'Cover Slide',
@@ -470,14 +483,8 @@ const SLIDES = [
       'Internal spending generates a second layer — 70% of credits spent internally doubles the spread per credit unit before it leaves the system.',
       'Margin is embedded in every transaction; no ad budget required to grow revenue.'] },
   { id:5, labelAr:'المنافسون', title:'Competitors',
-    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'No existing platform combines physical verification, micro-audience aggregation, and an internal economy in one product.' },
-      { key:'ct-name-0', labelAr:'صف 1 — اسم المنصة', type:'input', default:'Shabih' },
-      { key:'ct-name-1', labelAr:'صف 2 — اسم المنصة', type:'input', default:'Zid Affiliate' },
-      { key:'ct-name-2', labelAr:'صف 3 — اسم المنصة', type:'input', default:'Salla Affiliate' },
-      { key:'ct-name-3', labelAr:'صف 4 — اسم المنصة', type:'input', default:'Impact.com' },
-      { key:'ct-name-4', labelAr:'صف 5 — اسم المنصة', type:'input', default:'CJ Affiliate' },
-      { key:'ct-name-5', labelAr:'صف 6 — اسم المنصة', type:'input', default:'Meta / Snapchat Ads' }],
-    bullets:[] },
+    fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'No existing platform combines physical verification, micro-audience aggregation, and an internal economy in one product.' }],
+    bullets:[], isCompTable:true },
   { id:6, labelAr:'المرحلة الحالية', title:'Traction',
     fields:[{ key:'headline', labelAr:'عنوان الشريحة', type:'textarea', default:'Pre-launch — validated by market research, system architecture complete, and early partnerships in motion.' },
       { key:'tr-1v', labelAr:'إحصاء 1 — القيمة', type:'input', default:'[X]' },
@@ -611,8 +618,54 @@ async function buildEditor() {
     html += `</div>`;
   }
 
+  // Competitors table (slide 5): editable column headers, checkmarks, and a variable number of rows
+  if (s.isCompTable) {
+    const cols = (stored.columns && stored.columns.length) ? stored.columns : DEFAULT_COMP_TABLE.columns;
+    const rows = (stored.rows && stored.rows.length) ? stored.rows : DEFAULT_COMP_TABLE.rows;
+    html += `<hr class="hr"><div class="bullets-section">
+      <label class="field-label" style="display:block;margin-bottom:14px">أعمدة الجدول (المعايير)</label>
+      <div id="ct-cols">`;
+    cols.forEach((c, j) => {
+      html += `<div class="field-group"><input type="text" class="ct-col-input" data-col="${j}" value="${escHtml(c)}"></div>`;
+    });
+    html += `</div>
+      <hr class="hr">
+      <label class="field-label" style="display:block;margin-bottom:14px">صفوف الجدول (المنصات)</label>
+      <div id="ct-rows"></div>
+      <button type="button" class="btn-sm" onclick="addCompRow()">+ إضافة صف</button>
+    </div>`;
+  }
+
   editor.innerHTML = html;
+
+  if (s.isCompTable) {
+    const cols = (stored.columns && stored.columns.length) ? stored.columns : DEFAULT_COMP_TABLE.columns;
+    const rows = (stored.rows && stored.rows.length) ? stored.rows : DEFAULT_COMP_TABLE.rows;
+    const container = document.getElementById('ct-rows');
+    rows.forEach(r => addCompRow(r.name, r.values, container));
+  }
 }
+
+// Adds one editable row to the competitors table editor (name input + a check/cross toggle per column).
+function addCompRow(name, values, container) {
+  container = container || document.getElementById('ct-rows');
+  const colInputs = document.querySelectorAll('.ct-col-input');
+  const colCount = colInputs.length || DEFAULT_COMP_TABLE.columns.length;
+  const vals = values && values.length === colCount ? values : new Array(colCount).fill(false);
+  const row = document.createElement('div');
+  row.className = 'ct-row-editor';
+  row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--accent-faint);flex-wrap:wrap';
+  let togglesHtml = '';
+  for (let j = 0; j < colCount; j++) {
+    const checked = vals[j] ? 'checked' : '';
+    togglesHtml += `<label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--accent-muted)"><input type="checkbox" class="ct-val-input" data-col="${j}" ${checked}></label>`;
+  }
+  row.innerHTML = `<input type="text" class="ct-name-input" value="${escHtml(name || '')}" style="flex:1;min-width:140px">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">${togglesHtml}</div>
+    <button type="button" class="btn-sm" onclick="this.closest('.ct-row-editor').remove()">حذف الصف</button>`;
+  container.appendChild(row);
+}
+window.addCompRow = addCompRow;
 
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -719,6 +772,13 @@ async function saveCurrentSlide() {
       const el = document.getElementById('bullet_' + i);
       return el ? el.value : s.bullets[i];
     });
+  }
+  if (s.isCompTable) {
+    data.columns = Array.from(document.querySelectorAll('.ct-col-input')).map(el => el.value);
+    data.rows = Array.from(document.querySelectorAll('.ct-row-editor')).map(rowEl => ({
+      name: rowEl.querySelector('.ct-name-input').value,
+      values: Array.from(rowEl.querySelectorAll('.ct-val-input')).map(cb => cb.checked)
+    }));
   }
   try {
     await window.__saveSlide(currentSlide, data);
