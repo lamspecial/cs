@@ -575,19 +575,7 @@
   <p class="slide-label">05 — Competitive Landscape</p>
   <h2 class="slide-headline" id="h-5">No existing platform combines physical verification, micro-audience aggregation, and an internal economy in one product.</h2>
   <div class="divider"></div>
-  <table class="comp-table">
-    <thead><tr>
-      <th>Platform</th><th>Physical Redemption</th><th>Micro-Audience Support</th><th>Internal Currency</th><th>Pay-per-Verified Customer</th><th>Arabic Market Focus</th>
-    </tr></thead>
-    <tbody>
-      <tr class="highlight"><td id="ct-name-0">Shabih</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span></td></tr>
-      <tr><td id="ct-name-1">Zid Affiliate</td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="check">&#10003;</span></td></tr>
-      <tr><td id="ct-name-2">Salla Affiliate</td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="check">&#10003;</span></td></tr>
-      <tr><td id="ct-name-3">Impact.com</td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td></tr>
-      <tr><td id="ct-name-4">CJ Affiliate</td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td></tr>
-      <tr><td id="ct-name-5">Meta / Snapchat Ads</td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td><td><span class="cross">&#8212;</span></td></tr>
-    </tbody>
-  </table>
+  <table class="comp-table" id="comp-table"></table>
 </div>
 
 <!-- ═══ SLIDE 6 — TRACTION ═══ -->
@@ -781,6 +769,42 @@
   const slides = document.querySelectorAll('.slide');
 
   // ID map for applying data
+  // ─── Competitive table (slide 5) — fully data-driven so columns/checks/row count are editable ───
+  const DEFAULT_COMP_TABLE = {
+    columns: ['Physical Redemption','Micro-Audience Support','Internal Currency','Pay-per-Verified Customer','Arabic Market Focus'],
+    rows: [
+      { name: 'Shabih', values: [true,true,true,true,true] },
+      { name: 'Zid Affiliate', values: [false,false,false,false,true] },
+      { name: 'Salla Affiliate', values: [false,false,false,false,true] },
+      { name: 'Impact.com', values: [false,false,false,false,false] },
+      { name: 'CJ Affiliate', values: [false,false,false,false,false] },
+      { name: 'Meta / Snapchat Ads', values: [false,false,false,false,false] }
+    ]
+  };
+
+  function escapeText(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  window.renderCompTable = function(data) {
+    const cols = (data && Array.isArray(data.columns) && data.columns.length) ? data.columns : DEFAULT_COMP_TABLE.columns;
+    const rows = (data && Array.isArray(data.rows) && data.rows.length) ? data.rows : DEFAULT_COMP_TABLE.rows;
+    const el = document.getElementById('comp-table');
+    if (!el) return;
+    let html = '<thead><tr><th>Platform</th>' + cols.map(c => `<th>${escapeText(c)}</th>`).join('') + '</tr></thead><tbody>';
+    rows.forEach((row, i) => {
+      html += `<tr${i === 0 ? ' class="highlight"' : ''}><td>${escapeText(row.name)}</td>`;
+      cols.forEach((_, j) => {
+        const on = row.values && row.values[j];
+        html += on ? '<td><span class="check">&#10003;</span></td>' : '<td><span class="cross">&#8212;</span></td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody>';
+    el.innerHTML = html;
+  };
+  renderCompTable(null);
+
   // Helper: auto-generate a 1:1 id map for a list of keys (element id === data key)
   function selfMap(keys) {
     const m = {};
@@ -794,7 +818,7 @@
     2: { headline: 'h-2', ...selfMap(['fn-1t','fn-1d','fn-2t','fn-2d','fn-3t','fn-3d']), bullets: ['b-2-0','b-2-1','b-2-2'] },
     3: { headline: 'h-3', ...selfMap(['tam-val','sam-val','som-val']), bullets: ['b-3-0','b-3-1','b-3-2'] },
     4: { headline: 'h-4', ...selfMap(['cc1l','cc1v','cc1s','cc2l','cc2v','cc2s','cc3l','cc3v','cc3s']), bullets: ['b-4-0','b-4-1','b-4-2'] },
-    5: { headline: 'h-5', ...selfMap(['ct-name-0','ct-name-1','ct-name-2','ct-name-3','ct-name-4','ct-name-5']) },
+    5: { headline: 'h-5' },
     6: { headline: 'h-6', ...selfMap(['tr-1v','tr-1l','tr-2v','tr-2l','tr-3v','tr-3l','tr-4v','tr-4l']), bullets: ['b-6-0','b-6-1','b-6-2','b-6-3'] },
     7: { headline: 'h-7', bullets: ['b-7-0','b-7-1','b-7-2'] },
     8: { headline: 'h-8', 'ceo-name': 'ceo-name', 'ceo-desc': 'ceo-desc', 'cto-name': 'cto-name', 'cto-desc': 'cto-desc', 'adv-name': 'adv-name', 'adv-desc': 'adv-desc', bullets: ['b-8-0','b-8-1'] },
@@ -811,6 +835,7 @@
   }
 
   window.applySlideData = function(idx, data) {
+    if (idx === 5) renderCompTable(data);
     const map = FIELD_MAP[idx];
     if (!map) return;
     Object.keys(data).forEach(key => {
